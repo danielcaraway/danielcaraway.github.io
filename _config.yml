@@ -108,8 +108,8 @@ analytics:
 # Site Author
 author:
   name             : "Daniel Caraway"
-  avatar           : "/images/cactus.png" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "Putting the fun in **fun**ctions since 2018."
+  avatar           : "/images/pink_cactus_sq.jpg" # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
+  bio              : "I put the fun in **fun**ctions."
   location         : "Los Angeles, CA"
   email            :
   links:
