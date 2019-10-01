@@ -107,10 +107,10 @@ analytics:
 
 # Site Author
 author:
-  name             : "Your Name"
+  name             : "Daniel Caraway"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "I am an **amazing** person."
-  location         : "Somewhere"
+  bio              : "Putting the fun in **fun**ctions since 2018."
+  location         : "Los Angeles, CA"
   email            :
   links:
     - label: "Email"
