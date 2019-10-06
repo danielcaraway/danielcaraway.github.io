@@ -13074,12 +13074,28 @@ div#notebook {
   <div tabindex="-1" id="notebook" class="border-box-sizing">
     <div class="container" id="notebook-container">
 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="SENTIMENT-ANALYSIS-(PANDAS-STYLE!)">SENTIMENT ANALYSIS (PANDAS STYLE!)<a class="anchor-link" href="#SENTIMENT-ANALYSIS-(PANDAS-STYLE!)">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="STEP-1:-Import-ALL-the-things!">STEP 1: Import ALL the things!<a class="anchor-link" href="#STEP-1:-Import-ALL-the-things!">&#182;</a></h3><h4 id="Libraries-and-paths-and-files">Libraries and paths and files<a class="anchor-link" href="#Libraries-and-paths-and-files">&#182;</a></h4><p>I'm sure there is a cleaner way to do this, plz lmk <a href="mailto:danielcaraway42@gmail.com">via email</a></p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[164]:</div>
+<div class="prompt input_prompt">In&nbsp;[181]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="n">negative</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;NEG/&#39;</span><span class="p">)</span>
 <span class="n">positive</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="s1">&#39;POS/&#39;</span><span class="p">)</span>
 </pre></div>
@@ -13091,7 +13107,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[165]:</div>
+<div class="prompt input_prompt">In&nbsp;[182]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">positive_alltext</span> <span class="o">=</span> <span class="p">[]</span>
@@ -13112,22 +13128,16 @@ div#notebook {
 </div>
 
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[166]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-</pre></div>
-
-    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="STEP-2:-Turn-that-fresh-text-into-a-pandas-DF-and-add-a-column-to-mark-it-as-either-positive-or-negative">STEP 2: Turn that fresh text into a pandas DF and add a column to mark it as either positive or negative<a class="anchor-link" href="#STEP-2:-Turn-that-fresh-text-into-a-pandas-DF-and-add-a-column-to-mark-it-as-either-positive-or-negative">&#182;</a></h3>
 </div>
 </div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[167]:</div>
+<div class="prompt input_prompt">In&nbsp;[183]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">positive_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">positive_alltext</span><span class="p">)</span>
@@ -13141,7 +13151,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[168]:</div>
+<div class="prompt input_prompt">In&nbsp;[184]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">positive_df</span><span class="p">[</span><span class="s1">&#39;PoN&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;P&#39;</span>
@@ -13155,10 +13165,11 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[169]:</div>
+<div class="prompt input_prompt">In&nbsp;[185]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">all_df</span> <span class="o">=</span> <span class="n">positive_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">negative_df</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Combine the pos and neg dfs</span>
+<span class="n">all_df</span> <span class="o">=</span> <span class="n">positive_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">negative_df</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13168,10 +13179,11 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[170]:</div>
+<div class="prompt input_prompt">In&nbsp;[186]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">all_df</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Our results!</span>
+<span class="n">all_df</span>
 </pre></div>
 
     </div>
@@ -13184,7 +13196,7 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[170]:</div>
+    <div class="prompt output_prompt">Out[186]:</div>
 
 
 
@@ -13273,22 +13285,29 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="STEP-3:-TOKENIZE-(and-clean)!!">STEP 3: TOKENIZE (and clean)!!<a class="anchor-link" href="#STEP-3:-TOKENIZE-(and-clean)!!">&#182;</a></h3>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[171]:</div>
+<div class="prompt input_prompt">In&nbsp;[187]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">nltk.tokenize</span> <span class="k">import</span> <span class="n">word_tokenize</span>
-<span class="c1"># from nltk.tokenize import RegexpTokenizer</span>
-<span class="c1"># tokenizer = RegexpTokenizer(r&#39;\w+&#39;)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="sd">&#39;&#39;&#39; </span>
+<span class="sd">clean_tokens = [word.lower() for word in tokens if word.isalpha()]</span>
+<span class="sd">IN ENGLISH: for every word in this set of words lower case the word if it is &quot;is alpha&quot;</span>
+<span class="sd">&quot;isalpha()&quot; meaning &quot;not a number or punctuation&quot;</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="kn">from</span> <span class="nn">nltk.tokenize</span> <span class="k">import</span> <span class="n">word_tokenize</span>
 <span class="k">def</span> <span class="nf">get_tokens</span><span class="p">(</span><span class="n">sentence</span><span class="p">):</span>
     <span class="n">tokens</span> <span class="o">=</span> <span class="n">word_tokenize</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
     <span class="n">clean_tokens</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">tokens</span> <span class="k">if</span> <span class="n">word</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()]</span>
     <span class="k">return</span> <span class="n">clean_tokens</span>
-<span class="c1">#     clean_sentence = &#39; &#39;.join([word.lower() for word in sentence if word.isalpha()])</span>
-<span class="c1">#     return word_tokenize(clean_sentence)</span>
-<span class="c1">#     return tokenizer(sentence)</span>
-    
 
 <span class="n">all_df</span><span class="p">[</span><span class="s1">&#39;tokenized&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">get_tokens</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">all_df</span><span class="p">[</span><span class="s1">&#39;tokenized_count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">all_df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">&#39;tokenized&#39;</span><span class="p">]),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -13298,6 +13317,13 @@ div#notebook {
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="STEP-4:-Remove-Stopwords">STEP 4: Remove Stopwords<a class="anchor-link" href="#STEP-4:-Remove-Stopwords">&#182;</a></h3>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -13471,6 +13497,13 @@ div#notebook {
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="STEP-5:-Create-a-Frequency-Distribution">STEP 5: Create a Frequency Distribution<a class="anchor-link" href="#STEP-5:-Create-a-Frequency-Distribution">&#182;</a></h3>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -13675,45 +13708,6 @@ div#notebook {
 
 </div>
 
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
 </div>
 </div>
 
