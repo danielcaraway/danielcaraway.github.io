@@ -8,6 +8,21 @@ permalink: /pandas/
 
 ## A semi-cheatsheet? 
 
+#### Subsetting specific columns (or dropping)
+
+```python
+new = old.filter(['A','B','D'], axis=1)
+new = old.drop('B', axis=1)
+```
+
+#### DF to array
+
+[source](https://stackoverflow.com/questions/13187778/convert-pandas-dataframe-to-numpy-array)
+
+```python
+df.values
+```
+
 #### Sum + Count of Column
 
 ```python
