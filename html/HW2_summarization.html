@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>HW2_classification</title>
+<title>HW2_summarization</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13077,17 +13077,25 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="HW2:-SIDEQUEST----Classification">HW2: SIDEQUEST -- Classification<a class="anchor-link" href="#HW2:-SIDEQUEST----Classification">&#182;</a></h1>
+<h1 id="HOW-TO-SUMMARIZE-IN-PYTHON">HOW TO SUMMARIZE IN PYTHON<a class="anchor-link" href="#HOW-TO-SUMMARIZE-IN-PYTHON">&#182;</a></h1><p>Following <a href="https://stackabuse.com/text-summarization-with-nltk-in-python/">this tutorial!</a> | 10-13-19</p>
+<h2 id="STEP-1:-GET-THE-DATA!!">STEP 1: GET THE DATA!!<a class="anchor-link" href="#STEP-1:-GET-THE-DATA!!">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Step-1a:-Import-libraries">Step 1a: Import libraries<a class="anchor-link" href="#Step-1a:-Import-libraries">&#182;</a></h3>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[46]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sklearn</span>
-<span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">datasets</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># file = open(&#39;../summary_test_positive.txt&#39;).readlines()</span>
+<span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../summary_test_negative.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
 </pre></div>
 
     </div>
@@ -13097,68 +13105,10 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[63]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wine</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_wine</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wine</span><span class="o">.</span><span class="n">feature_names</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[9]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[&#39;alcohol&#39;,
- &#39;malic_acid&#39;,
- &#39;ash&#39;,
- &#39;alcalinity_of_ash&#39;,
- &#39;magnesium&#39;,
- &#39;total_phenols&#39;,
- &#39;flavanoids&#39;,
- &#39;nonflavanoid_phenols&#39;,
- &#39;proanthocyanins&#39;,
- &#39;color_intensity&#39;,
- &#39;hue&#39;,
- &#39;od280/od315_of_diluted_wines&#39;,
- &#39;proline&#39;]</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">wine</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">file</span>
 </pre></div>
 
     </div>
@@ -13171,13 +13121,76 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[10]:</div>
+    <div class="prompt output_prompt">Out[63]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>sklearn.utils.Bunch</pre>
+<pre>[&#39;bad . bad . \n&#39;,
+ &#39;bad . \n&#39;,
+ &#39;that one word seems to pretty much sums up beyond the valley of the dolls . \n&#39;,
+ &#34;if that summary isn&#39;t enough for you , how about t&amp;a , t&amp;a , t&amp;a ? \n&#34;,
+ &#34;still haven&#39;t got the point ? \n&#34;,
+ &#34;other than director russ meyer&#39;s predilection for casting attractive large breasted women who ultimately expose the afore-mentioned anatomical areas , there is really only one other reason to recommend even taking a look at this movie . \n&#34;,
+ &#39;that is the fact that it was co-written by famed film critic roger ebert , who also was responsible for the screenplay . \n&#39;,
+ &#39;after watching this movie you will never be able to sit through another one of his reviews where he gives a movie a thumbs down for bad writing with a straight face . \n&#39;,
+ &#39;this movie stinks out loud . \n&#39;,
+ &#39;quite frankly , this movie deserves a . \n&#39;,
+ &#39;but there are parts of it that are so bad they are almost funny . \n&#39;,
+ &#34;so i&#39;m giving it a . \n&#34;,
+ &#39;and maybe that is too generous . \n&#39;,
+ &#39;right from the opening credits , i knew that i had a class-a bomb on my hands . \n&#39;,
+ &#39;not only are the way the credits actually shot distracting , but the first scene you see includes a big breasted young woman being chased by a guy in a nazi uniform . \n&#39;,
+ &#39;i had absolutely no idea why the hell that was happening ( it does get explained later ) and as soon as the first scene is over , we cut to a completely unrelated scene . \n&#39;,
+ &#39;to be honest , as i sat through this movie mesmerized by just how incredibly awful it was , i actually forgot about the seemingly out of place opening until it popped up again later in the film . \n&#39;,
+ &#34;with the quality of the writing during the rest of the film , it wouldn&#39;t have surprised me if the opening had never been explained . \n&#34;,
+ &#39;so what is this movie about ? \n&#39;,
+ &#39;you ask . \n&#39;,
+ &#39;like it really matters . \n&#39;,
+ &#39;ok , here goes . \n&#39;,
+ &#39;this all-girl band headed by kelly macnamara ( dolly reed ) and her friends go to hollywood to try to gain a foothold in the music industry . \n&#39;,
+ &#34;once there , they do manage to find success ( due as much to their hooters as anything else ? it sure wasn&#39;t for their brutally bad singing voices ) , and the movie chronicles how their lives change for the worse as the pressures of fame get to them . \n&#34;,
+ &#39;everything from big egos , to booze and drugs to free flowing sex sends them on a downward spiral . \n&#39;,
+ &#39;there are a couple of other idiotic subplots thrown in for good measure , but the fame is the one that pretty much sums up this thing . \n&#39;,
+ &#39;&gt;from a creative standpoint there is nothing redeeming here . \n&#39;,
+ &#39;other than the above-mentioned obsession with big knockers that russ meyer seemed to have . \n&#39;,
+ &#39;the dialogue is so incredibly bad that it literally is funny in parts . \n&#39;,
+ &#39;mr . ebert has generously thrown in helpings of &#34; hey man &#34; , &#34; dig &#34; and my all time favorite -- &#34; this is my happening , and it freaks me out &#34; . \n&#39;,
+ &#39;now i ask you , with lines like that how can you go wrong ? \n&#39;,
+ &#39;ebert had tried to inject as many big words as possible into the dialogue . \n&#39;,
+ &#39;maybe he thought it would make the movie seem smarter . \n&#39;,
+ &#34;i don&#39;t know , but all the big words in the world wouldn&#39;t be able to disguise the bad writing and even worse acting . \n&#34;,
+ &#39;but the wretched dialogue goes along well with the wretched quality of everything else in this movie . \n&#39;,
+ &#34;i&#39;ve seen home movies directed better than meyer managed with this turkey . \n&#34;,
+ &#39;in fact , there is one scene -- the one in which they are in a van driving to hollywood to make their fortunes -- during which i really had to question if meyer or his editors had just suffered serious head injuries . \n&#39;,
+ &#39;add to the directing and writing the music in this movie . \n&#39;,
+ &#39;i almost got up to check my sound system to see if it was broken , there was such a pile of crap emanating from the speakers . \n&#39;,
+ &#39;then we have the cast . \n&#39;,
+ &#39;first lets start david gurian who played harris , the manager of the band . \n&#39;,
+ &#39;this has got to be the goofiest looking guy that has ever set foot in front of a motion picture camera . \n&#39;,
+ &#34;sadly , his acting doesn&#39;t come close to making up for his looks . \n&#34;,
+ &#34;if you have been following along up to this point , this shouldn&#39;t surprise you . \n&#34;,
+ &#34;meyer&#39;s stable of well endowed girls also have the benefit of being fairly attractive to go along with their other assets . \n&#34;,
+ &#39;dolly reed plays kelly , the leader of the band . \n&#39;,
+ &#39;and no surprise here , she was cast for her cup size , not her talents . \n&#39;,
+ &#39;and yes , she does loose the shirt a few times and display her impressive talents . \n&#39;,
+ &#39;sadly , her ass is almost as large as her chest . \n&#39;,
+ &#34;hey , it a sexist movie , so i&#39;m writing a sexist review . \n&#34;,
+ &#39;then we have former playboy playmate cynthia myers in a fairly small role as casey , one of the other band members . \n&#39;,
+ &#39;this goes along with the rest of the idiotic thinking in the movie . \n&#39;,
+ &#39;meyer casts a gorgeous playmate with a rack to kill for and who obviously has no acting talent at all , but her nude scenes are the biggest disappointment of all . \n&#39;,
+ &#39;sure russ , now is the time to get artsy and throw in some well placed shadows . \n&#39;,
+ &#39;on the up side , she does have a fun lesbo scene . \n&#39;,
+ &#34;i sound like i&#39;m writing a review in a porn magazine . \n&#34;,
+ &#34;but hey , i&#39;ll admit it ; the only reason that i actually managed to sit through this damn movie was to catch a look at cynthia myers naked . \n&#34;,
+ &#39;and since that was a huge disappointment , i pretty much wasted two hours of my life on this turkey . \n&#39;,
+ &#39;the only thing that i can say about this movie is that you should stay away from it . \n&#39;,
+ &#39;unless of course you want to feel good about yourself by knowing that even a pulitzer prize winning film critic like roger ebert has screwed up at least once in his life too . \n&#39;,
+ &#34;and if you are thinking of checking it out for the double d&#39;s -- you are better off just downloading nude cynthia myers pictures off the internet . \n&#34;,
+ &#39;this is a movie that should be avoided at all costs . \n&#39;,
+ &#39;an even better idea might be to require video stores to place a warning on the box of beyond the valley of the dolls -- beware : this movie is extremely hazardous to your common sense . \n&#39;,
+ &#39;proceed with extreme caution . &#39;]</pre>
 </div>
 
 </div>
@@ -13188,24 +13201,13 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[47]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">train_test_split</span>
-<span class="n">x_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">wine</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">wine</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">109</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wine</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">article_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
+    <span class="n">article_text</span> <span class="o">+=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+<span class="n">article_text</span><span class="p">[:</span><span class="mi">1000</span><span class="p">]</span>
 </pre></div>
 
     </div>
@@ -13218,15 +13220,13 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[23]:</div>
+    <div class="prompt output_prompt">Out[47]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>array([1.32e+01, 1.78e+00, 2.14e+00, 1.12e+01, 1.00e+02, 2.65e+00,
-       2.76e+00, 2.60e-01, 1.28e+00, 4.38e+00, 1.05e+00, 3.40e+00,
-       1.05e+03])</pre>
+<pre>&#34;bad . bad .bad .that one word seems to pretty much sums up beyond the valley of the dolls .if that summary isn&#39;t enough for you , how about t&amp;a , t&amp;a , t&amp;a ?still haven&#39;t got the point ?other than director russ meyer&#39;s predilection for casting attractive large breasted women who ultimately expose the afore-mentioned anatomical areas , there is really only one other reason to recommend even taking a look at this movie .that is the fact that it was co-written by famed film critic roger ebert , who also was responsible for the screenplay .after watching this movie you will never be able to sit through another one of his reviews where he gives a movie a thumbs down for bad writing with a straight face .this movie stinks out loud .quite frankly , this movie deserves a .but there are parts of it that are so bad they are almost funny .so i&#39;m giving it a .and maybe that is too generous .right from the opening credits , i knew that i had a class-a bomb on my hands .not only are the way the cred&#34;</pre>
 </div>
 
 </div>
@@ -13234,13 +13234,30 @@ div#notebook {
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="STEP-2:-CLEAN-(&amp;-preprocess)-THE-DATA!!">STEP 2: CLEAN (&amp; preprocess) THE DATA!!<a class="anchor-link" href="#STEP-2:-CLEAN-(&amp;-preprocess)-THE-DATA!!">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Step-2a:-Use-regex-and-re.sub-to-remove-square-brackets-and-extra-spaces-from-ORIGINAL-article_text">Step 2a: Use regex and <code>re.sub</code> to remove square brackets and extra spaces from ORIGINAL article_text<a class="anchor-link" href="#Step-2a:-Use-regex-and-re.sub-to-remove-square-brackets-and-extra-spaces-from-ORIGINAL-article_text">&#182;</a></h3>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[48]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wine</span><span class="o">.</span><span class="n">target</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="n">article_text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\[[0-9]*\]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">article_text</span><span class="p">)</span>
+<span class="n">article_text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s+&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">article_text</span><span class="p">)</span>
+<span class="n">article_text</span><span class="p">[:</span><span class="mi">1000</span><span class="p">]</span>
 </pre></div>
 
     </div>
@@ -13253,21 +13270,13 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[14]:</div>
+    <div class="prompt output_prompt">Out[48]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
-       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2,
-       2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-       2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-       2, 2])</pre>
+<pre>&#34;bad . bad .bad .that one word seems to pretty much sums up beyond the valley of the dolls .if that summary isn&#39;t enough for you , how about t&amp;a , t&amp;a , t&amp;a ?still haven&#39;t got the point ?other than director russ meyer&#39;s predilection for casting attractive large breasted women who ultimately expose the afore-mentioned anatomical areas , there is really only one other reason to recommend even taking a look at this movie .that is the fact that it was co-written by famed film critic roger ebert , who also was responsible for the screenplay .after watching this movie you will never be able to sit through another one of his reviews where he gives a movie a thumbs down for bad writing with a straight face .this movie stinks out loud .quite frankly , this movie deserves a .but there are parts of it that are so bad they are almost funny .so i&#39;m giving it a .and maybe that is too generous .right from the opening credits , i knew that i had a class-a bomb on my hands .not only are the way the cred&#34;</pre>
 </div>
 
 </div>
@@ -13275,13 +13284,21 @@ div#notebook {
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Step-2b:-Use-regex-and-re.sub-to-remove-extra-characters-and-digits-for-a-new-FORMATTED_TEXT-variable">Step 2b: Use regex and <code>re.sub</code> to remove extra characters and digits for a new FORMATTED_TEXT variable<a class="anchor-link" href="#Step-2b:-Use-regex-and-re.sub-to-remove-extra-characters-and-digits-for-a-new-FORMATTED_TEXT-variable">&#182;</a></h3>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[49]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="k">import</span> <span class="n">GaussianNB</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">formatted_article_text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;[^a-zA-Z]&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">article_text</span><span class="p">)</span>
+<span class="n">formatted_article_text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s+&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">formatted_article_text</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13291,23 +13308,10 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[50]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">gnb</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">gnb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">formatted_article_text</span><span class="p">[:</span><span class="mi">1000</span><span class="p">]</span>
 </pre></div>
 
     </div>
@@ -13320,13 +13324,13 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[18]:</div>
+    <div class="prompt output_prompt">Out[50]:</div>
 
 
 
 
 <div class="output_text output_subarea output_execute_result">
-<pre>GaussianNB(priors=None, var_smoothing=1e-09)</pre>
+<pre>&#39;bad bad bad that one word seems to pretty much sums up beyond the valley of the dolls if that summary isn t enough for you how about t a t a t a still haven t got the point other than director russ meyer s predilection for casting attractive large breasted women who ultimately expose the afore mentioned anatomical areas there is really only one other reason to recommend even taking a look at this movie that is the fact that it was co written by famed film critic roger ebert who also was responsible for the screenplay after watching this movie you will never be able to sit through another one of his reviews where he gives a movie a thumbs down for bad writing with a straight face this movie stinks out loud quite frankly this movie deserves a but there are parts of it that are so bad they are almost funny so i m giving it a and maybe that is too generous right from the opening credits i knew that i had a class a bomb on my hands not only are the way the credits actually shot distracting &#39;</pre>
 </div>
 
 </div>
@@ -13334,13 +13338,72 @@ div#notebook {
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="STEP-3:-TOKENIZE-SENTENCES!!">STEP 3: TOKENIZE SENTENCES!!<a class="anchor-link" href="#STEP-3:-TOKENIZE-SENTENCES!!">&#182;</a></h2>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[51]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y_pred</span> <span class="o">=</span> <span class="n">gnb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">nltk</span>
+<span class="n">sentence_list</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">sent_tokenize</span><span class="p">(</span><span class="n">article_text</span><span class="p">)</span>
+<span class="n">sentence_list</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[51]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&#39;bad .&#39;,
+ &#34;bad .bad .that one word seems to pretty much sums up beyond the valley of the dolls .if that summary isn&#39;t enough for you , how about t&amp;a , t&amp;a , t&amp;a ?still haven&#39;t got the point ?other than director russ meyer&#39;s predilection for casting attractive large breasted women who ultimately expose the afore-mentioned anatomical areas , there is really only one other reason to recommend even taking a look at this movie .that is the fact that it was co-written by famed film critic roger ebert , who also was responsible for the screenplay .after watching this movie you will never be able to sit through another one of his reviews where he gives a movie a thumbs down for bad writing with a straight face .this movie stinks out loud .quite frankly , this movie deserves a .but there are parts of it that are so bad they are almost funny .so i&#39;m giving it a .and maybe that is too generous .right from the opening credits , i knew that i had a class-a bomb on my hands .not only are the way the credits actually shot distracting , but the first scene you see includes a big breasted young woman being chased by a guy in a nazi uniform .i had absolutely no idea why the hell that was happening ( it does get explained later ) and as soon as the first scene is over , we cut to a completely unrelated scene .to be honest , as i sat through this movie mesmerized by just how incredibly awful it was , i actually forgot about the seemingly out of place opening until it popped up again later in the film .with the quality of the writing during the rest of the film , it wouldn&#39;t have surprised me if the opening had never been explained .so what is this movie about ?you ask .like it really matters .ok , here goes .this all-girl band headed by kelly macnamara ( dolly reed ) and her friends go to hollywood to try to gain a foothold in the music industry .once there , they do manage to find success ( due as much to their hooters as anything else ?&#34;,
+ &#34;it sure wasn&#39;t for their brutally bad singing voices ) , and the movie chronicles how their lives change for the worse as the pressures of fame get to them .everything from big egos , to booze and drugs to free flowing sex sends them on a downward spiral .there are a couple of other idiotic subplots thrown in for good measure , but the fame is the one that pretty much sums up this thing .&gt;from a creative standpoint there is nothing redeeming here .other than the above-mentioned obsession with big knockers that russ meyer seemed to have .the dialogue is so incredibly bad that it literally is funny in parts .mr .&#34;,
+ &#39;ebert has generously thrown in helpings of &#34; hey man &#34; , &#34; dig &#34; and my all time favorite -- &#34; this is my happening , and it freaks me out &#34; .now i ask you , with lines like that how can you go wrong ?ebert had tried to inject as many big words as possible into the dialogue .maybe he thought it would make the movie seem smarter .i don\&#39;t know , but all the big words in the world wouldn\&#39;t be able to disguise the bad writing and even worse acting .but the wretched dialogue goes along well with the wretched quality of everything else in this movie .i\&#39;ve seen home movies directed better than meyer managed with this turkey .in fact , there is one scene -- the one in which they are in a van driving to hollywood to make their fortunes -- during which i really had to question if meyer or his editors had just suffered serious head injuries .add to the directing and writing the music in this movie .i almost got up to check my sound system to see if it was broken , there was such a pile of crap emanating from the speakers .then we have the cast .first lets start david gurian who played harris , the manager of the band .this has got to be the goofiest looking guy that has ever set foot in front of a motion picture camera .sadly , his acting doesn\&#39;t come close to making up for his looks .if you have been following along up to this point , this shouldn\&#39;t surprise you .meyer\&#39;s stable of well endowed girls also have the benefit of being fairly attractive to go along with their other assets .dolly reed plays kelly , the leader of the band .and no surprise here , she was cast for her cup size , not her talents .and yes , she does loose the shirt a few times and display her impressive talents .sadly , her ass is almost as large as her chest .hey , it a sexist movie , so i\&#39;m writing a sexist review .then we have former playboy playmate cynthia myers in a fairly small role as casey , one of the other band members .this goes along with the rest of the idiotic thinking in the movie .meyer casts a gorgeous playmate with a rack to kill for and who obviously has no acting talent at all , but her nude scenes are the biggest disappointment of all .sure russ , now is the time to get artsy and throw in some well placed shadows .on the up side , she does have a fun lesbo scene .i sound like i\&#39;m writing a review in a porn magazine .but hey , i\&#39;ll admit it ; the only reason that i actually managed to sit through this damn movie was to catch a look at cynthia myers naked .and since that was a huge disappointment , i pretty much wasted two hours of my life on this turkey .the only thing that i can say about this movie is that you should stay away from it .unless of course you want to feel good about yourself by knowing that even a pulitzer prize winning film critic like roger ebert has screwed up at least once in his life too .and if you are thinking of checking it out for the double d\&#39;s -- you are better off just downloading nude cynthia myers pictures off the internet .this is a movie that should be avoided at all costs .an even better idea might be to require video stores to place a warning on the box of beyond the valley of the dolls -- beware : this movie is extremely hazardous to your common sense .proceed with extreme caution .&#39;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="STEP-4:-FIND-WORD-FREQUENCY,-WEIGHTED!!">STEP 4: FIND WORD FREQUENCY, WEIGHTED!!<a class="anchor-link" href="#STEP-4:-FIND-WORD-FREQUENCY,-WEIGHTED!!">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Step-4a:-Remove-Stopwords">Step 4a: Remove Stopwords<a class="anchor-link" href="#Step-4a:-Remove-Stopwords">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[52]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">stopwords</span> <span class="o">=</span> <span class="n">nltk</span><span class="o">.</span><span class="n">corpus</span><span class="o">.</span><span class="n">stopwords</span><span class="o">.</span><span class="n">words</span><span class="p">(</span><span class="s1">&#39;english&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13348,12 +13411,25 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Step-4b:-Tokenize-Words-&amp;-DIY-Frequency-Distribution">Step 4b: Tokenize Words &amp; DIY Frequency Distribution<a class="anchor-link" href="#Step-4b:-Tokenize-Words-&amp;-DIY-Frequency-Distribution">&#182;</a></h3>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[53]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">metrics</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">word_frequencies</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">formatted_article_text</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">stopwords</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">word_frequencies</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">word_frequencies</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">word_frequencies</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
 </pre></div>
 
     </div>
@@ -13361,12 +13437,45 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Step-4c:-Calculate-Weighted-Frequency">Step 4c: Calculate Weighted Frequency<a class="anchor-link" href="#Step-4c:-Calculate-Weighted-Frequency">&#182;</a></h3>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[54]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy:&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">max_frequency</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">word_frequencies</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_frequencies</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="n">word_frequencies</span><span class="p">[</span><span class="n">word</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">word_frequencies</span><span class="p">[</span><span class="n">word</span><span class="p">]</span><span class="o">/</span><span class="n">max_frequency</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="STEP-5:-CALCULATE-SENTENCE-SCORES">STEP 5: CALCULATE SENTENCE SCORES<a class="anchor-link" href="#STEP-5:-CALCULATE-SENTENCE-SCORES">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[55]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">## ILLUSTRATIVE EXAMPLE</span>
+<span class="c1">## Nothing removed</span>
+<span class="k">for</span> <span class="n">sent</span> <span class="ow">in</span> <span class="n">sentence_list</span><span class="p">[:</span><span class="mi">1</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">sent</span><span class="o">.</span><span class="n">lower</span><span class="p">()):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13383,7 +13492,8 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Accuracy: 0.9074074074074074
+<pre>bad
+.
 </pre>
 </div>
 </div>
@@ -13394,13 +13504,162 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[56]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">## ILLUSTRATIVE EXAMPLE</span>
+<span class="c1">## Stopwords etc. removed</span>
+<span class="c1">## We are ONLY assigning values/weights to the words in the sentences that are inside our freq dist!</span>
+
+<span class="k">for</span> <span class="n">sent</span> <span class="ow">in</span> <span class="n">sentence_list</span><span class="p">[:</span><span class="mi">1</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">sent</span><span class="o">.</span><span class="n">lower</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_frequencies</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">word</span><span class="p">)</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>bad
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[61]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sentence_scores</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">sent</span> <span class="ow">in</span> <span class="n">sentence_list</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">nltk</span><span class="o">.</span><span class="n">word_tokenize</span><span class="p">(</span><span class="n">sent</span><span class="o">.</span><span class="n">lower</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">word_frequencies</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sent</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">sent</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sentence_scores</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">sentence_scores</span><span class="p">[</span><span class="n">sent</span><span class="p">]</span> <span class="o">=</span> <span class="n">word_frequencies</span><span class="p">[</span><span class="n">word</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">sentence_scores</span><span class="p">[</span><span class="n">sent</span><span class="p">]</span> <span class="o">+=</span> <span class="n">word_frequencies</span><span class="p">[</span><span class="n">word</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[62]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">sorted_sentences</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sentence_scores</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">kv</span><span class="p">:</span> <span class="n">kv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">sorted_sentences</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[62]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[(&#34;it sure wasn&#39;t for their brutally bad singing voices ) , and the movie chronicles how their lives change for the worse as the pressures of fame get to them .everything from big egos , to booze and drugs to free flowing sex sends them on a downward spiral .there are a couple of other idiotic subplots thrown in for good measure , but the fame is the one that pretty much sums up this thing .&gt;from a creative standpoint there is nothing redeeming here .other than the above-mentioned obsession with big knockers that russ meyer seemed to have .the dialogue is so incredibly bad that it literally is funny in parts .mr .&#34;,
+  7.235294117647053),
+ (&#39;bad .&#39;, 0.47058823529411764)]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[64]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">summary</span> <span class="o">=</span> <span class="p">[</span><span class="n">sent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sent</span> <span class="ow">in</span> <span class="n">sorted_sentences</span><span class="p">[:</span><span class="mi">10</span><span class="p">]]</span>
+<span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[64]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#34;it sure wasn&#39;t for their brutally bad singing voices ) , and the movie chronicles how their lives change for the worse as the pressures of fame get to them .everything from big egos , to booze and drugs to free flowing sex sends them on a downward spiral .there are a couple of other idiotic subplots thrown in for good measure , but the fame is the one that pretty much sums up this thing .&gt;from a creative standpoint there is nothing redeeming here .other than the above-mentioned obsession with big knockers that russ meyer seemed to have .the dialogue is so incredibly bad that it literally is funny in parts .mr .bad .&#34;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[60]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[60]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;bad .&#39;</pre>
+</div>
+
+</div>
+
 </div>
 </div>
 

@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>HW2_classification</title>
+<title>HW1_ALL</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13077,17 +13077,22 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="HW2:-SIDEQUEST----Classification">HW2: SIDEQUEST -- Classification<a class="anchor-link" href="#HW2:-SIDEQUEST----Classification">&#182;</a></h1>
+<h1 id="Sentiment-Analysis:-TextBlob-+-Vader">Sentiment Analysis: TextBlob + Vader<a class="anchor-link" href="#Sentiment-Analysis:-TextBlob-+-Vader">&#182;</a></h1><p>via <a href="https://levelup.gitconnected.com/sentiment-analysis-using-machine-learning-python-9122e03f8f7b">this tutorial</a> |10-6-19</p>
+
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[39]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sklearn</span>
-<span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">datasets</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">textblob</span> <span class="k">import</span> <span class="n">TextBlob</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="k">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">nltk.sentiment.vader</span> <span class="k">import</span> <span class="n">SentimentIntensityAnalyzer</span>
+<span class="n">sid</span> <span class="o">=</span> <span class="n">SentimentIntensityAnalyzer</span><span class="p">()</span>
 </pre></div>
 
     </div>
@@ -13097,10 +13102,24 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[40]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wine</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">load_wine</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_data_from_files</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">directory</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">=</span><span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">results</span>
+
+<span class="n">neg_k</span> <span class="o">=</span> <span class="n">get_data_from_files</span><span class="p">(</span><span class="s1">&#39;AI_NEG/&#39;</span><span class="p">)</span>
+<span class="n">pos_k</span> <span class="o">=</span> <span class="n">get_data_from_files</span><span class="p">(</span><span class="s1">&#39;AI_POS/&#39;</span><span class="p">)</span>
+<span class="n">neg_a</span> <span class="o">=</span> <span class="n">get_data_from_files</span><span class="p">(</span><span class="s1">&#39;NEG/&#39;</span><span class="p">)</span>
+<span class="n">pos_a</span> <span class="o">=</span> <span class="n">get_data_from_files</span><span class="p">(</span><span class="s1">&#39;POS/&#39;</span><span class="p">)</span>
+<span class="n">neg_cornell</span> <span class="o">=</span> <span class="n">get_data_from_files</span><span class="p">(</span><span class="s1">&#39;neg_cornell/&#39;</span><span class="p">)</span>
+<span class="n">pos_cornell</span> <span class="o">=</span> <span class="n">get_data_from_files</span><span class="p">(</span><span class="s1">&#39;pos_cornell/&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13108,91 +13127,28 @@ div#notebook {
 </div>
 
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wine</span><span class="o">.</span><span class="n">feature_names</span>
-</pre></div>
-
-    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="TEXT-BLOB">TEXT BLOB<a class="anchor-link" href="#TEXT-BLOB">&#182;</a></h1>
 </div>
 </div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[9]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>[&#39;alcohol&#39;,
- &#39;malic_acid&#39;,
- &#39;ash&#39;,
- &#39;alcalinity_of_ash&#39;,
- &#39;magnesium&#39;,
- &#39;total_phenols&#39;,
- &#39;flavanoids&#39;,
- &#39;nonflavanoid_phenols&#39;,
- &#39;proanthocyanins&#39;,
- &#39;color_intensity&#39;,
- &#39;hue&#39;,
- &#39;od280/od315_of_diluted_wines&#39;,
- &#39;proline&#39;]</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[41]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">wine</span><span class="p">)</span>
-</pre></div>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_pn</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s1">&#39;neg&#39;</span> <span class="k">if</span> <span class="n">num</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="s1">&#39;pos&#39;</span>
 
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt output_prompt">Out[10]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>sklearn.utils.Bunch</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">train_test_split</span>
-<span class="n">x_train</span><span class="p">,</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">wine</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">wine</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span> <span class="o">=</span> <span class="mi">109</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">get_sentiment</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="n">blobs</span> <span class="o">=</span> <span class="p">[[</span><span class="n">TextBlob</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> <span class="n">text</span><span class="p">]</span> <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">array</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">([{</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span>
+              <span class="s1">&#39;prediction&#39;</span><span class="p">:</span> <span class="n">get_pn</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">sentiment</span><span class="o">.</span><span class="n">polarity</span><span class="p">),</span>
+              <span class="s1">&#39;sentiment&#39;</span><span class="p">:</span> <span class="n">obj</span><span class="o">.</span><span class="n">sentiment</span><span class="o">.</span><span class="n">polarity</span><span class="p">,</span>
+              <span class="s1">&#39;length&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> 
+              <span class="s1">&#39;excerpt&#39;</span><span class="p">:</span> <span class="n">text</span><span class="p">[:</span><span class="mi">50</span><span class="p">]}</span> <span class="k">for</span> <span class="n">obj</span><span class="p">,</span><span class="n">text</span> <span class="ow">in</span> <span class="n">blobs</span><span class="p">])</span>
 </pre></div>
 
     </div>
@@ -13200,12 +13156,20 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="CASE-STUDY-1:-Kendra's-Data">CASE STUDY 1: Kendra's Data<a class="anchor-link" href="#CASE-STUDY-1:-Kendra's-Data">&#182;</a></h2>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wine</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">get_sentiment</span><span class="p">(</span><span class="n">neg_k</span><span class="p">,</span> <span class="s1">&#39;neg&#39;</span><span class="p">)))</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">get_sentiment</span><span class="p">(</span><span class="n">pos_k</span><span class="p">,</span> <span class="s1">&#39;pos&#39;</span><span class="p">)))</span>
 </pre></div>
 
     </div>
@@ -13218,15 +13182,160 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[23]:</div>
+    <div class="prompt"></div>
 
 
 
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-<div class="output_text output_subarea output_execute_result">
-<pre>array([1.32e+01, 1.78e+00, 2.14e+00, 1.12e+01, 1.00e+02, 2.65e+00,
-       2.76e+00, 2.60e-01, 1.28e+00, 4.38e+00, 1.05e+00, 3.40e+00,
-       1.05e+03])</pre>
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>label</th>
+      <th>prediction</th>
+      <th>sentiment</th>
+      <th>length</th>
+      <th>excerpt</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>neg</td>
+      <td>neg</td>
+      <td>-0.157143</td>
+      <td>76</td>
+      <td>WHERE ARE THE JOBS?! OH THAT'S RIGHT. ARTIFICI...</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>neg</td>
+      <td>neg</td>
+      <td>-0.750000</td>
+      <td>96</td>
+      <td>How can we trust Artificial Intelligence to dr...</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>neg</td>
+      <td>neg</td>
+      <td>-0.775000</td>
+      <td>31</td>
+      <td>I hate artificial intelligence!</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>neg</td>
+      <td>neg</td>
+      <td>-0.750000</td>
+      <td>47</td>
+      <td>My dog is terrified by artificial intelligence!</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>neg</td>
+      <td>neg</td>
+      <td>-0.750000</td>
+      <td>68</td>
+      <td>Artificial intelligence is going to melt the b...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>label</th>
+      <th>prediction</th>
+      <th>sentiment</th>
+      <th>length</th>
+      <th>excerpt</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>pos</td>
+      <td>neg</td>
+      <td>-0.112500</td>
+      <td>65</td>
+      <td>My dog is excited by the advancements in artif...</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>pos</td>
+      <td>neg</td>
+      <td>-0.075000</td>
+      <td>133</td>
+      <td>I'm excited for my child to grow up and have t...</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>pos</td>
+      <td>neg</td>
+      <td>-0.125000</td>
+      <td>31</td>
+      <td>I love artificial intelligence!</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>pos</td>
+      <td>neg</td>
+      <td>-0.300000</td>
+      <td>121</td>
+      <td>Order my groceries, pay my taxes, take my kids...</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>pos</td>
+      <td>neg</td>
+      <td>-0.133333</td>
+      <td>116</td>
+      <td>I'm grateful every day that my child will like...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 </div>
 
 </div>
@@ -13234,13 +13343,21 @@ div#notebook {
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="CASE-STUDY-2:-Ami's-Data">CASE STUDY 2: Ami's Data<a class="anchor-link" href="#CASE-STUDY-2:-Ami's-Data">&#182;</a></h2>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[43]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wine</span><span class="o">.</span><span class="n">target</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">get_sentiment</span><span class="p">(</span><span class="n">neg_a</span><span class="p">,</span> <span class="s1">&#39;neg&#39;</span><span class="p">)))</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">get_sentiment</span><span class="p">(</span><span class="n">pos_a</span><span class="p">,</span> <span class="s1">&#39;pos&#39;</span><span class="p">)))</span>
 </pre></div>
 
     </div>
@@ -13253,80 +13370,160 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[14]:</div>
+    <div class="prompt"></div>
 
 
 
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-<div class="output_text output_subarea output_execute_result">
-<pre>array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
-       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2,
-       2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-       2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-       2, 2])</pre>
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>label</th>
+      <th>prediction</th>
+      <th>sentiment</th>
+      <th>length</th>
+      <th>excerpt</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>neg</td>
+      <td>neg</td>
+      <td>-0.054577</td>
+      <td>3554</td>
+      <td>that's exactly how long the movie felt to me ....</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>neg</td>
+      <td>pos</td>
+      <td>0.025467</td>
+      <td>2929</td>
+      <td>" quest for camelot " is warner bros . ' firs...</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>neg</td>
+      <td>pos</td>
+      <td>0.003334</td>
+      <td>3365</td>
+      <td>so ask yourself what " 8mm " ( " eight millime...</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>neg</td>
+      <td>pos</td>
+      <td>0.022925</td>
+      <td>4418</td>
+      <td>synopsis : a mentally unstable man undergoing ...</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>neg</td>
+      <td>pos</td>
+      <td>0.043234</td>
+      <td>3911</td>
+      <td>capsule : in 2176 on the planet mars police ta...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 </div>
 
 </div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="k">import</span> <span class="n">GaussianNB</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">gnb</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">gnb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[18]:</div>
+    <div class="prompt"></div>
 
 
 
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
 
-<div class="output_text output_subarea output_execute_result">
-<pre>GaussianNB(priors=None, var_smoothing=1e-09)</pre>
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>label</th>
+      <th>prediction</th>
+      <th>sentiment</th>
+      <th>length</th>
+      <th>excerpt</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>pos</td>
+      <td>pos</td>
+      <td>0.023663</td>
+      <td>4227</td>
+      <td>films adapted from comic books have had plenty...</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>pos</td>
+      <td>pos</td>
+      <td>0.131092</td>
+      <td>2421</td>
+      <td>you've got mail works alot better than it dese...</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>pos</td>
+      <td>pos</td>
+      <td>0.110626</td>
+      <td>6092</td>
+      <td>" jaws " is a rare film that grabs your atten...</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>pos</td>
+      <td>pos</td>
+      <td>0.103847</td>
+      <td>4096</td>
+      <td>every now and then a movie comes along from a ...</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>pos</td>
+      <td>neg</td>
+      <td>-0.070151</td>
+      <td>3898</td>
+      <td>moviemaking is a lot like being the general ma...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 </div>
 
 </div>
@@ -13334,39 +13531,31 @@ div#notebook {
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="CASE-STUDY-3:-Cornell-Data">CASE STUDY 3: Cornell Data<a class="anchor-link" href="#CASE-STUDY-3:-Cornell-Data">&#182;</a></h2>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[44]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y_pred</span> <span class="o">=</span> <span class="n">gnb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
-</pre></div>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df_n</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">get_sentiment</span><span class="p">(</span><span class="n">neg_cornell</span><span class="p">,</span> <span class="s1">&#39;neg&#39;</span><span class="p">))</span>
+<span class="n">df_p</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">get_sentiment</span><span class="p">(</span><span class="n">pos_cornell</span><span class="p">,</span> <span class="s1">&#39;pos&#39;</span><span class="p">))</span>
 
-    </div>
-</div>
-</div>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">df_n</span><span class="p">[</span><span class="s1">&#39;accurate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">df_n</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">df_n</span><span class="p">[</span><span class="s1">&#39;prediction&#39;</span><span class="p">],</span> <span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span>
+<span class="n">df_p</span><span class="p">[</span><span class="s1">&#39;accurate&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">df_p</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">df_p</span><span class="p">[</span><span class="s1">&#39;prediction&#39;</span><span class="p">],</span> <span class="s1">&#39;yes&#39;</span><span class="p">,</span> <span class="s1">&#39;no&#39;</span><span class="p">)</span>
 
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">metrics</span>
-</pre></div>
+<span class="nb">print</span><span class="p">((</span><span class="n">df_n</span><span class="p">[</span><span class="s1">&#39;accurate&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;yes&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df_n</span><span class="p">)</span>
 
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Accuracy:&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">((</span><span class="n">df_p</span><span class="p">[</span><span class="s1">&#39;accurate&#39;</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;yes&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+<span class="n">display</span><span class="p">(</span><span class="n">df_p</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13383,7 +13572,793 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Accuracy: 0.9074074074074074
+<pre>229
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>label</th>
+      <th>prediction</th>
+      <th>sentiment</th>
+      <th>length</th>
+      <th>excerpt</th>
+      <th>accurate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>neg</td>
+      <td>pos</td>
+      <td>0.026240</td>
+      <td>5953</td>
+      <td>bad . bad . \nbad . \nthat one word seems to p...</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>neg</td>
+      <td>pos</td>
+      <td>0.076040</td>
+      <td>3396</td>
+      <td>isn't it the ultimate sign of a movie's cinema...</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>neg</td>
+      <td>neg</td>
+      <td>-0.128733</td>
+      <td>2762</td>
+      <td>" gordy " is not a movie , it is a 90-minute-...</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>neg</td>
+      <td>neg</td>
+      <td>-0.000485</td>
+      <td>3840</td>
+      <td>disconnect the phone line . \ndon't accept the...</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>neg</td>
+      <td>pos</td>
+      <td>0.122770</td>
+      <td>2270</td>
+      <td>when robert forster found himself famous again...</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <td>995</td>
+      <td>neg</td>
+      <td>pos</td>
+      <td>0.145489</td>
+      <td>1945</td>
+      <td>synopsis : when a meteorite crashlands in the ...</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>996</td>
+      <td>neg</td>
+      <td>pos</td>
+      <td>0.102723</td>
+      <td>3116</td>
+      <td>it's now the anniversary of the slayings of ju...</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>997</td>
+      <td>neg</td>
+      <td>pos</td>
+      <td>0.042473</td>
+      <td>1755</td>
+      <td>coinciding with the emerging popularity of mov...</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td>998</td>
+      <td>neg</td>
+      <td>neg</td>
+      <td>-0.048656</td>
+      <td>2826</td>
+      <td>and now the high-flying hong kong style of fil...</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>999</td>
+      <td>neg</td>
+      <td>neg</td>
+      <td>-0.090655</td>
+      <td>4165</td>
+      <td>battlefield long , boring and just plain stupi...</td>
+      <td>yes</td>
+    </tr>
+  </tbody>
+</table>
+<p>1000 rows × 6 columns</p>
+</div>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>971
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>label</th>
+      <th>prediction</th>
+      <th>sentiment</th>
+      <th>length</th>
+      <th>excerpt</th>
+      <th>accurate</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>pos</td>
+      <td>pos</td>
+      <td>0.221173</td>
+      <td>4662</td>
+      <td>assume nothing . \nthe phrase is perhaps one o...</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>pos</td>
+      <td>pos</td>
+      <td>0.089736</td>
+      <td>3839</td>
+      <td>plot : derek zoolander is a male model . \nhe ...</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>pos</td>
+      <td>pos</td>
+      <td>0.206743</td>
+      <td>9380</td>
+      <td>i actually am a fan of the original 1961 or so...</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>pos</td>
+      <td>pos</td>
+      <td>0.141905</td>
+      <td>2407</td>
+      <td>a movie that's been as highly built up as the ...</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>pos</td>
+      <td>pos</td>
+      <td>0.176332</td>
+      <td>1840</td>
+      <td>" good will hunting " is two movies in one : ...</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <td>995</td>
+      <td>pos</td>
+      <td>pos</td>
+      <td>0.072815</td>
+      <td>2658</td>
+      <td>one of the funniest carry on movies and the th...</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>996</td>
+      <td>pos</td>
+      <td>pos</td>
+      <td>0.102879</td>
+      <td>4196</td>
+      <td>i remember making a pact , right after `patch ...</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>997</td>
+      <td>pos</td>
+      <td>pos</td>
+      <td>0.195097</td>
+      <td>2094</td>
+      <td>barely scrapping by playing at a nyc piano bar...</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>998</td>
+      <td>pos</td>
+      <td>pos</td>
+      <td>0.117530</td>
+      <td>4575</td>
+      <td>if the current trends of hollywood filmmaking ...</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td>999</td>
+      <td>pos</td>
+      <td>neg</td>
+      <td>-0.013569</td>
+      <td>3870</td>
+      <td>capsule : the director of cure brings a weird ...</td>
+      <td>no</td>
+    </tr>
+  </tbody>
+</table>
+<p>1000 rows × 6 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="VADER">VADER<a class="anchor-link" href="#VADER">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[45]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_vader_scores</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="n">vader_array</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">array</span><span class="p">:</span>
+        <span class="n">ss</span> <span class="o">=</span> <span class="n">sid</span><span class="o">.</span><span class="n">polarity_scores</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+        <span class="n">vader_array</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">label</span><span class="p">,</span> <span class="s1">&#39;compound&#39;</span><span class="p">:</span> <span class="n">ss</span><span class="p">[</span><span class="s1">&#39;compound&#39;</span><span class="p">],</span> <span class="s1">&#39;excerpt&#39;</span><span class="p">:</span> <span class="n">sentence</span><span class="p">[:</span><span class="mi">50</span><span class="p">]})</span>
+    <span class="k">return</span> <span class="n">vader_array</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[46]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">neg_k</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[46]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>[&#34;WHERE ARE THE JOBS?! OH THAT&#39;S RIGHT. ARTIFICIAL INTELLIGENCE TOOK OUR JOBS.&#34;,
+ &#34;How can we trust Artificial Intelligence to drive our cars when they can&#39;t even hack a captcha?!&#34;,
+ &#39;I hate artificial intelligence!&#39;,
+ &#39;My dog is terrified by artificial intelligence!&#39;,
+ &#39;Artificial intelligence is going to melt the brains of our children!&#39;]</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="CASE-STUDY-1:-Kendra's-Data">CASE STUDY 1: Kendra's Data<a class="anchor-link" href="#CASE-STUDY-1:-Kendra's-Data">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[47]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">get_vader_scores</span><span class="p">(</span><span class="n">neg_k</span><span class="p">,</span> <span class="s1">&#39;neg&#39;</span><span class="p">)))</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">get_vader_scores</span><span class="p">(</span><span class="n">pos_k</span><span class="p">,</span> <span class="s1">&#39;pos&#39;</span><span class="p">)))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>label</th>
+      <th>compound</th>
+      <th>excerpt</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>neg</td>
+      <td>0.5255</td>
+      <td>WHERE ARE THE JOBS?! OH THAT'S RIGHT. ARTIFICI...</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>neg</td>
+      <td>0.7712</td>
+      <td>How can we trust Artificial Intelligence to dr...</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>neg</td>
+      <td>-0.2244</td>
+      <td>I hate artificial intelligence!</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>neg</td>
+      <td>-0.2942</td>
+      <td>My dog is terrified by artificial intelligence!</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>neg</td>
+      <td>0.5255</td>
+      <td>Artificial intelligence is going to melt the b...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>label</th>
+      <th>compound</th>
+      <th>excerpt</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>pos</td>
+      <td>0.6705</td>
+      <td>My dog is excited by the advancements in artif...</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>pos</td>
+      <td>0.8271</td>
+      <td>I'm excited for my child to grow up and have t...</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>pos</td>
+      <td>0.8221</td>
+      <td>I love artificial intelligence!</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>pos</td>
+      <td>0.8213</td>
+      <td>Order my groceries, pay my taxes, take my kids...</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>pos</td>
+      <td>0.8402</td>
+      <td>I'm grateful every day that my child will like...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="CASE-STUDY-2:-Ami's-Data">CASE STUDY 2: Ami's Data<a class="anchor-link" href="#CASE-STUDY-2:-Ami's-Data">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[48]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">get_vader_scores</span><span class="p">(</span><span class="n">neg_a</span><span class="p">,</span> <span class="s1">&#39;neg&#39;</span><span class="p">)))</span>
+<span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">get_vader_scores</span><span class="p">(</span><span class="n">pos_a</span><span class="p">,</span> <span class="s1">&#39;pos&#39;</span><span class="p">)))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>label</th>
+      <th>compound</th>
+      <th>excerpt</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>neg</td>
+      <td>0.7836</td>
+      <td>that's exactly how long the movie felt to me ....</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>neg</td>
+      <td>-0.8481</td>
+      <td>" quest for camelot " is warner bros . ' firs...</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>neg</td>
+      <td>-0.9753</td>
+      <td>so ask yourself what " 8mm " ( " eight millime...</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>neg</td>
+      <td>0.6824</td>
+      <td>synopsis : a mentally unstable man undergoing ...</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>neg</td>
+      <td>-0.9879</td>
+      <td>capsule : in 2176 on the planet mars police ta...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+<div class="output_html rendered_html output_subarea ">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>label</th>
+      <th>compound</th>
+      <th>excerpt</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td>pos</td>
+      <td>-0.5887</td>
+      <td>films adapted from comic books have had plenty...</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>pos</td>
+      <td>0.9964</td>
+      <td>you've got mail works alot better than it dese...</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>pos</td>
+      <td>0.9868</td>
+      <td>" jaws " is a rare film that grabs your atten...</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>pos</td>
+      <td>0.8825</td>
+      <td>every now and then a movie comes along from a ...</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>pos</td>
+      <td>-0.3525</td>
+      <td>moviemaking is a lot like being the general ma...</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="NLTK-with-NaiveBayes">NLTK with NaiveBayes<a class="anchor-link" href="#NLTK-with-NaiveBayes">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[49]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">nltk.classify</span> <span class="k">import</span> <span class="n">NaiveBayesClassifier</span>
+<span class="kn">from</span> <span class="nn">nltk.tokenize</span> <span class="k">import</span> <span class="n">word_tokenize</span>
+<span class="kn">from</span> <span class="nn">nltk.sentiment</span> <span class="k">import</span> <span class="n">SentimentAnalyzer</span>
+<span class="kn">from</span> <span class="nn">nltk.sentiment.util</span> <span class="k">import</span> <span class="o">*</span>
+
+<span class="k">def</span> <span class="nf">get_tokens</span><span class="p">(</span><span class="n">sentence</span><span class="p">):</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="n">word_tokenize</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span>
+    <span class="n">clean_tokens</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">tokens</span> <span class="k">if</span> <span class="n">word</span><span class="o">.</span><span class="n">isalpha</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="n">clean_tokens</span>
+
+<span class="k">def</span> <span class="nf">get_nltk_train_test</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">num_train</span><span class="p">):</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="p">[</span><span class="n">get_tokens</span><span class="p">(</span><span class="n">sentence</span><span class="p">)</span> <span class="k">for</span> <span class="n">sentence</span> <span class="ow">in</span> <span class="n">array</span><span class="p">]</span>
+    <span class="n">docs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">sent</span><span class="p">,</span> <span class="n">label</span><span class="p">)</span> <span class="k">for</span> <span class="n">sent</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
+    <span class="n">train_docs</span> <span class="o">=</span> <span class="n">docs</span><span class="p">[:</span><span class="n">num_train</span><span class="p">]</span>
+    <span class="n">test_docs</span> <span class="o">=</span> <span class="n">docs</span><span class="p">[</span><span class="n">num_train</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">train_docs</span><span class="p">,</span> <span class="n">test_docs</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">get_nltk_NB</span><span class="p">(</span><span class="n">NEG_DATA</span><span class="p">,</span> <span class="n">POS_DATA</span><span class="p">,</span> <span class="n">num_train</span><span class="p">):</span>
+    <span class="n">train_neg</span><span class="p">,</span> <span class="n">test_neg</span> <span class="o">=</span> <span class="n">get_nltk_train_test</span><span class="p">(</span><span class="n">NEG_DATA</span><span class="p">,</span> <span class="s1">&#39;neg&#39;</span><span class="p">,</span> <span class="n">num_train</span><span class="p">)</span>
+    <span class="n">train_pos</span><span class="p">,</span> <span class="n">test_pos</span> <span class="o">=</span> <span class="n">get_nltk_train_test</span><span class="p">(</span><span class="n">POS_DATA</span><span class="p">,</span> <span class="s1">&#39;pos&#39;</span><span class="p">,</span> <span class="n">num_train</span><span class="p">)</span>
+
+    <span class="n">training_docs</span> <span class="o">=</span> <span class="n">train_neg</span> <span class="o">+</span> <span class="n">train_pos</span>
+    <span class="n">testing_docs</span> <span class="o">=</span> <span class="n">test_neg</span> <span class="o">+</span> <span class="n">test_pos</span>
+
+    <span class="n">sentim_analyzer</span> <span class="o">=</span> <span class="n">SentimentAnalyzer</span><span class="p">()</span>
+    <span class="n">all_words_neg</span> <span class="o">=</span> <span class="n">sentim_analyzer</span><span class="o">.</span><span class="n">all_words</span><span class="p">([</span><span class="n">mark_negation</span><span class="p">(</span><span class="n">doc</span><span class="p">)</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">training_docs</span><span class="p">])</span>
+    <span class="n">unigram_feats</span> <span class="o">=</span> <span class="n">sentim_analyzer</span><span class="o">.</span><span class="n">unigram_word_feats</span><span class="p">(</span><span class="n">all_words_neg</span><span class="p">)</span>
+    <span class="n">sentim_analyzer</span><span class="o">.</span><span class="n">add_feat_extractor</span><span class="p">(</span><span class="n">extract_unigram_feats</span><span class="p">,</span> <span class="n">unigrams</span><span class="o">=</span><span class="n">unigram_feats</span><span class="p">)</span>
+    <span class="n">training_set</span> <span class="o">=</span> <span class="n">sentim_analyzer</span><span class="o">.</span><span class="n">apply_features</span><span class="p">(</span><span class="n">training_docs</span><span class="p">)</span>
+    <span class="n">test_set</span> <span class="o">=</span> <span class="n">sentim_analyzer</span><span class="o">.</span><span class="n">apply_features</span><span class="p">(</span><span class="n">testing_docs</span><span class="p">)</span>
+
+    <span class="n">trainer</span> <span class="o">=</span> <span class="n">NaiveBayesClassifier</span><span class="o">.</span><span class="n">train</span>
+    <span class="n">classifier</span> <span class="o">=</span> <span class="n">sentim_analyzer</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">training_set</span><span class="p">)</span>
+    
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sentim_analyzer</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">test_set</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">: </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">value</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="CASE-STUDY-1:-Kendra's-Data">CASE STUDY 1: Kendra's Data<a class="anchor-link" href="#CASE-STUDY-1:-Kendra's-Data">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[50]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">get_nltk_NB</span><span class="p">(</span><span class="n">neg_k</span><span class="p">,</span> <span class="n">pos_k</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Training classifier
+Evaluating NaiveBayesClassifier results...
+Accuracy: 1.0
+F-measure [neg]: 1.0
+F-measure [pos]: 1.0
+Precision [neg]: 1.0
+Precision [pos]: 1.0
+Recall [neg]: 1.0
+Recall [pos]: 1.0
 </pre>
 </div>
 </div>
@@ -13392,15 +14367,94 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="CASE-STUDY-2:-Ami's-Data">CASE STUDY 2: Ami's Data<a class="anchor-link" href="#CASE-STUDY-2:-Ami's-Data">&#182;</a></h2>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[51]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">get_nltk_NB</span><span class="p">(</span><span class="n">neg_a</span><span class="p">,</span> <span class="n">pos_a</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Training classifier
+Evaluating NaiveBayesClassifier results...
+Accuracy: 0.5
+F-measure [neg]: 0.6666666666666666
+F-measure [pos]: None
+Precision [neg]: 0.5
+Precision [pos]: None
+Recall [neg]: 1.0
+Recall [pos]: 0.0
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="CASE-STUDY-3:-Cornell's-Data">CASE STUDY 3: Cornell's Data<a class="anchor-link" href="#CASE-STUDY-3:-Cornell's-Data">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[52]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">get_nltk_NB</span><span class="p">(</span><span class="n">neg_cornell</span><span class="p">,</span> <span class="n">pos_cornell</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Training classifier
+Evaluating NaiveBayesClassifier results...
+Accuracy: 0.8125
+F-measure [neg]: 0.8259860788863109
+F-measure [pos]: 0.7967479674796748
+Precision [neg]: 0.7705627705627706
+Precision [pos]: 0.8698224852071006
+Recall [neg]: 0.89
+Recall [pos]: 0.735
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 

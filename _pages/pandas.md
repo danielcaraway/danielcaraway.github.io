@@ -8,6 +8,12 @@ permalink: /pandas/
 
 ## A semi-cheatsheet? 
 
+#### Conditionals
+
+```python
+conditional_df = all_df[all_df['colname'] == 'val_i_need']
+```
+
 #### Subsetting specific columns (or dropping)
 
 ```python
