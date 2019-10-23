@@ -8,6 +8,12 @@ permalink: /pandas/
 
 ## A semi-cheatsheet? 
 
+#### Resetting index
+
+```python
+    all_df.reset_index(inplace = True) 
+```
+
 #### Conditionals
 
 ```python
