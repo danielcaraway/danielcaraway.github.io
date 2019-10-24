@@ -8,6 +8,15 @@ permalink: /pandas/
 
 ## A semi-cheatsheet? 
 
+#### Problems importing CSV?
+
+Had to change delimiter to 
+
+```python
+dirtyFile = pd.read_csv('dirtyfile.csv',  sep='\t')
+```
+[see here](https://stackoverflow.com/questions/18039057/python-pandas-error-tokenizing-data)
+
 #### Resetting index
 
 ```python
