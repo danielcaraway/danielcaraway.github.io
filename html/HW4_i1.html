@@ -13091,7 +13091,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[54]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -13109,7 +13109,7 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[2]:</div>
+    <div class="prompt output_prompt">Out[54]:</div>
 
 
 
@@ -13176,7 +13176,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[55]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_labels</span><span class="p">(</span><span class="n">row</span><span class="p">):</span>
@@ -13199,7 +13199,7 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[3]:</div>
+    <div class="prompt output_prompt">Out[55]:</div>
 
 
 
@@ -13265,7 +13265,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[56]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;lie&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -13282,7 +13282,7 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[4]:</div>
+    <div class="prompt output_prompt">Out[56]:</div>
 
 
 
@@ -13354,7 +13354,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[57]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;sentiment&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -13371,7 +13371,7 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[5]:</div>
+    <div class="prompt output_prompt">Out[57]:</div>
 
 
 
@@ -13449,7 +13449,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[64]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;review&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">row</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -13466,7 +13466,7 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[6]:</div>
+    <div class="prompt output_prompt">Out[64]:</div>
 
 
 
@@ -13550,7 +13550,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[65]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">clean_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -13563,7 +13563,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[66]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">clean_df</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;lie,sentiment,review&#39;</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -13576,7 +13576,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[67]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">clean_df</span>
@@ -13592,7 +13592,7 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[9]:</div>
+    <div class="prompt output_prompt">Out[67]:</div>
 
 
 
@@ -13708,7 +13708,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[68]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">clean_rogue_characters</span><span class="p">(</span><span class="n">string</span><span class="p">):</span>
@@ -13731,7 +13731,7 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[10]:</div>
+    <div class="prompt output_prompt">Out[68]:</div>
 
 
 
@@ -13755,7 +13755,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[71]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">clean_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s1">&#39;hw4_data.csv&#39;</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -13768,7 +13768,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="prompt input_prompt">In&nbsp;[72]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;hw4_data.csv&#39;</span><span class="p">)</span>
@@ -13785,7 +13785,7 @@ div#notebook {
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[12]:</div>
+    <div class="prompt output_prompt">Out[72]:</div>
 
 
 
@@ -13871,7 +13871,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[74]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">lie_df_f</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;lie&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;f&#39;</span><span class="p">]</span>
@@ -13892,68 +13892,11 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[79]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">sent_df_n</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;sentiment&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;n&#39;</span><span class="p">]</span>
 <span class="n">sent_df_p</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;sentiment&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;p&#39;</span><span class="p">]</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="STEP-5b:-Export-to-Corpus-to-run-on-current-pipelines">STEP 5b: Export to Corpus to run on current pipelines<a class="anchor-link" href="#STEP-5b:-Export-to-Corpus-to-run-on-current-pipelines">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">print_to_file</span><span class="p">(</span><span class="n">rating</span><span class="p">,</span> <span class="n">review</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
-    <span class="n">both</span> <span class="o">=</span> <span class="n">review</span>
-    <span class="n">output_filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rating</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span><span class="o">+</span> <span class="n">title</span> <span class="o">+</span><span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;.txt&#39;</span>
-    <span class="n">outfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">output_filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
-    <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">both</span><span class="p">)</span>
-    <span class="n">outfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-
-<span class="k">def</span> <span class="nf">export_to_corpus</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">subj</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
-    <span class="k">for</span> <span class="n">num</span><span class="p">,</span><span class="n">row</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;review&#39;</span><span class="p">]):</span>
-        <span class="n">print_to_file</span><span class="p">(</span><span class="n">subj</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">export_to_corpus</span><span class="p">(</span><span class="n">sent_df_n</span><span class="p">,</span> <span class="s1">&#39;neg&#39;</span><span class="p">,</span> <span class="s1">&#39;hw4_n&#39;</span><span class="p">)</span>
-<span class="n">export_to_corpus</span><span class="p">(</span><span class="n">sent_df_p</span><span class="p">,</span> <span class="s1">&#39;pos&#39;</span><span class="p">,</span> <span class="s1">&#39;hw4_p&#39;</span><span class="p">)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">export_to_corpus</span><span class="p">(</span><span class="n">lie_df_f</span><span class="p">,</span> <span class="s1">&#39;false&#39;</span><span class="p">,</span> <span class="s1">&#39;hw4_f&#39;</span><span class="p">)</span>
-<span class="n">export_to_corpus</span><span class="p">(</span><span class="n">lie_df_t</span><span class="p">,</span> <span class="s1">&#39;true&#39;</span><span class="p">,</span> <span class="s1">&#39;hw4_t&#39;</span><span class="p">)</span>
 </pre></div>
 
     </div>
