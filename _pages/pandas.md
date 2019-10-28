@@ -20,7 +20,7 @@ dirtyFile = pd.read_csv('dirtyfile.csv',  sep='\t')
 #### Resetting index
 
 ```python
-    all_df.reset_index(inplace = True) 
+    all_df.reset_index(drop=True,inplace = True) 
 ```
 
 #### Conditionals
