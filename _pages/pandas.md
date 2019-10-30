@@ -10,6 +10,15 @@ permalink: /pandas/
 
 #### Problems importing CSV?
 
+Dropping on a conditional
+
+To remove all rows where column 'score' is < 50:
+
+```python
+df = df.drop(df[df.score < 50].index)
+```
+[SO](https://stackoverflow.com/questions/13851535/delete-rows-from-a-pandas-dataframe-based-on-a-conditional-expression-involving)
+
 Had to change delimiter to 
 
 ```python
@@ -71,4 +80,32 @@ def get_tokens(sentence):
 
 all_df['tokenized'] = all_df.apply(lambda x: get_tokens(x[0]),axis=1)
 all_df['tokenized_count'] = all_df.apply(lambda x: len(x['tokenized']),axis=1)
+```
+
+getting bag of words from column?
+
+```python
+def get_bow_from_column(df, column):
+    all_column_data = ' '.join(df[column].tolist())
+    all_column_fd = Counter(all_column_data.split())
+    return all_column_fd
+
+# pos_bow = get_bow_from_column(all_df, 'pos_dict')
+```
+
+Tuples to DF
+
+```python
+# data in the form of list of tuples 
+data = [('Peter', 18, 7), 
+        ('Riff', 15, 6), 
+        ('John', 17, 8), 
+        ('Michel', 18, 7), 
+        ('Sheli', 17, 5) ] 
+  
+  
+# create DataFrame using data 
+df = pd.DataFrame.from_records(data, columns =['Team', 'Age', 'Score']) 
+  
+print(df)
 ```
