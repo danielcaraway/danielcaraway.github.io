@@ -6,6 +6,18 @@ permalink: /python/
 
 # Python
 
+## Regex stripping multiple characters
+
+```python
+import re
+name = "Barack (of Washington)"
+name = re.sub('[\(\)\{\}<>]', '', name)
+print(name)
+# OUTPUT: Barack of Washington
+```
+[Stack Overflow](https://stackoverflow.com/questions/3900054/python-strip-multiple-characters)
+
+
 ## Using .format()
 
 ```python
