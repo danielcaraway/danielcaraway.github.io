@@ -6,6 +6,19 @@ permalink: /python/
 
 # Python
 
+## Regex, characters between symbols `§` and `;`
+
+`(?<=§).*?(?=;)`
+
+[SO link](https://stackoverflow.com/questions/3335562/regex-to-select-everything-between-two-characters)
+
+## Regex find all between quotes
+
+`re.findall(r'"([^"]*)"', inputString)`
+
+[SO 1](https://stackoverflow.com/questions/22735440/extract-a-string-between-double-quotes)
+[SO 2](https://stackoverflow.com/questions/2947502/getting-dialogue-snippets-from-text-using-regular-expressions)
+
 ## Regex stripping multiple characters
 
 ```python

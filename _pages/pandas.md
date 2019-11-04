@@ -8,6 +8,11 @@ permalink: /pandas/
 
 ## A semi-cheatsheet? 
 
+## Select columns of groupby by sum
+
+`df.groupby(['Country', 'Item_Code'])[["Y1961", "Y1962", "Y1963"]].sum()`
+
+[SO](https://stackoverflow.com/a/32751412)
 #### Problems importing CSV?
 
 Dropping on a conditional
