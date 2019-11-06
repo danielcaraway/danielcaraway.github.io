@@ -22,3 +22,11 @@ sns.catplot(x="Answer.sentiment.label",
             data=pos)
 plt.title('Positive')
 ```
+
+
+## SEABORN GROUPBY
+
+```python
+df_2 = df.groupby('A').sum()
+df_2.reset_index(inplace=True)
+sns.barplot(x='A', y='B', data=df_2);
