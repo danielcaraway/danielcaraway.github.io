@@ -6,6 +6,12 @@ permalink: /python/
 
 # Python
 
+## Markdown to word doc
+
+```console
+pandoc -o output.docx -f markdown -t docx HW5_pretty.md
+```
+
 ## Regex, characters between symbols `§` and `;`
 
 `(?<=§).*?(?=;)`

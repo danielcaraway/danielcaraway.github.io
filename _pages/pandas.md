@@ -5,8 +5,25 @@ permalink: /pandas/
 ---
 
 # Pandas 
+#### A semi-cheatsheet? 
 
-## A semi-cheatsheet? 
+## Most efficient way to loop!
+
+[Most efficient way to loop pandas](https://stackoverflow.com/questions/7837722/what-is-the-most-efficient-way-to-loop-through-dataframes-with-pandas/11617194#11617194)
+
+## Converting Column Content
+```python
+# w.female[w.female == 'female'] = 1 
+# w.female[w.female == 'male']   = 0
+
+df['Status'][df['Status'] == 'ham'] = 1
+df['Status'][df['Status'] == 'spam'] = 0
+```
+
+## Replacing non-zeros with ones
+```
+df.astype(bool).astype(int)
+```
 
 ## Select columns of groupby by sum
 
