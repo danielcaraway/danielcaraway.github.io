@@ -7,6 +7,10 @@ permalink: /pandas/
 # Pandas 
 #### A semi-cheatsheet? 
 
+## String Contains? And ignore NA
+
+`df.a.str.contains("foo", na=False)`
+
 ## Most efficient way to loop!
 
 [Most efficient way to loop pandas](https://stackoverflow.com/questions/7837722/what-is-the-most-efficient-way-to-loop-through-dataframes-with-pandas/11617194#11617194)
