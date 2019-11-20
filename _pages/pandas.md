@@ -7,6 +7,18 @@ permalink: /pandas/
 # Pandas 
 #### A semi-cheatsheet? 
 
+##
+
+### one way
+
+`newdf = df[df.columns[2:4]]`
+### another way
+
+`
+columns = ['b', 'c']
+df1 = pd.DataFrame(df, columns=columns)
+`
+
 ## String Contains? And ignore NA
 
 `df.a.str.contains("foo", na=False)`
