@@ -7,11 +7,14 @@ permalink: /pandas/
 # Pandas 
 #### A semi-cheatsheet? 
 
-##
+## Problems Getting 
 
-### one way
+### one way to drop columns
 
-`newdf = df[df.columns[2:4]]`
+`python
+newdf = df[df.columns[2:4]]
+`
+
 ### another way
 
 `

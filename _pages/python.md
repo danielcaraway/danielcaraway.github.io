@@ -5,6 +5,20 @@ permalink: /python/
 ---
 
 # Python
+## Regex BETWEEN two STRINGS
+
+(?<=% of )(.*)(?= at )
+[example](https://www.regextester.com/96872)
+
+## Save image from link
+
+`python
+import requests
+
+img_data = requests.get(image_url).content
+with open('image_name.jpg', 'wb') as handler:
+    handler.write(img_data)
+`
 
 ## Markdown to word doc
 
