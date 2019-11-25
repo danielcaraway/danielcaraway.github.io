@@ -4,6 +4,10 @@ title: "Python Cheatsheet"
 permalink: /python/
 ---
 
+## ## ok but really proud of these visuals
+
+[V4-16](https://danielcaraway.github.io/html/HW7_v4_i6.html)
+
 ## Plotting a table using matplotlib
 
 [SO](https://stackoverflow.com/questions/32137396/how-do-i-plot-only-a-table-in-matplotlib)

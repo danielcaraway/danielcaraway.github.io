@@ -6,6 +6,10 @@ main:
     url: /dreams/
   - title: "Pandas"
     url: /pandas/
+  - title: "VIZ"
+    url: /visuals/
+  - title: "Data Prep"
+    url: /dataprep/
   - title: "THX"
     url: https://mmistakes.github.io/minimal-mistakes/docs/quick-start-guide/
   # - title: "About"
