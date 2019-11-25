@@ -1,7 +1,7 @@
 --- 
 layout: single
 title: "Python Cheatsheet"
-permalink: /python/
+permalink: /visuals/
 ---
 
 ## ## ok but really proud of these visuals

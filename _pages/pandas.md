@@ -7,7 +7,17 @@ permalink: /pandas/
 # Pandas 
 #### A semi-cheatsheet? 
 
-## Problems Getting 
+## renaming columns
+
+`
+data.rename(columns={'gdp':'log(gdp)'}, inplace=True)
+`
+
+## merging
+
+`
+new_df = pd.merge(A_df, B_df,  how='left', left_on=['A_c1','c2'], right_on = ['B_c1','c2'])
+`
 
 ### one way to drop columns
 
