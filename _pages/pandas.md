@@ -7,15 +7,20 @@ permalink: /pandas/
 # Pandas 
 #### A semi-cheatsheet? 
 
+`python
+deals = weights['! ;) :) half off free crazy deal only $ 80 %'.split()].round(3) * 100
+['! ;) :) half off free crazy deal only $ 80 %'.split()]
+`
+
 ## renaming columns
 
-`
+`python
 data.rename(columns={'gdp':'log(gdp)'}, inplace=True)
 `
 
 ## merging
 
-`
+`python
 new_df = pd.merge(A_df, B_df,  how='left', left_on=['A_c1','c2'], right_on = ['B_c1','c2'])
 `
 
