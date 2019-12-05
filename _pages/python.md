@@ -5,6 +5,16 @@ permalink: /python/
 ---
 
 # Python
+
+## Get unique list
+
+`python
+mylist = list(set(mylist))
+`
+`python
+sorted([*{*c}])
+`
+
 ## Regex BETWEEN two STRINGS
 
 (?<=% of )(.*)(?= at )
