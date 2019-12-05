@@ -1,8 +1,5 @@
 {% for file in site.static_files %}
     {% if file.path contains 'html' %}
-        <div markdown="1">
-        [{{ file.path }}]("https://danielcaraway.github.io/{{ file.path}}")
-        </div>
-        <!-- <a href="{{ site.baseurl }}{{ file.path }}">{{ file.path }}</a> -->
+        <a href="https://danielcaraway.github.io/{{ file.path }}">{{ file.path }}</a>
     {% endif %}
 {% endfor %}
