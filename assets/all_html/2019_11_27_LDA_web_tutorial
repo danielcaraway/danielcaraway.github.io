@@ -1,0 +1,489 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# LDA\n",
+    "[Tutorial Here](http://dataskunkworks.com/2018/06/06/extracting-topics-from-11000-newsgroups-posts-with-python-gensim-and-lda/)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['rec.autos' 'comp.sys.mac.hardware' 'comp.graphics' 'sci.space'\n",
+      " 'talk.politics.guns' 'sci.med' 'comp.sys.ibm.pc.hardware'\n",
+      " 'comp.os.ms-windows.misc' 'rec.motorcycles' 'talk.religion.misc'\n",
+      " 'misc.forsale' 'alt.atheism' 'sci.electronics' 'comp.windows.x'\n",
+      " 'rec.sport.hockey' 'rec.sport.baseball' 'soc.religion.christian'\n",
+      " 'talk.politics.mideast' 'talk.politics.misc' 'sci.crypt']\n",
+      "['rec.autos' 'comp.sys.mac.hardware' 'comp.graphics' 'sci.space'\n",
+      " 'talk.politics.guns' 'sci.med' 'comp.sys.ibm.pc.hardware'\n",
+      " 'comp.os.ms-windows.misc' 'rec.motorcycles' 'talk.religion.misc'\n",
+      " 'misc.forsale' 'alt.atheism' 'sci.electronics' 'comp.windows.x'\n",
+      " 'rec.sport.hockey' 'rec.sport.baseball' 'soc.religion.christian'\n",
+      " 'talk.politics.mideast' 'talk.politics.misc' 'sci.crypt']\n"
+     ]
+    },
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>content</th>\n",
+       "      <th>target</th>\n",
+       "      <th>target_names</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>From: lerxst@wam.umd.edu (where's my thing)\\nS...</td>\n",
+       "      <td>7</td>\n",
+       "      <td>rec.autos</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>From: guykuo@carson.u.washington.edu (Guy Kuo)...</td>\n",
+       "      <td>4</td>\n",
+       "      <td>comp.sys.mac.hardware</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>From: twillis@ec.ecn.purdue.edu (Thomas E Will...</td>\n",
+       "      <td>4</td>\n",
+       "      <td>comp.sys.mac.hardware</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>From: jgreen@amber (Joe Green)\\nSubject: Re: W...</td>\n",
+       "      <td>1</td>\n",
+       "      <td>comp.graphics</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>From: jcm@head-cfa.harvard.edu (Jonathan McDow...</td>\n",
+       "      <td>14</td>\n",
+       "      <td>sci.space</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                             content  target  \\\n",
+       "0  From: lerxst@wam.umd.edu (where's my thing)\\nS...       7   \n",
+       "1  From: guykuo@carson.u.washington.edu (Guy Kuo)...       4   \n",
+       "2  From: twillis@ec.ecn.purdue.edu (Thomas E Will...       4   \n",
+       "3  From: jgreen@amber (Joe Green)\\nSubject: Re: W...       1   \n",
+       "4  From: jcm@head-cfa.harvard.edu (Jonathan McDow...      14   \n",
+       "\n",
+       "            target_names  \n",
+       "0              rec.autos  \n",
+       "1  comp.sys.mac.hardware  \n",
+       "2  comp.sys.mac.hardware  \n",
+       "3          comp.graphics  \n",
+       "4              sci.space  "
+      ]
+     },
+     "execution_count": 2,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "\n",
+    "import pandas as pd\n",
+    "df = pd.read_json('https://raw.githubusercontent.com/selva86/datasets/master/newsgroups.json')\n",
+    "print(df.target_names.unique())\n",
+    "df.head()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "From: (Guy Kuo) Subject: SI Clock Poll - Final Call Summary: Final call for SI clock reports Keywords: SI,acceleration,clock,upgrade Article-I.D.: shelley.1qvfo9INNc3s Organization: University of Washington Lines: 11 NNTP-Posting-Host: carson.u.washington.edu A fair number of brave souls who upgraded their SI clock oscillator have shared their experiences for this poll. Please send a brief message detailing your experiences with the procedure. Top speed attained, CPU rated speed, add on cards and adapters, heat sinks, hour of usage per day, floppy disk functionality with 800 and 1.4 m floppies are especially requested. I will be summarizing in the next two days, so please add to the network knowledge base if you have done the clock upgrade and havent answered this poll. Thanks. Guy Kuo \n"
+     ]
+    }
+   ],
+   "source": [
+    "import re\n",
+    "text_corpus = df.content.values.tolist()\n",
+    "text_corpus = [re.sub('\\S*@\\S*\\s?', '', doc) for doc in text_corpus] #removing email addresses\n",
+    "text_corpus = [re.sub('\\s+', ' ', doc) for doc in text_corpus] #removing newline characters\n",
+    "text_corpus = [re.sub(\"\\'\", \"\", doc) for doc in text_corpus] #removing single quote characters\n",
+    " \n",
+    "print(text_corpus[1])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['from', 'guy', 'kuo', 'subject', 'si', 'clock', 'poll', 'final', 'call', 'summary', 'final', 'call', 'for', 'si', 'clock', 'reports', 'keywords', 'si', 'acceleration', 'clock', 'upgrade', 'article', 'shelley', 'qvfo', 'innc', 'organization', 'university', 'of', 'washington', 'lines', 'nntp', 'posting', 'host', 'carson', 'washington', 'edu', 'fair', 'number', 'of', 'brave', 'souls', 'who', 'upgraded', 'their', 'si', 'clock', 'oscillator', 'have', 'shared', 'their', 'experiences', 'for', 'this', 'poll', 'please', 'send', 'brief', 'message', 'detailing', 'your', 'experiences', 'with', 'the', 'procedure', 'top', 'speed', 'attained', 'cpu', 'rated', 'speed', 'add', 'on', 'cards', 'and', 'adapters', 'heat', 'sinks', 'hour', 'of', 'usage', 'per', 'day', 'floppy', 'disk', 'functionality', 'with', 'and', 'floppies', 'are', 'especially', 'requested', 'will', 'be', 'summarizing', 'in', 'the', 'next', 'two', 'days', 'so', 'please', 'add', 'to', 'the', 'network', 'knowledge', 'base', 'if', 'you', 'have', 'done', 'the', 'clock', 'upgrade', 'and', 'havent', 'answered', 'this', 'poll', 'thanks', 'guy', 'kuo']\n"
+     ]
+    }
+   ],
+   "source": [
+    "import gensim\n",
+    "import warnings\n",
+    "warnings.simplefilter(\"ignore\", DeprecationWarning)\n",
+    " \n",
+    "def doc_to_words(sentences):\n",
+    "    for sentence in sentences:\n",
+    "        yield(gensim.utils.simple_preprocess(str(sentence), deacc=True))\n",
+    "\n",
+    "words = list(doc_to_words(text_corpus)) \n",
+    "print(words[1])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "['guy', 'kuo', 'si', 'clock', 'poll', 'final', 'call', 'summary', 'final', 'call', 'si', 'clock', 'reports', 'keywords', 'si', 'acceleration', 'clock', 'upgrade', 'article', 'shelley', 'qvfo', 'innc', 'organization', 'university', 'washington', 'lines', 'nntp', 'posting', 'host', 'carson', 'washington', 'fair', 'number', 'brave', 'souls', 'upgraded', 'si', 'clock', 'oscillator', 'shared', 'experiences', 'poll', 'please', 'send', 'brief', 'message', 'detailing', 'experiences', 'procedure', 'top', 'speed', 'attained', 'cpu', 'rated', 'speed', 'add', 'cards', 'adapters', 'heat', 'sinks', 'hour', 'usage', 'per', 'day', 'floppy', 'disk', 'functionality', 'floppies', 'especially', 'requested', 'summarizing', 'next', 'two', 'days', 'please', 'add', 'network', 'knowledge', 'base', 'done', 'clock', 'upgrade', 'havent', 'answered', 'poll', 'thanks', 'guy', 'kuo']\n"
+     ]
+    }
+   ],
+   "source": [
+    "from nltk.corpus import stopwords\n",
+    "stop_words = stopwords.words('english')\n",
+    "stop_words.extend(['from', 'subject', 're', 'edu', 'use'])\n",
+    " \n",
+    "def remove_stopwords(text):\n",
+    "    return [[word for word in gensim.utils.simple_preprocess(str(doc)) if word not in stop_words] for doc in text_corpus]\n",
+    " \n",
+    "words = remove_stopwords(words)\n",
+    " \n",
+    "print(words[1])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0 documents lemmatised\n",
+      "500 documents lemmatised\n",
+      "1000 documents lemmatised\n",
+      "1500 documents lemmatised\n",
+      "2000 documents lemmatised\n",
+      "2500 documents lemmatised\n",
+      "3000 documents lemmatised\n",
+      "3500 documents lemmatised\n",
+      "4000 documents lemmatised\n",
+      "4500 documents lemmatised\n",
+      "5000 documents lemmatised\n",
+      "5500 documents lemmatised\n",
+      "6000 documents lemmatised\n",
+      "6500 documents lemmatised\n",
+      "7000 documents lemmatised\n",
+      "7500 documents lemmatised\n",
+      "8000 documents lemmatised\n",
+      "8500 documents lemmatised\n",
+      "9000 documents lemmatised\n",
+      "9500 documents lemmatised\n",
+      "10000 documents lemmatised\n",
+      "10500 documents lemmatised\n",
+      "11000 documents lemmatised\n"
+     ]
+    }
+   ],
+   "source": [
+    "import spacy\n",
+    "nlp = spacy.load('en', disable=['parser', 'ner'] )\n",
+    "# nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])\n",
+    " \n",
+    "def lemmatization(texts, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):\n",
+    "    texts_out = []\n",
+    "    for idx, sent in enumerate(texts):\n",
+    "        if (idx) % 500 == 0:\n",
+    "            print(str(idx) + ' documents lemmatised')\n",
+    "        doc = nlp(\" \".join(sent)) \n",
+    "        texts_out.append([token.lemma_ for token in doc if token.pos_ in allowed_postags])\n",
+    "    return texts_out\n",
+    " \n",
+    "data_lemmatized = lemmatization(words, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "# Create Dictionary\n",
+    "import gensim.corpora as corpora\n",
+    "id2word = corpora.Dictionary(data_lemmatized)\n",
+    " \n",
+    "# Create Corpus\n",
+    "corpus = [id2word.doc2bow(text) for text in data_lemmatized]\n",
+    " \n",
+    "# Build LDA model\n",
+    "lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,\n",
+    "                                           id2word=id2word,\n",
+    "                                           num_topics=20, \n",
+    "                                           per_word_topics=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[(0,\n",
+      "  '0.013*\"drive\" + 0.012*\"car\" + 0.012*\"not\" + 0.009*\"line\" + '\n",
+      "  '0.008*\"organization\" + 0.007*\"write\" + 0.007*\"article\" + 0.007*\"do\" + '\n",
+      "  '0.006*\"be\" + 0.006*\"light\"'),\n",
+      " (1,\n",
+      "  '0.695*\"ax\" + 0.048*\"max\" + 0.009*\"_\" + 0.004*\"rlk\" + 0.003*\"bhj\" + '\n",
+      "  '0.003*\"ey\" + 0.003*\"giz\" + 0.002*\"qax\" + 0.002*\"tm\" + 0.002*\"chz\"'),\n",
+      " (2,\n",
+      "  '0.027*\"key\" + 0.015*\"encryption\" + 0.014*\"clipper\" + 0.014*\"chip\" + '\n",
+      "  '0.009*\"government\" + 0.008*\"security\" + 0.007*\"escrow\" + 0.007*\"system\" + '\n",
+      "  '0.007*\"would\" + 0.007*\"public\"'),\n",
+      " (3,\n",
+      "  '0.008*\"state\" + 0.008*\"not\" + 0.006*\"law\" + 0.006*\"write\" + '\n",
+      "  '0.006*\"armenian\" + 0.005*\"government\" + 0.005*\"line\" + 0.005*\"would\" + '\n",
+      "  '0.004*\"exist\" + 0.004*\"question\"'),\n",
+      " (4,\n",
+      "  '0.014*\"not\" + 0.010*\"do\" + 0.008*\"would\" + 0.008*\"line\" + 0.008*\"write\" + '\n",
+      "  '0.007*\"year\" + 0.007*\"be\" + 0.007*\"get\" + 0.007*\"organization\" + '\n",
+      "  '0.006*\"time\"'),\n",
+      " (5,\n",
+      "  '0.017*\"key\" + 0.015*\"bit\" + 0.012*\"line\" + 0.012*\"_\" + 0.009*\"organization\" '\n",
+      "  '+ 0.008*\"use\" + 0.008*\"number\" + 0.008*\"serial\" + 0.008*\"window\" + '\n",
+      "  '0.008*\"c\"'),\n",
+      " (6,\n",
+      "  '0.030*\"space\" + 0.012*\"nasa\" + 0.011*\"orbit\" + 0.010*\"mission\" + '\n",
+      "  '0.009*\"mar\" + 0.007*\"earth\" + 0.007*\"satellite\" + 0.006*\"spacecraft\" + '\n",
+      "  '0.006*\"shuttle\" + 0.006*\"probe\"'),\n",
+      " (7,\n",
+      "  '0.013*\"game\" + 0.012*\"hockey\" + 0.010*\"cub\" + 0.009*\"league\" + '\n",
+      "  '0.008*\"division\" + 0.008*\"db\" + 0.007*\"lose\" + 0.006*\"hawk\" + 0.006*\"line\" '\n",
+      "  '+ 0.006*\"min\"'),\n",
+      " (8,\n",
+      "  '0.015*\"not\" + 0.010*\"say\" + 0.009*\"do\" + 0.009*\"people\" + 0.008*\"would\" + '\n",
+      "  '0.007*\"be\" + 0.007*\"write\" + 0.007*\"think\" + 0.007*\"god\" + 0.007*\"know\"'),\n",
+      " (9,\n",
+      "  '0.013*\"greek\" + 0.010*\"article\" + 0.009*\"write\" + 0.009*\"organization\" + '\n",
+      "  '0.009*\"get\" + 0.009*\"line\" + 0.008*\"not\" + 0.007*\"car\" + 0.007*\"greece\" + '\n",
+      "  '0.007*\"dealer\"'),\n",
+      " (10,\n",
+      "  '0.014*\"wire\" + 0.011*\"ground\" + 0.008*\"ax\" + 0.008*\"line\" + '\n",
+      "  '0.008*\"organization\" + 0.007*\"outlet\" + 0.006*\"post\" + 0.006*\"neutral\" + '\n",
+      "  '0.006*\"wiring\" + 0.006*\"write\"'),\n",
+      " (11,\n",
+      "  '0.029*\"bike\" + 0.014*\"line\" + 0.013*\"dod\" + 0.012*\"organization\" + '\n",
+      "  '0.012*\"motorcycle\" + 0.012*\"ride\" + 0.011*\"rider\" + 0.008*\"post\" + '\n",
+      "  '0.007*\"nntp\" + 0.007*\"host\"'),\n",
+      " (12,\n",
+      "  '0.021*\"not\" + 0.012*\"do\" + 0.010*\"write\" + 0.008*\"be\" + 0.008*\"line\" + '\n",
+      "  '0.007*\"get\" + 0.007*\"would\" + 0.007*\"drive\" + 0.007*\"scsi\" + '\n",
+      "  '0.007*\"article\"'),\n",
+      " (13,\n",
+      "  '0.010*\"write\" + 0.008*\"line\" + 0.008*\"not\" + 0.008*\"article\" + '\n",
+      "  '0.008*\"organization\" + 0.006*\"would\" + 0.006*\"israel\" + 0.006*\"do\" + '\n",
+      "  '0.006*\"state\" + 0.006*\"right\"'),\n",
+      " (14,\n",
+      "  '0.015*\"gun\" + 0.012*\"game\" + 0.011*\"team\" + 0.008*\"not\" + 0.008*\"play\" + '\n",
+      "  '0.007*\"get\" + 0.007*\"line\" + 0.007*\"organization\" + 0.007*\"year\" + '\n",
+      "  '0.006*\"go\"'),\n",
+      " (15,\n",
+      "  '0.007*\"mail\" + 0.007*\"_\" + 0.006*\"file\" + 0.006*\"cx\" + 0.006*\"ripem\" + '\n",
+      "  '0.006*\"line\" + 0.006*\"list\" + 0.006*\"information\" + 0.005*\"post\" + '\n",
+      "  '0.005*\"available\"'),\n",
+      " (16,\n",
+      "  '0.014*\"line\" + 0.014*\"drive\" + 0.012*\"organization\" + 0.010*\"card\" + '\n",
+      "  '0.009*\"university\" + 0.008*\"disk\" + 0.008*\"driver\" + 0.008*\"post\" + '\n",
+      "  '0.008*\"video\" + 0.008*\"write\"'),\n",
+      " (17,\n",
+      "  '0.011*\"new\" + 0.011*\"line\" + 0.010*\"organization\" + 0.009*\"gm\" + '\n",
+      "  '0.008*\"university\" + 0.008*\"not\" + 0.007*\"car\" + 0.006*\"write\" + '\n",
+      "  '0.006*\"good\" + 0.005*\"think\"'),\n",
+      " (18,\n",
+      "  '0.020*\"line\" + 0.016*\"organization\" + 0.011*\"post\" + 0.011*\"file\" + '\n",
+      "  '0.010*\"host\" + 0.009*\"nntp\" + 0.008*\"program\" + 0.008*\"window\" + '\n",
+      "  '0.007*\"university\" + 0.007*\"get\"'),\n",
+      " (19,\n",
+      "  '0.010*\"not\" + 0.007*\"do\" + 0.007*\"get\" + 0.006*\"window\" + '\n",
+      "  '0.005*\"organization\" + 0.005*\"be\" + 0.005*\"line\" + 0.005*\"space\" + '\n",
+      "  '0.005*\"would\" + 0.005*\"use\"')]\n"
+     ]
+    }
+   ],
+   "source": [
+    "from pprint import pprint\n",
+    "pprint(lda_model.print_topics())\n",
+    "doc_lda = lda_model[corpus]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "KeyboardInterrupt",
+     "evalue": "",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mKeyboardInterrupt\u001b[0m                         Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-27-0ce1051c8de2>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      3\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mpyLDAvis\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mgensim\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m \u001b[0mpyLDAvis\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0menable_notebook\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 5\u001b[0;31m \u001b[0mvis\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mpyLDAvis\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mgensim\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mprepare\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mlda_model\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mcorpus\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mid2word\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      6\u001b[0m \u001b[0mvis\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/anaconda3/lib/python3.7/site-packages/pyLDAvis/gensim.py\u001b[0m in \u001b[0;36mprepare\u001b[0;34m(topic_model, corpus, dictionary, doc_topic_dist, **kwargs)\u001b[0m\n\u001b[1;32m    117\u001b[0m     \"\"\"\n\u001b[1;32m    118\u001b[0m     \u001b[0mopts\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mfp\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mmerge\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0m_extract_data\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtopic_model\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mcorpus\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdictionary\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdoc_topic_dist\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mkwargs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 119\u001b[0;31m     \u001b[0;32mreturn\u001b[0m \u001b[0mvis_prepare\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m**\u001b[0m\u001b[0mopts\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m~/anaconda3/lib/python3.7/site-packages/pyLDAvis/_prepare.py\u001b[0m in \u001b[0;36mprepare\u001b[0;34m(topic_term_dists, doc_topic_dists, doc_lengths, vocab, term_frequency, R, lambda_step, mds, n_jobs, plot_opts, sort_topics)\u001b[0m\n\u001b[1;32m    396\u001b[0m    \u001b[0mterm_frequency\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mnp\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0msum\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mterm_topic_freq\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0maxis\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;36m0\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    397\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 398\u001b[0;31m    \u001b[0mtopic_info\u001b[0m         \u001b[0;34m=\u001b[0m \u001b[0m_topic_info\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtopic_term_dists\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtopic_proportion\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mterm_frequency\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mterm_topic_freq\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mvocab\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mlambda_step\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mR\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mn_jobs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    399\u001b[0m    \u001b[0mtoken_table\u001b[0m        \u001b[0;34m=\u001b[0m \u001b[0m_token_table\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtopic_info\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mterm_topic_freq\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mvocab\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mterm_frequency\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    400\u001b[0m    \u001b[0mtopic_coordinates\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0m_topic_coordinates\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mmds\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtopic_term_dists\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mtopic_proportion\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/anaconda3/lib/python3.7/site-packages/pyLDAvis/_prepare.py\u001b[0m in \u001b[0;36m_topic_info\u001b[0;34m(topic_term_dists, topic_proportion, term_frequency, term_topic_freq, vocab, lambda_step, R, n_jobs)\u001b[0m\n\u001b[1;32m    253\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    254\u001b[0m    top_terms = pd.concat(Parallel(n_jobs=n_jobs)(delayed(_find_relevance_chunks)(log_ttd, log_lift, R, ls) \\\n\u001b[0;32m--> 255\u001b[0;31m                                                  for ls in _job_chunks(lambda_seq, n_jobs)))\n\u001b[0m\u001b[1;32m    256\u001b[0m    \u001b[0mtopic_dfs\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mmap\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtopic_top_term_df\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0menumerate\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtop_terms\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mT\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0miterrows\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    257\u001b[0m    \u001b[0;32mreturn\u001b[0m \u001b[0mpd\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mconcat\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mdefault_term_info\u001b[0m\u001b[0;34m]\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0mlist\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtopic_dfs\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/anaconda3/lib/python3.7/site-packages/joblib/parallel.py\u001b[0m in \u001b[0;36m__call__\u001b[0;34m(self, iterable)\u001b[0m\n\u001b[1;32m    932\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    933\u001b[0m             \u001b[0;32mwith\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_backend\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mretrieval_context\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 934\u001b[0;31m                 \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mretrieve\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    935\u001b[0m             \u001b[0;31m# Make sure that we get a last message telling us we are done\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    936\u001b[0m             \u001b[0melapsed_time\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mtime\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtime\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m-\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_start_time\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/anaconda3/lib/python3.7/site-packages/joblib/parallel.py\u001b[0m in \u001b[0;36mretrieve\u001b[0;34m(self)\u001b[0m\n\u001b[1;32m    831\u001b[0m             \u001b[0;32mtry\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    832\u001b[0m                 \u001b[0;32mif\u001b[0m \u001b[0mgetattr\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_backend\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m'supports_timeout'\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;32mFalse\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 833\u001b[0;31m                     \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_output\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mextend\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mjob\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mget\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtimeout\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtimeout\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    834\u001b[0m                 \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    835\u001b[0m                     \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_output\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mextend\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mjob\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mget\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/anaconda3/lib/python3.7/site-packages/joblib/_parallel_backends.py\u001b[0m in \u001b[0;36mwrap_future_result\u001b[0;34m(future, timeout)\u001b[0m\n\u001b[1;32m    519\u001b[0m         AsyncResults.get from multiprocessing.\"\"\"\n\u001b[1;32m    520\u001b[0m         \u001b[0;32mtry\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 521\u001b[0;31m             \u001b[0;32mreturn\u001b[0m \u001b[0mfuture\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mresult\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtimeout\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mtimeout\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    522\u001b[0m         \u001b[0;32mexcept\u001b[0m \u001b[0mLokyTimeoutError\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    523\u001b[0m             \u001b[0;32mraise\u001b[0m \u001b[0mTimeoutError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/anaconda3/lib/python3.7/concurrent/futures/_base.py\u001b[0m in \u001b[0;36mresult\u001b[0;34m(self, timeout)\u001b[0m\n\u001b[1;32m    428\u001b[0m                 \u001b[0;32mreturn\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m__get_result\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    429\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 430\u001b[0;31m             \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_condition\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mwait\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mtimeout\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    431\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    432\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_state\u001b[0m \u001b[0;32min\u001b[0m \u001b[0;34m[\u001b[0m\u001b[0mCANCELLED\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mCANCELLED_AND_NOTIFIED\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m~/anaconda3/lib/python3.7/threading.py\u001b[0m in \u001b[0;36mwait\u001b[0;34m(self, timeout)\u001b[0m\n\u001b[1;32m    294\u001b[0m         \u001b[0;32mtry\u001b[0m\u001b[0;34m:\u001b[0m    \u001b[0;31m# restore state no matter what (e.g., KeyboardInterrupt)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    295\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0mtimeout\u001b[0m \u001b[0;32mis\u001b[0m \u001b[0;32mNone\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 296\u001b[0;31m                 \u001b[0mwaiter\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0macquire\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    297\u001b[0m                 \u001b[0mgotit\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;32mTrue\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    298\u001b[0m             \u001b[0;32melse\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mKeyboardInterrupt\u001b[0m: "
+     ]
+    }
+   ],
+   "source": [
+    "# Visualize the topics\n",
+    "import pyLDAvis\n",
+    "import pyLDAvis.gensim  \n",
+    "pyLDAvis.enable_notebook()\n",
+    "vis = pyLDAvis.gensim.prepare(lda_model, corpus, id2word)\n",
+    "vis\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def format_topics_sentences(ldamodel=lda_model, corpus=corpus, texts=text_corpus):\n",
+    "    # Array of top 10 topics\n",
+    "    top10array = []\n",
+    " \n",
+    "    for row in range(ldamodel.num_topics):\n",
+    "        wp = ldamodel.show_topic(row)\n",
+    "        topic_keywords = \", \".join([word for word, prop in wp])\n",
+    "        top10array.append((row+1, topic_keywords))\n",
+    " \n",
+    "    top10dict = dict(top10array)\n",
+    " \n",
+    "    sent_topics_df = pd.DataFrame(pd.DataFrame([sorted(topic[0], key=lambda x: (x[1]), reverse=True) for topic in ldamodel[corpus]])[0])\n",
+    "    sent_topics_df.columns=[\"Data\"]\n",
+    "    sent_topics_df['Dominant_Topic'] = sent_topics_df.Data.apply(lambda x: x[0]+1)\n",
+    "    sent_topics_df['Perc_Contribution'] = sent_topics_df.Data.apply(lambda x: round(x[1],4))\n",
+    "    sent_topics_df['Topic_Keywords'] = sent_topics_df.Dominant_Topic.apply(lambda x: top10dict[x])\n",
+    " \n",
+    "    # Add original text to the end of the output\n",
+    "    contents = pd.Series(texts)\n",
+    "    sent_topics_df = pd.concat([sent_topics_df, contents.rename(\"Text\")], axis=1)\n",
+    "    sent_topics_df = sent_topics_df[['Dominant_Topic', 'Perc_Contribution', 'Topic_Keywords', 'Text']]\n",
+    "    return(sent_topics_df)\n",
+    " \n",
+    "df_topic_sents_keywords = format_topics_sentences()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Group top 5 sentences under each topic\n",
+    "sent_topics_sorteddf_mallet = pd.DataFrame()\n",
+    " \n",
+    "sent_topics_outdf_grpd = df_topic_sents_keywords.groupby('Dominant_Topic')\n",
+    " \n",
+    "for i, grp in sent_topics_outdf_grpd:\n",
+    "    sent_topics_sorteddf_mallet = pd.concat([sent_topics_sorteddf_mallet, \n",
+    "                                             grp.sort_values(['Perc_Contribution'], ascending=[0]).head(1)], \n",
+    "                                            axis=0)\n",
+    " \n",
+    "# Reset Index    \n",
+    "sent_topics_sorteddf_mallet.reset_index(drop=True, inplace=True)\n",
+    " \n",
+    "# Format\n",
+    "sent_topics_sorteddf_mallet.columns = ['Topic_Num', \"Topic_Perc_Contrib\", \"Keywords\", \"Text\"]\n",
+    " \n",
+    "# Show\n",
+    "sent_topics_sorteddf_mallet.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

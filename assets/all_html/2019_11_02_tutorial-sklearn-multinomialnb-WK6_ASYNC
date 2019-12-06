@@ -1,0 +1,1041 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Tutorial - build MNB with sklearn"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "This tutorial demonstrates how to use the Sci-kit Learn (sklearn) package to build Multinomial Naive Bayes model, rank features, and use the model for prediction. \n",
+    "\n",
+    "The data from the Kaggle Sentiment Analysis on Movie Review Competition are used in this tutorial. Check out the details of the data and the competition on Kaggle.\n",
+    "https://www.kaggle.com/c/sentiment-analysis-on-movie-reviews\n",
+    "\n",
+    "The tutorial also includes sample code to prepare your prediction result for submission to Kaggle. Although the competition is over, you can still submit your prediction to get an evaluation score."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 1: Read in data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# read in the training data\n",
+    "\n",
+    "# the data set includes four columns: PhraseId, SentenceId, Phrase, Sentiment\n",
+    "# In this data set a sentence is further split into phrases \n",
+    "# in order to build a sentiment classification model\n",
+    "# that can not only predict sentiment of sentences but also shorter phrases\n",
+    "\n",
+    "# A data example:\n",
+    "# PhraseId SentenceId Phrase Sentiment\n",
+    "# 1 1 A series of escapades demonstrating the adage that what is good for the goose is also good for the gander , some of which occasionally amuses but none of which amounts to much of a story .1\n",
+    "\n",
+    "# the Phrase column includes the training examples\n",
+    "# the Sentiment column includes the training labels\n",
+    "# \"0\" for very negative\n",
+    "# \"1\" for negative\n",
+    "# \"2\" for neutral\n",
+    "# \"3\" for positive\n",
+    "# \"4\" for very positive\n",
+    "\n",
+    "import numpy as np\n",
+    "import pandas as p\n",
+    "train=p.read_csv(\"kaggle-sentiment/train.tsv\", delimiter='\\t')\n",
+    "y=train['Sentiment'].values\n",
+    "X=train['Phrase'].values"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 2: Split train/test data for hold-out test"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(93636,) (93636,) (62424,) (62424,)\n",
+      "almost in a class with that of Wilde\n",
+      "3\n",
+      "escape movie\n",
+      "2\n"
+     ]
+    }
+   ],
+   "source": [
+    "# check the sklearn documentation for train_test_split\n",
+    "# http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html\n",
+    "# \"test_size\" : float, int, None, optional\n",
+    "# If float, should be between 0.0 and 1.0 and represent the proportion of the dataset to include in the test split. \n",
+    "# If int, represents the absolute number of test samples. \n",
+    "# If None, the value is set to the complement of the train size. \n",
+    "# By default, the value is set to 0.25. The default will change in version 0.21. It will remain 0.25 only if train_size is unspecified, otherwise it will complement the specified train_size.    \n",
+    "\n",
+    "from sklearn.model_selection import train_test_split\n",
+    "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=0)\n",
+    "\n",
+    "print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)\n",
+    "print(X_train[0])\n",
+    "print(y_train[0])\n",
+    "print(X_test[0])\n",
+    "print(y_test[0])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Sample output from the code above:\n",
+    "\n",
+    "(93636,) (93636,) (62424,) (62424,)\n",
+    "almost in a class with that of Wilde\n",
+    "3\n",
+    "escape movie\n",
+    "2"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 2.1 Data Checking"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[[    0     1     2     3     4]\n",
+      " [ 4141 16449 47718 19859  5469]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Check how many training examples in each category\n",
+    "# this is important to see whether the data set is balanced or skewed\n",
+    "\n",
+    "unique, counts = np.unique(y_train, return_counts=True)\n",
+    "print(np.asarray((unique, counts)))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The sample output shows that the data set is skewed with 47718/93636=51% \"neutral\" examples. All other categories are smaller.\n",
+    "\n",
+    "{0, 1, 2, 3, 4}\n",
+    "[[    0  4141]\n",
+    " [    1 16449]\n",
+    " [    2 47718]\n",
+    " [    3 19859]\n",
+    " [    4  5469]]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Exercise A"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Print out the category distribution in the test data set. \n",
+    "#Is the test data set's category distribution similar to the training data set's?\n",
+    "\n",
+    "# Your code starts here\n",
+    "\n",
+    "# Your code ends here"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 3: Vectorization"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# sklearn contains two vectorizers\n",
+    "\n",
+    "# CountVectorizer can give you Boolean or TF vectors\n",
+    "# http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html\n",
+    "\n",
+    "# TfidfVectorizer can give you TF or TFIDF vectors\n",
+    "# http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html\n",
+    "\n",
+    "# Read the sklearn documentation to understand all vectorization options\n",
+    "\n",
+    "from sklearn.feature_extraction.text import CountVectorizer\n",
+    "from sklearn.feature_extraction.text import TfidfVectorizer\n",
+    "\n",
+    "# several commonly used vectorizer setting\n",
+    "\n",
+    "#  unigram boolean vectorizer, set minimum document frequency to 5\n",
+    "unigram_bool_vectorizer = CountVectorizer(encoding='latin-1', binary=True, min_df=5, stop_words='english')\n",
+    "\n",
+    "#  unigram term frequency vectorizer, set minimum document frequency to 5\n",
+    "unigram_count_vectorizer = CountVectorizer(encoding='latin-1', binary=False, min_df=5, stop_words='english')\n",
+    "\n",
+    "#  unigram and bigram term frequency vectorizer, set minimum document frequency to 5\n",
+    "gram12_count_vectorizer = CountVectorizer(encoding='latin-1', ngram_range=(1,2), min_df=5, stop_words='english')\n",
+    "\n",
+    "#  unigram tfidf vectorizer, set minimum document frequency to 5\n",
+    "unigram_tfidf_vectorizer = TfidfVectorizer(encoding='latin-1', use_idf=True, min_df=5, stop_words='english')\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Step 3.1: Vectorize the training data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(93636, 11967)\n",
+      "[[0 0 0 ... 0 0 0]]\n",
+      "11967\n",
+      "[('class', 1858), ('wilde', 11742), ('derring', 2802), ('chilling', 1764), ('affecting', 313), ('meanspirited', 6557), ('personal', 7662), ('low', 6296), ('involved', 5602), ('worth', 11868)]\n",
+      "5224\n"
+     ]
+    }
+   ],
+   "source": [
+    "# The vectorizer can do \"fit\" and \"transform\"\n",
+    "# fit is a process to collect unique tokens into the vocabulary\n",
+    "# transform is a process to convert each document to vector based on the vocabulary\n",
+    "# These two processes can be done together using fit_transform(), or used individually: fit() or transform()\n",
+    "\n",
+    "# fit vocabulary in training documents and transform the training documents into vectors\n",
+    "X_train_vec = unigram_count_vectorizer.fit_transform(X_train)\n",
+    "\n",
+    "# check the content of a document vector\n",
+    "print(X_train_vec.shape)\n",
+    "print(X_train_vec[0].toarray())\n",
+    "\n",
+    "# check the size of the constructed vocabulary\n",
+    "print(len(unigram_count_vectorizer.vocabulary_))\n",
+    "\n",
+    "# print out the first 10 items in the vocabulary\n",
+    "print(list(unigram_count_vectorizer.vocabulary_.items())[:10])\n",
+    "\n",
+    "# check word index in vocabulary\n",
+    "print(unigram_count_vectorizer.vocabulary_.get('imaginative'))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Sample output:\n",
+    "\n",
+    "(93636, 11967)\n",
+    "[[0 0 0 ..., 0 0 0]]\n",
+    "11967\n",
+    "[('imaginative', 5224), ('tom', 10809), ('smiling', 9708), ('easy', 3310), ('diversity', 3060), ('impossibly', 5279), ('buy', 1458), ('sentiments', 9305), ('households', 5095), ('deteriorates', 2843)]\n",
+    "5224"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Step 3.2: Vectorize the test data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(62424, 11967)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# use the vocabulary constructed from the training data to vectorize the test data. \n",
+    "# Therefore, use \"transform\" only, not \"fit_transform\", \n",
+    "# otherwise \"fit\" would generate a new vocabulary from the test data\n",
+    "\n",
+    "X_test_vec = unigram_count_vectorizer.transform(X_test)\n",
+    "\n",
+    "# print out #examples and #features in the test set\n",
+    "print(X_test_vec.shape)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Sample output:\n",
+    "\n",
+    "(62424, 14324)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Exercise B"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# In the above sample code, the term-frequency vectors were generated for training and test data.\n",
+    "\n",
+    "# Some people argue that \n",
+    "# because the MultinomialNB algorithm is based on word frequency, \n",
+    "# we should not use boolean representation for MultinomialNB.\n",
+    "# While in theory it is true, you might see people use boolean representation for MultinomialNB\n",
+    "# especially when the chosen tool, e.g. Weka, does not provide the BernoulliNB algorithm.\n",
+    "\n",
+    "# sklearn does provide both MultinomialNB and BernoulliNB algorithms.\n",
+    "# http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html\n",
+    "# You will practice that later\n",
+    "\n",
+    "# In this exercise you will vectorize the training and test data using boolean representation\n",
+    "# You can decide on other options like ngrams, stopwords, etc.\n",
+    "\n",
+    "# Your code starts here\n",
+    "\n",
+    "# Your code ends here"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 4: Train a MNB classifier"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True)"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# import the MNB module\n",
+    "from sklearn.naive_bayes import MultinomialNB\n",
+    "\n",
+    "# initialize the MNB model\n",
+    "nb_clf= MultinomialNB()\n",
+    "\n",
+    "# use the training data to train the MNB model\n",
+    "nb_clf.fit(X_train_vec,y_train)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 4.1 Interpret a trained MNB model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "-8.538982639195012\n",
+      "-10.64363758669141\n",
+      "-11.841984577875767\n",
+      "-11.477837002297735\n",
+      "-10.62975514642929\n"
+     ]
+    }
+   ],
+   "source": [
+    "## interpreting naive Bayes models\n",
+    "## by consulting the sklearn documentation you can also find out feature_log_prob_, \n",
+    "## which are the conditional probabilities\n",
+    "## http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html\n",
+    "\n",
+    "# the code below will print out the conditional prob of the word \"worthless\" in each category\n",
+    "# sample output\n",
+    "# -8.98942647599 -> logP('worthless'|very negative')\n",
+    "# -11.1864401922 -> logP('worthless'|negative')\n",
+    "# -12.3637684625 -> logP('worthless'|neutral')\n",
+    "# -11.9886066961 -> logP('worthless'|positive')\n",
+    "# -11.0504454621 -> logP('worthless'|very positive')\n",
+    "# the above output means the word feature \"worthless\" is indicating \"very negative\" \n",
+    "# because P('worthless'|very negative) is the greatest among all conditional probs\n",
+    "\n",
+    "unigram_count_vectorizer.vocabulary_.get('worthless')\n",
+    "for i in range(0,5):\n",
+    "  print(nb_clf.feature_log_prob_[i][unigram_count_vectorizer.vocabulary_.get('worthless')])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Sample output:\n",
+    "\n",
+    "-8.5389826392\n",
+    "-10.6436375867\n",
+    "-11.8419845779\n",
+    "-11.4778370023\n",
+    "-10.6297551464"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[(-5.941598005980322, 'time'), (-5.931015896649785, 'characters'), (-5.92054459678249, 'minutes'), (-5.92054459678249, 'story'), (-5.910181809746943, 'comedy'), (-5.689102242653584, 'just'), (-5.137785257532857, 'like'), (-4.975504451622348, 'bad'), (-4.832403607981675, 'film'), (-4.3215779842156845, 'movie')]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# sort the conditional probability for category 0 \"very negative\"\n",
+    "# print the words with highest conditional probs\n",
+    "# these can be words popular in the \"very negative\" category alone, or words popular in all cateogires\n",
+    "\n",
+    "feature_ranks = sorted(zip(nb_clf.feature_log_prob_[0], unigram_count_vectorizer.get_feature_names()))\n",
+    "very_negative_features = feature_ranks[-10:]\n",
+    "print(very_negative_features)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Exercise C"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# calculate log ratio of conditional probs\n",
+    "\n",
+    "# In this exercise you will calculate the log ratio \n",
+    "# between conditional probs in the \"very negative\" category\n",
+    "# and conditional probs in the \"very positive\" category,\n",
+    "# and then sort and print out the top and bottom 10 words\n",
+    "\n",
+    "# the conditional probs for the \"very negative\" category is stored in nb_clf.feature_log_prob_[0]\n",
+    "# the conditional probs for the \"very positive\" category is stored in nb_clf.feature_log_prob_[4]\n",
+    "\n",
+    "# You can consult with similar code in week 4's sample script on feature weighting\n",
+    "# Note that in sklearn's MultinomialNB the conditional probs have been converted to log values.\n",
+    "\n",
+    "# Your code starts here\n",
+    "\n",
+    "# Your code ends here"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Sample output for print(log_ratios[0])\n",
+    "\n",
+    "-0.838009538739"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 5: Test the MNB classifier"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.606401384083045"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# test the classifier on the test data set, print accuracy score\n",
+    "\n",
+    "nb_clf.score(X_test_vec,y_test)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[[  742  1276   797   105    11]\n",
+      " [  614  4126  5397   655    32]\n",
+      " [  248  2385 25756  3239   236]\n",
+      " [   19   456  5570  6253   770]\n",
+      " [    1    53   729  1977   977]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# print confusion matrix (row: ground truth; col: prediction)\n",
+    "\n",
+    "from sklearn.metrics import confusion_matrix\n",
+    "y_pred = nb_clf.fit(X_train_vec, y_train).predict(X_test_vec)\n",
+    "cm=confusion_matrix(y_test, y_pred, labels=[0,1,2,3,4])\n",
+    "print(cm)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0.45689655 0.49734812 0.67337708 0.51132554 0.482231  ]\n",
+      "[0.25315592 0.38118995 0.80831032 0.47849709 0.26143966]\n",
+      "              precision    recall  f1-score   support\n",
+      "\n",
+      "           0       0.46      0.25      0.33      2931\n",
+      "           1       0.50      0.38      0.43     10824\n",
+      "           2       0.67      0.81      0.73     31864\n",
+      "           3       0.51      0.48      0.49     13068\n",
+      "           4       0.48      0.26      0.34      3737\n",
+      "\n",
+      "    accuracy                           0.61     62424\n",
+      "   macro avg       0.52      0.44      0.47     62424\n",
+      "weighted avg       0.59      0.61      0.59     62424\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "# print classification report\n",
+    "\n",
+    "from sklearn.metrics import precision_score\n",
+    "from sklearn.metrics import recall_score\n",
+    "print(precision_score(y_test, y_pred, average=None))\n",
+    "print(recall_score(y_test, y_pred, average=None))\n",
+    "\n",
+    "from sklearn.metrics import classification_report\n",
+    "target_names = ['0','1','2','3','4']\n",
+    "print(classification_report(y_test, y_pred, target_names=target_names))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 5.1 Interpret the prediction result"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0.06434628 0.34275846 0.50433091 0.07276319 0.01580115]\n",
+      "2\n",
+      "2\n"
+     ]
+    }
+   ],
+   "source": [
+    "## find the calculated posterior probability\n",
+    "posterior_probs = nb_clf.predict_proba(X_test_vec)\n",
+    "\n",
+    "## find the posterior probabilities for the first test example\n",
+    "print(posterior_probs[0])\n",
+    "\n",
+    "# find the category prediction for the first test example\n",
+    "y_pred = nb_clf.predict(X_test_vec)\n",
+    "print(y_pred[0])\n",
+    "\n",
+    "# check the actual label for the first test example\n",
+    "print(y_test[0])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "sample output array([ 0.06434628  0.34275846  0.50433091  0.07276319  0.01580115]\n",
+    "\n",
+    "Because the posterior probability for category 2 (neutral) is the greatest, 0.50, the prediction should be \"2\". Because the actual label is also \"2\", this is a correct prediction\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 5.2 Error Analysis"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "this might not seem like the proper cup of tea , however it is almost guaranteed that even the stuffiest cinema goers will laugh their \\*\\*\\* off for an hour-and-a-half\n",
+      "Parents may even find that it goes by quickly , because it has some of the funniest jokes of any movie this year , including those intended for adults .\n",
+      "are an absolute joy .\n",
+      "Adams , with four scriptwriters , takes care with the characters , who are so believable that you feel what they feel .\n",
+      "this might not seem like the proper cup of tea , however it is almost guaranteed that even the stuffiest cinema goers will laugh their \\*\\*\\* off for an hour-and-a-half .\n",
+      "you will probably like it .\n",
+      "Pokemon 4Ever\n",
+      "the funniest jokes\n",
+      "the film is never dull\n",
+      ", Lawrence 's delivery remains perfect\n",
+      "one of the most high-concept sci fi adventures attempted for the screen\n",
+      "We 've seen the hippie-turned-yuppie plot before , but there 's an enthusiastic charm in Fire that makes the formula fresh again\n",
+      "that it goes by quickly , because it has some of the funniest jokes of any movie this year , including those intended for adults\n",
+      "is a hoot , and is just as good , if not better than much of what 's on Saturday morning TV especially the pseudo-educational stuff we all ca n't stand .\n",
+      "worldly-wise and very funny script\n",
+      "A smart , provocative drama that does the nearly impossible : It gets under the skin of a man we only know as an evil , monstrous lunatic .\n",
+      "very thrilling\n",
+      "excited about on this DVD\n",
+      "an absolute joy\n",
+      "two fine actors , Morgan Freeman and Ashley Judd\n",
+      "stunningly\n",
+      ", its hard to imagine having more fun watching a documentary ...\n",
+      "is just too original to be ignored .\n",
+      "flat-out amusing ,\n",
+      "may even find that it goes by quickly , because it has some of the funniest jokes of any movie this year , including those intended for adults .\n",
+      "to make the most sincere and artful movie in which Adam Sandler will probably ever appear\n",
+      "The story , once it gets rolling , is nothing short of a great one .\n",
+      "Jackie Chan movies are a guilty pleasure - he 's easy to like and always leaves us laughing\n",
+      "ca n't go wrong .\n",
+      "deserves a sequel\n",
+      "The film is a hoot , and is just as good , if not better than much of what 's on Saturday morning TV especially the pseudo-educational stuff we all ca n't stand .\n",
+      "wo n't be disappointed .\n",
+      "achieves the near-impossible\n",
+      "succeed merrily at their noble endeavor .\n",
+      "the most high-concept sci fi adventures\n",
+      "first-rate , especially Sorvino\n",
+      "the utter cuteness\n",
+      "simply ca n't recommend it enough .\n",
+      "A terrifically entertaining specimen of Spielbergian sci-fi .\n",
+      "you wo n't be disappointed\n",
+      "Fairy-tale formula , serves as a paper skeleton for some very good acting , dialogue , comedy , direction and especially charm .\n",
+      "that even the stuffiest cinema goers will laugh their \\*\\*\\* off for an hour-and-a-half\n",
+      "can do no wrong with Jason X.\n",
+      "Orgasm\n",
+      "The entire cast is first-rate , especially Sorvino .\n",
+      "be spectacularly outrageous\n",
+      "The gags that fly at such a furiously funny pace that the only rip off that we were aware of was the one we felt when the movie ended so damned soon .\n",
+      "hard to imagine having more fun watching a documentary ...\n",
+      "he does display an original talent\n",
+      "when his story ends or just ca n't tear himself away from the characters\n",
+      "is a seriously intended movie that is not easily forgotten .\n",
+      "ca n't recommend it enough\n",
+      "does n't try to surprise us with plot twists , but rather seems to enjoy its own transparency\n",
+      "errors: 53\n"
+     ]
+    }
+   ],
+   "source": [
+    "# print out specific type of error for further analysis\n",
+    "\n",
+    "# print out the very positive examples that are mistakenly predicted as negative\n",
+    "# according to the confusion matrix, there should be 53 such examples\n",
+    "# note if you use a different vectorizer option, your result might be different\n",
+    "\n",
+    "err_cnt = 0\n",
+    "for i in range(0, len(y_test)):\n",
+    "    if(y_test[i]==4 and y_pred[i]==1):\n",
+    "        print(X_test[i])\n",
+    "        err_cnt = err_cnt+1\n",
+    "print(\"errors:\", err_cnt)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Exercise D"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Can you find linguistic patterns in the above errors? \n",
+    "# What kind of very positive examples were mistakenly predicted as negative?\n",
+    "\n",
+    "# Can you write code to print out the errors that very negative examples were mistakenly predicted as very positive?\n",
+    "# Can you find lingustic patterns for this kind of errors?\n",
+    "# Based on the above error analysis, what suggestions would you give to improve the current model?\n",
+    "\n",
+    "# Your code starts here\n",
+    "\n",
+    "# Your code ends here"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 6: write the prediction output to file"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "y_pred=nb_clf.predict(X_test_vec)\n",
+    "output = open('prediction_output.csv', 'w')\n",
+    "for x, value in enumerate(y_pred):\n",
+    "    output.write(str(value) + '\\n') \n",
+    "output.close()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 6.1 Prepare submission to Kaggle sentiment classification competition"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "########## submit to Kaggle submission\n",
+    "\n",
+    "# we are still using the model trained on 60% of the training data\n",
+    "# you can re-train the model on the entire data set \n",
+    "#   and use the new model to predict the Kaggle test data\n",
+    "# below is sample code for using a trained model to predict Kaggle test data \n",
+    "#    and format the prediction output for Kaggle submission\n",
+    "\n",
+    "# read in the test data\n",
+    "kaggle_test=p.read_csv(\"kaggle-sentiment/test.tsv\", delimiter='\\t') \n",
+    "\n",
+    "# preserve the id column of the test examples\n",
+    "kaggle_ids=kaggle_test['PhraseId'].values\n",
+    "\n",
+    "# read in the text content of the examples\n",
+    "kaggle_X_test=kaggle_test['Phrase'].values\n",
+    "\n",
+    "# vectorize the test examples using the vocabulary fitted from the 60% training data\n",
+    "kaggle_X_test_vec=unigram_count_vectorizer.transform(kaggle_X_test)\n",
+    "\n",
+    "# predict using the NB classifier that we built\n",
+    "kaggle_pred=nb_clf.fit(X_train_vec, y_train).predict(kaggle_X_test_vec)\n",
+    "\n",
+    "# combine the test example ids with their predictions\n",
+    "kaggle_submission=zip(kaggle_ids, kaggle_pred)\n",
+    "\n",
+    "# prepare output file\n",
+    "outf=open('kaggle_submission.csv', 'w')\n",
+    "\n",
+    "# write header\n",
+    "outf.write('PhraseId,Sentiment\\n')\n",
+    "\n",
+    "# write predictions with ids to the output file\n",
+    "for x, value in enumerate(kaggle_submission): outf.write(str(value[0]) + ',' + str(value[1]) + '\\n')\n",
+    "\n",
+    "# close the output file\n",
+    "outf.close()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Exercise E"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# generate your Kaggle submissions with boolean representation and TF representation\n",
+    "# submit to Kaggle\n",
+    "# report your scores here\n",
+    "# which model gave better performance in the hold-out test\n",
+    "# which model gave better performance in the Kaggle test"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Sample output:\n",
+    "\n",
+    "(93636, 9968)\n",
+    "[[0 0 0 ..., 0 0 0]]\n",
+    "9968\n",
+    "[('disloc', 2484), ('surgeon', 8554), ('camaraderi', 1341), ('sketchiest', 7943), ('dedic', 2244), ('impud', 4376), ('adopt', 245), ('worker', 9850), ('buy', 1298), ('systemat', 8623)]\n",
+    "245"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# BernoulliNB"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.naive_bayes import BernoulliNB\n",
+    "X_train_vec_bool = unigram_bool_vectorizer.fit_transform(X_train)\n",
+    "bernoulliNB_clf = BernoulliNB(X_train_vec_bool, y_train)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Cross Validation"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.559547456968\n"
+     ]
+    }
+   ],
+   "source": [
+    "# cross validation\n",
+    "\n",
+    "from sklearn.pipeline import Pipeline\n",
+    "from sklearn.model_selection import cross_val_score\n",
+    "nb_clf_pipe = Pipeline([('vect', CountVectorizer(encoding='latin-1', binary=False)),('nb', MultinomialNB())])\n",
+    "scores = cross_val_score(nb_clf_pipe, X, y, cv=3)\n",
+    "avg=sum(scores)/len(scores)\n",
+    "print(avg)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "# Exercise F"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.55315243657\n",
+      "0.553844611375\n",
+      "0.552306763002\n",
+      "0.560136963721\n"
+     ]
+    }
+   ],
+   "source": [
+    "# run 3-fold cross validation to compare the performance of \n",
+    "# (1) BernoulliNB (2) MultinomialNB with TF vectors (3) MultinomialNB with boolean vectors\n",
+    "\n",
+    "# Your code starts here\n",
+    "\n",
+    "\n",
+    "# Your code ends here"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Optional: use external linguistic resources such as stemmer"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 204,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.feature_extraction.text import CountVectorizer\n",
+    "import nltk.stem\n",
+    "\n",
+    "english_stemmer = nltk.stem.SnowballStemmer('english')\n",
+    "class StemmedCountVectorizer(CountVectorizer):\n",
+    "    def build_analyzer(self):\n",
+    "        analyzer = super(StemmedCountVectorizer, self).build_analyzer()\n",
+    "        return lambda doc: ([english_stemmer.stem(w) for w in analyzer(doc)])\n",
+    "\n",
+    "stem_vectorizer = StemmedCountVectorizer(min_df=3, analyzer=\"word\")\n",
+    "X_train_stem_vec = stem_vectorizer.fit_transform(X_train)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 194,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(93636, 9968)\n",
+      "[[0 0 0 ..., 0 0 0]]\n",
+      "9968\n",
+      "[('disloc', 2484), ('surgeon', 8554), ('camaraderi', 1341), ('sketchiest', 7943), ('dedic', 2244), ('impud', 4376), ('adopt', 245), ('worker', 9850), ('buy', 1298), ('systemat', 8623)]\n",
+      "245\n"
+     ]
+    }
+   ],
+   "source": [
+    "# check the content of a document vector\n",
+    "print(X_train_stem_vec.shape)\n",
+    "print(X_train_stem_vec[0].toarray())\n",
+    "\n",
+    "# check the size of the constructed vocabulary\n",
+    "print(len(stem_vectorizer.vocabulary_))\n",
+    "\n",
+    "# print out the first 10 items in the vocabulary\n",
+    "print(list(stem_vectorizer.vocabulary_.items())[:10])\n",
+    "\n",
+    "# check word index in vocabulary\n",
+    "print(stem_vectorizer.vocabulary_.get('adopt'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

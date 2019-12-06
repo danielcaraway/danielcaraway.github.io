@@ -1,0 +1,498 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# HOW TO SUMMARIZE IN PYTHON\n",
+    "Following [this tutorial!](https://stackabuse.com/text-summarization-with-nltk-in-python/) | 10-13-19\n",
+    "## STEP 1: GET THE DATA!!"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 1a: Import libraries"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 107,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# file = open('../summary_test_positive.txt').readlines()\n",
+    "file = open('HP1.txt').readlines()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 114,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['\\n',\n",
+       " '1\\n',\n",
+       " \"Harry Potter and the Sorcerer's Stone\\n\",\n",
+       " 'CHAPTER ONE\\n',\n",
+       " 'THE BOY WHO LIVED\\n',\n",
+       " 'Mr. and Mrs. Dursley, of number four, Privet Drive, were proud to say\\n',\n",
+       " 'that they were perfectly normal, thank you very much. They were the last\\n',\n",
+       " \"people you'd expect to be involved in anything strange or mysterious,\\n\",\n",
+       " \"because they just didn't hold with such nonsense.\\n\",\n",
+       " 'Mr. Dursley was the director of a firm called Grunnings, which made\\n']"
+      ]
+     },
+     "execution_count": 114,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "file[:10]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 117,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'ONE THE BOY WHO LIVED Mr. and Mrs. Dursley, of number four, Privet Drive, were proud to say that the'"
+      ]
+     },
+     "execution_count": 117,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "all_text = \"\"\n",
+    "for line in file:\n",
+    "    all_text += line\n",
+    "\n",
+    "type(all_text)\n",
+    "all_text = all_text.replace(\"\\n\", \" \")\n",
+    "all_text = all_text.replace(\"\\'\", \"\")\n",
+    "\n",
+    "import re\n",
+    "# article_text = re.sub(r'\\[[0-9]*\\]', '', article_text)\n",
+    "all_text = re.sub(r'[0-9]', '', all_text)\n",
+    "chapters = all_text.split('CHAPTER ')\n",
+    "chapters[1][:100]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 2: CLEAN (& preprocess) THE DATA!! "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 2a: Use regex and `re.sub` to remove square brackets and extra spaces from ORIGINAL article_text"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 60,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "\" 1 Harry Potter and the Sorcerer's Stone CHAPTER ONE THE BOY WHO LIVED Mr. and Mrs. Dursley, of number four, Privet Drive, were proud to say that they were perfectly normal, thank you very much. They were the last people you'd expect to be involved in anything strange or mysterious, because they just didn't hold with such nonsense. Mr. Dursley was the director of a firm called Grunnings, which made drills. He was a big, beefy man with hardly any neck, although he did have a very large mustache. Mrs. Dursley was thin and blonde and had nearly twice the usual amount of neck, which came in very useful as she spent so much of her time craning over garden fences, spying on the neighbors. The Dursleys had a small son called Dudley and in their opinion there was no finer boy anywhere. The Dursleys had everything they wanted, but they also had a secret, and their greatest fear was that somebody would discover it. They didn't think they could bear it if anyone found out about the Potters. Mrs. \""
+      ]
+     },
+     "execution_count": 60,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import re\n",
+    "# article_text = re.sub(r'\\[[0-9]*\\]', '', article_text)\n",
+    "formatted_article_text = re.sub(r'\\n+', ' ', article_text)\n",
+    "formatted_article_text[:1000]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 2b: Use regex and `re.sub` to remove extra characters and digits for a new FORMATTED_TEXT variable"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# formatted_article_text = re.sub('[^a-zA-Z]', ' ', article_text)\n",
+    "# formatted_article_text = re.sub(r'\\s+', ' ', formatted_article_text)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# formatted_article_text[:1000]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 3: TOKENIZE SENTENCES!!"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 61,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[\" 1 Harry Potter and the Sorcerer's Stone CHAPTER ONE THE BOY WHO LIVED Mr. and Mrs. Dursley, of number four, Privet Drive, were proud to say that they were perfectly normal, thank you very much.\",\n",
+       " \"They were the last people you'd expect to be involved in anything strange or mysterious, because they just didn't hold with such nonsense.\",\n",
+       " 'Mr. Dursley was the director of a firm called Grunnings, which made drills.',\n",
+       " 'He was a big, beefy man with hardly any neck, although he did have a very large mustache.',\n",
+       " 'Mrs. Dursley was thin and blonde and had nearly twice the usual amount of neck, which came in very useful as she spent so much of her time craning over garden fences, spying on the neighbors.']"
+      ]
+     },
+     "execution_count": 61,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import nltk\n",
+    "sentence_list = nltk.sent_tokenize(article_text)\n",
+    "sentence_list[:5]\n",
+    "# formatted_article"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 4: FIND WORD FREQUENCY, WEIGHTED!!"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 4a: Remove Stopwords"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 62,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "stopwords = nltk.corpus.stopwords.words('english')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 4b: Tokenize Words & DIY Frequency Distribution "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 63,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "word_frequencies = {}\n",
+    "for word in nltk.word_tokenize(formatted_article_text):\n",
+    "    if word not in stopwords:\n",
+    "        if word not in word_frequencies.keys():\n",
+    "            word_frequencies[word] = 1\n",
+    "        else:\n",
+    "            word_frequencies[word] += 1"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 4c: Calculate Weighted Frequency "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 64,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "max_frequency = max(word_frequencies.values())\n",
+    "for word in word_frequencies.keys():\n",
+    "    word_frequencies[word] = (word_frequencies[word]/max_frequency)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 5: CALCULATE SENTENCE SCORES"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 65,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1\n",
+      "harry\n",
+      "potter\n",
+      "and\n",
+      "the\n",
+      "sorcerer\n",
+      "'s\n",
+      "stone\n",
+      "chapter\n",
+      "one\n",
+      "the\n",
+      "boy\n",
+      "who\n",
+      "lived\n",
+      "mr.\n",
+      "and\n",
+      "mrs.\n",
+      "dursley\n",
+      ",\n",
+      "of\n",
+      "number\n",
+      "four\n",
+      ",\n",
+      "privet\n",
+      "drive\n",
+      ",\n",
+      "were\n",
+      "proud\n",
+      "to\n",
+      "say\n",
+      "that\n",
+      "they\n",
+      "were\n",
+      "perfectly\n",
+      "normal\n",
+      ",\n",
+      "thank\n",
+      "you\n",
+      "very\n",
+      "much\n",
+      ".\n"
+     ]
+    }
+   ],
+   "source": [
+    "## ILLUSTRATIVE EXAMPLE\n",
+    "## Nothing removed\n",
+    "for sent in sentence_list[:1]:\n",
+    "    for word in nltk.word_tokenize(sent.lower()):\n",
+    "        print(word)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 67,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1\n",
+      "sorcerer\n",
+      "'s\n",
+      "stone\n",
+      "one\n",
+      "boy\n",
+      "lived\n",
+      ",\n",
+      "number\n",
+      "four\n",
+      ",\n",
+      "drive\n",
+      ",\n",
+      "proud\n",
+      "say\n",
+      "perfectly\n",
+      "normal\n",
+      ",\n",
+      "thank\n",
+      "much\n",
+      ".\n"
+     ]
+    }
+   ],
+   "source": [
+    "## ILLUSTRATIVE EXAMPLE\n",
+    "## Stopwords etc. removed\n",
+    "## We are ONLY assigning values/weights to the words in the sentences that are inside our freq dist!\n",
+    "\n",
+    "for sent in sentence_list[:1]:\n",
+    "    for word in nltk.word_tokenize(sent.lower()):\n",
+    "        if word in word_frequencies.keys():\n",
+    "            print(word)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 75,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sentence_scores = {}\n",
+    "for sent in sentence_list:\n",
+    "    for word in nltk.word_tokenize(sent.lower()):\n",
+    "        if word in word_frequencies.keys():\n",
+    "            if len(sent.split(' ')) < 30:\n",
+    "                if sent not in sentence_scores.keys():\n",
+    "                    sentence_scores[sent] = word_frequencies[word]\n",
+    "                else:\n",
+    "                    sentence_scores[sent] += word_frequencies[word]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 119,
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[('said Ron.', 16.89360197949805),\n",
+       " ('said Harry.', 14.781901732060795),\n",
+       " ('\"Yes,\" said Harry.', 11.606221279604098),\n",
+       " ('\"I\\'ll get him,\" said Ron, grinding his teeth at Malfoy\\'s back, \"one of these days, I\\'ll get him --\" \"I hate them both,\" said Harry, \"Malfoy and Snape.\"',\n",
+       "  11.08890067161541),\n",
+       " ('\"Moon\" \"Nott\" \"Parkinson\" then a pair of twin girls, \"Patil\" and \"Patil\" then \"Perks, Sally-Anne\" and then, at last -- \"Potter, Harry!\"',\n",
+       "  10.131671968893599)]"
+      ]
+     },
+     "execution_count": 119,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sorted_sentences = sorted(sentence_scores.items(), key=lambda kv: kv[1], reverse=True)\n",
+    "sorted_sentences[:5]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 120,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'said Ron.said Harry.\"Yes,\" said Harry.\"I\\'ll get him,\" said Ron, grinding his teeth at Malfoy\\'s back, \"one of these days, I\\'ll get him --\" \"I hate them both,\" said Harry, \"Malfoy and Snape.\"\"Moon\" \"Nott\" \"Parkinson\" then a pair of twin girls, \"Patil\" and \"Patil\" then \"Perks, Sally-Anne\" and then, at last -- \"Potter, Harry!\"Harry tried to remember, left, right, right, left, middle fork, right, left, but it was impossible.Malfoy, Crabbe, and Goyle howled with laughter, but Ron, still not daring to take his eyes from the game, said, \"You tell him, Neville.\"piped a small girl, also red-headed, who was holding her hand, \"Mom, can\\'t I go... \" \"You\\'re not old enough, Ginny, now be quiet.See, there\\'s Potter, who\\'s got no parents, then there\\'s the Weasleys, who\\'ve got no money -- you should be on the team, Longbottom, you\\'ve got no brains.\"As the snake slid swiftly past him, Harry could have sworn a low, hissing voice said, \"Brazil, here I come.... Thanksss, amigo.\"'"
+      ]
+     },
+     "execution_count": 120,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "summary = [sent[0] for sent in sorted_sentences[:10]]\n",
+    "''.join(summary)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 121,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "lolsummary = ''.join(summary).strip()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 122,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'said Ron.said Harry.\"Yes,\" said Harry.\"Ill get him,\" said Ron, grinding his teeth at Malfoys back, \"one of these days, Ill get him --\" \"I hate them both,\" said Harry, \"Malfoy and Snape.\"\"Moon\" \"Nott\" \"Parkinson\" then a pair of twin girls, \"Patil\" and \"Patil\" then \"Perks, Sally-Anne\" and then, at last -- \"Potter, Harry!\"Harry tried to remember, left, right, right, left, middle fork, right, left, but it was impossible.Malfoy, Crabbe, and Goyle howled with laughter, but Ron, still not daring to take his eyes from the game, said, \"You tell him, Neville.\"piped a small girl, also red-headed, who was holding her hand, \"Mom, cant I go... \" \"Youre not old enough, Ginny, now be quiet.See, theres Potter, whos got no parents, then theres the Weasleys, whove got no money -- you should be on the team, Longbottom, youve got no brains.\"As the snake slid swiftly past him, Harry could have sworn a low, hissing voice said, \"Brazil, here I come.... Thanksss, amigo.\"'"
+      ]
+     },
+     "execution_count": 122,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# lolsummary = re.sub(r'\\\\', ' ', lolsummary)\n",
+    "# lolsummary\n",
+    "lolsummary = lolsummary.replace(\"\\'\", \"\")\n",
+    "lolsummary\n",
+    "# type(lolsummary)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

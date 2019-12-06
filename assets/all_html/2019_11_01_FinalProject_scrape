@@ -1,0 +1,271 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# WHAT MAKES AN OSCAR WINNER?"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Scraping IMSDB for Scripts"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Outputs txt files for corpus creation!!"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import re\n",
+    "import urllib\n",
+    "from bs4 import BeautifulSoup"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "# url = \"http://awardsdatabase.oscars.org/Search/GetResults?query=%7B%22AwardShowFrom%22:91,%22Sort%22:%223-Award%20Category-Chron%22,%22Search%22:%22Basic%22%7D\""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 50,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def get_reviews(movie):\n",
+    "    try:\n",
+    "        url = \"https://www.imsdb.com/scripts/\"+ movie+\".html\"\n",
+    "    #     url = \"https://www.imdb.com/title/tt0241527/reviews?sort=helpfulnessScore&dir=desc&ratingFilter=\" + str(rating)\n",
+    "        html = urllib.request.urlopen(url).read()\n",
+    "        soup = BeautifulSoup(html, 'html.parser')\n",
+    "#         print('yes for', movie)\n",
+    "        text = soup.findAll(\"td\", {\"class\": \"scrtext\"})\n",
+    "#         print(text.text())\n",
+    "#         for num,t in enumerate(text):\n",
+    "#             scale = t.find(\"span\", {\"class\": \"point-scale\"})\n",
+    "#             review = t.find(\"div\", {\"class\": \"text show-more__control\"})\n",
+    "        try:\n",
+    "            print_to_file(movie, text)\n",
+    "        except:\n",
+    "            print('fake out')\n",
+    "    except:\n",
+    "        print('nope for', movie)\n",
+    "\n",
+    "def print_to_file(movie, script):\n",
+    "    output_filename = movie + '_script.txt'\n",
+    "    outfile = open(output_filename, 'w')\n",
+    "    outfile.write(str(script))\n",
+    "    outfile.close()\n",
+    "        \n",
+    "# for rating in range(10):\n",
+    "#     get_reviews(rating)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 51,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def get_movies():\n",
+    "    url = \"https://www.today.com/popculture/complete-list-every-best-picture-oscar-winner-ever-t107617\"\n",
+    "    html = urllib.request.urlopen(url).read()\n",
+    "    soup = BeautifulSoup(html, 'html.parser')\n",
+    "    text = soup.findAll(\"li\")\n",
+    "    for num,t in enumerate(text):\n",
+    "        print(t.text)\n",
+    "        # Kendra manually copypasted these for quickness\n",
+    "# get_movies()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 53,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "nope for Schindler’s-List\n",
+      "nope for Unforgiven\n",
+      "nope for Casablanca\n"
+     ]
+    }
+   ],
+   "source": [
+    "file = open('FinalProject/oscar_movies.txt').readlines()\n",
+    "# import re\n",
+    "\n",
+    "\n",
+    "# bad_chars = ''\n",
+    "# rgx = re.compile('[%s]' % bad_chars)\n",
+    "\n",
+    "all_movies = []\n",
+    "for line in file:\n",
+    "    movie = line.split('-')[1].strip()\n",
+    "    movie = movie.replace('\"', '')\n",
+    "    movie = movie.replace(' ', '-')\n",
+    "    all_movies.append(movie)\n",
+    "    \n",
+    "for movie in all_movies:\n",
+    "    get_reviews(movie)\n",
+    "# get_reviews('Birdman')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['Green-Book',\n",
+       " 'The-Shape-of-Water',\n",
+       " 'Moonlight',\n",
+       " 'Spotlight',\n",
+       " 'Birdman',\n",
+       " '12-Years-a-Slave',\n",
+       " 'Argo',\n",
+       " 'The-Artist',\n",
+       " \"The-King's-Speech\",\n",
+       " 'The-Hurt-Locker',\n",
+       " 'Slumdog-Millionaire',\n",
+       " 'No-Country-for-Old-Men',\n",
+       " 'The-Departed',\n",
+       " 'Crash',\n",
+       " 'Million-Dollar-Baby',\n",
+       " 'The-Lord-of-the-Rings:-The-Return-of-the-King',\n",
+       " 'Chicago',\n",
+       " 'A-Beautiful-Mind',\n",
+       " 'Gladiator',\n",
+       " 'American-Beauty',\n",
+       " 'Shakespeare-in-Love',\n",
+       " 'Titanic',\n",
+       " 'The-English-Patient',\n",
+       " 'Braveheart',\n",
+       " 'Forrest-Gump',\n",
+       " 'Schindler’s-List',\n",
+       " 'Unforgiven',\n",
+       " 'The-Silence-of-the-Lambs',\n",
+       " 'Dances-With-Wolves',\n",
+       " 'Driving-Miss-Daisy',\n",
+       " 'Rain-Man',\n",
+       " 'The-Last-Emperor',\n",
+       " 'Platoon',\n",
+       " 'Out-of-Africa',\n",
+       " 'Amadeus',\n",
+       " 'Terms-of-Endearment',\n",
+       " 'Gandhi',\n",
+       " 'Chariots-of-Fire',\n",
+       " 'Ordinary-People',\n",
+       " 'Kramer-vs.-Kramer',\n",
+       " 'The-Deer-Hunter',\n",
+       " 'Annie-Hall',\n",
+       " 'Rocky',\n",
+       " \"One-Flew-over-the-Cuckoo's-Nest\",\n",
+       " 'The-Godfather-Part-II',\n",
+       " 'The-Sting',\n",
+       " 'The-Godfather',\n",
+       " 'The-French-Connection',\n",
+       " 'Patton',\n",
+       " 'Midnight-Cowboy',\n",
+       " 'Oliver!',\n",
+       " 'In-the-Heat-of-the-Night',\n",
+       " 'A-Man-for-All-Seasons',\n",
+       " 'The-Sound-of-Music',\n",
+       " 'My-Fair-Lady',\n",
+       " 'Tom-Jones',\n",
+       " 'Lawrence-of-Arabia',\n",
+       " 'West-Side-Story',\n",
+       " 'The-Apartment',\n",
+       " 'Ben',\n",
+       " 'Gigi',\n",
+       " 'The-Bridge-on-the-River-Kwai',\n",
+       " 'Around-the-World-in-80-Days',\n",
+       " 'Marty',\n",
+       " 'On-the-Waterfront',\n",
+       " 'From-Here-to-Eternity',\n",
+       " 'The-Greatest-Show-on-Earth',\n",
+       " 'An-American-in-Paris',\n",
+       " 'All-About-Eve',\n",
+       " 'All-the-Kings-Men',\n",
+       " 'Hamlet',\n",
+       " \"Gentleman's-Agreement\",\n",
+       " 'The-Best-Years-of-Our-Lives',\n",
+       " 'The-Lost-Weekend',\n",
+       " 'Going-My-Way',\n",
+       " 'Casablanca',\n",
+       " 'Mrs.-Miniver',\n",
+       " 'How-Green-Was-My-Valley',\n",
+       " 'Rebecca',\n",
+       " 'Gone-with-the-Wind',\n",
+       " \"You-Can't-Take-It-with-You\",\n",
+       " 'The-Life-of-Emile-Zola',\n",
+       " 'The-Great-Ziegfeld',\n",
+       " 'Mutiny-on-the-Bounty',\n",
+       " 'It-Happened-One-Night',\n",
+       " 'Cavalcade',\n",
+       " 'Grand-Hotel',\n",
+       " 'Cimarron',\n",
+       " 'All-Quiet-on-the-Western-Front',\n",
+       " 'The-Broadway-Melody',\n",
+       " 'Wings']"
+      ]
+     },
+     "execution_count": 40,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "all_movies"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

@@ -1,0 +1,201 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Tutorial: How to Calculate Cosine Similarity"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Method 1: Use numpy's dot and norm functions"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.948683298051\n"
+     ]
+    }
+   ],
+   "source": [
+    "from numpy import dot\n",
+    "from numpy.linalg import norm\n",
+    "X = [1,2]\n",
+    "Y = [2,2]\n",
+    "cos_sim = dot(X,Y) / (norm(X)*norm(Y))\n",
+    "print(cos_sim)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Method 2: Use scipy's built-in cosine function"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.948683298051\n"
+     ]
+    }
+   ],
+   "source": [
+    "# note that this function actually calculates cosine similarity \n",
+    "# and then use \"1-similarity\" to convert similarity to distance\n",
+    "# to get the actual cosine similarity, you need to do 1-distance\n",
+    "\n",
+    "from scipy import spatial\n",
+    "X = [1,2]\n",
+    "Y = [2,2]\n",
+    "cos_sim = 1 - spatial.distance.cosine(X, Y)\n",
+    "print(cos_sim)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Method 3: Use sklearn to calculate the cosine similarity matrix among vectors"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[[ 0.9486833  1.       ]]\n",
+      "[[ 1.         0.9486833  1.       ]\n",
+      " [ 0.9486833  1.         0.9486833]\n",
+      " [ 1.         0.9486833  1.       ]]\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn.metrics.pairwise import cosine_similarity\n",
+    "import numpy as np\n",
+    "X = np.array([1,2])\n",
+    "Y = np.array([2,2])\n",
+    "Z = np.array([2,4])\n",
+    "\n",
+    "# calculate cosine similarity between [X] and [Y,Z]\n",
+    "# sending input as arrays would allow for calculating both cosine_sim(X,Y) and cosine_sim (X,Y)\n",
+    "cos_sim = cosine_similarity([X], [Y,Z])\n",
+    "print(cos_sim)\n",
+    "\n",
+    "# calculate the entire cosie similarity matrix among X, Y, and Z\n",
+    "cos_sim = cosine_similarity([X, Y, Z])\n",
+    "print(cos_sim)\n",
+    "print()\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Use cosine similarity for plagiarism detection"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(3, 70)\n",
+      "[[ 1.          0.69376514  0.21550898]]\n",
+      "(1, 3)\n",
+      "Contrast the condition into which all these friendly Indians are suddenly plunged now, with their condition only two years previous: martial law now in force on all their reservations; themselves in danger of starvation, and constantly exposed to the influence of emissaries from their friends and relations, urging them to join in fighting this treacherous government that had kept faith with nobody--neither with friend nor with foe.\n",
+      "\n",
+      "Only two years later, all these friendly Sioux were suddenly plunged into new conditions, including starvation, martial law on all their reservations, and constant urging by their friends and relations to join in warfare against the treacherous government that had kept faith with neither friend nor foe.\n"
+     ]
+    }
+   ],
+   "source": [
+    "# data from https://www.bowdoin.edu/studentaffairs/academic-honesty/examples/mosaic/index.shtml\n",
+    "\n",
+    "txt_original = \"Contrast the condition into which all these friendly Indians are suddenly plunged now, with their condition only two years previous: martial law now in force on all their reservations; themselves in danger of starvation, and constantly exposed to the influence of emissaries from their friends and relations, urging them to join in fighting this treacherous government that had kept faith with nobody--neither with friend nor with foe.\"\n",
+    "txt_plagiarized = \"Only two years later, all these friendly Sioux were suddenly plunged into new conditions, including starvation, martial law on all their reservations, and constant urging by their friends and relations to join in warfare against the treacherous government that had kept faith with neither friend nor foe.\"\n",
+    "txt_control = \"Only two years later, all the money he won from lottery was gone.\"\n",
+    "\n",
+    "txts = [txt_original, txt_plagiarized, txt_control]\n",
+    "from sklearn.feature_extraction.text import CountVectorizer\n",
+    "from sklearn.feature_extraction.text import TfidfVectorizer\n",
+    "\n",
+    "unigram_count = CountVectorizer(encoding='latin-1', binary=False)\n",
+    "unigram_count_stop_remove = CountVectorizer(encoding='latin-1', binary=False, stop_words='english')\n",
+    "\n",
+    "vecs = unigram_count.fit_transform(txts)\n",
+    "\n",
+    "print(vecs.shape)\n",
+    "\n",
+    "from sklearn.metrics.pairwise import linear_kernel\n",
+    "cos_sim = cosine_similarity(vecs[0], vecs)\n",
+    "print(cos_sim)\n",
+    "sim_sorted_doc_idx = cos_sim.argsort()\n",
+    "print(sim_sorted_doc_idx.shape)\n",
+    "\n",
+    "# print the most similar doc; it's actually the original doc itself\n",
+    "print(txts[sim_sorted_doc_idx[0][len(txts)-1]])\n",
+    "print()\n",
+    "\n",
+    "# print the second most similar doc; it's the most likely plagiarized one\n",
+    "print(txts[sim_sorted_doc_idx[0][len(txts)-2]])\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.6.5"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

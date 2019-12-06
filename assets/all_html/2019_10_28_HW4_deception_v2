@@ -1,0 +1,244 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# HW4 Deception (V2)\n",
+    "## STEP 1: Get Data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import os\n",
+    "def get_data(file, path):\n",
+    "    f=open(path+file)\n",
+    "    data = f.read()\n",
+    "    f.close()\n",
+    "    return data\n",
+    "    \n",
+    "def get_data_from_files(path):\n",
+    "    results = [get_data(file, path) for file in os.listdir(path)]\n",
+    "    return results\n",
+    "\n",
+    "# pos = get_data_from_files('../pos_cornell//')\n",
+    "# neg = get_data_from_files('../neg_cornell/')\n",
+    "pos = get_data_from_files('../hw4_lie_false/')\n",
+    "neg = get_data_from_files('../hw4_lie_true/')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### STEP 1b -- turn it into neg/pos df then merge df"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>0</th>\n",
+       "      <th>PoN</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>?</td>\n",
+       "      <td>N</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>Twin Trees Cicero NY HUGE salad bar and high q...</td>\n",
+       "      <td>N</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>The worst restaurant that I have ever eaten in...</td>\n",
+       "      <td>N</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>?</td>\n",
+       "      <td>N</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>I have been to a Asian restaurant in New York ...</td>\n",
+       "      <td>N</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>87</td>\n",
+       "      <td>Mikes Pizza High Point NY Service was very slo...</td>\n",
+       "      <td>P</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>88</td>\n",
+       "      <td>After I went shopping with some of my friend w...</td>\n",
+       "      <td>P</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>89</td>\n",
+       "      <td>I entered the restaurant and a waitress came b...</td>\n",
+       "      <td>P</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>90</td>\n",
+       "      <td>Carlos Plate Shack was the worst dining experi...</td>\n",
+       "      <td>P</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>91</td>\n",
+       "      <td>Olive Oil Garden was very disappointing. I exp...</td>\n",
+       "      <td>P</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>92 rows × 2 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                                    0 PoN\n",
+       "0                                                   ?   N\n",
+       "1   Twin Trees Cicero NY HUGE salad bar and high q...   N\n",
+       "2   The worst restaurant that I have ever eaten in...   N\n",
+       "3                                                   ?   N\n",
+       "4   I have been to a Asian restaurant in New York ...   N\n",
+       "..                                                ...  ..\n",
+       "87  Mikes Pizza High Point NY Service was very slo...   P\n",
+       "88  After I went shopping with some of my friend w...   P\n",
+       "89  I entered the restaurant and a waitress came b...   P\n",
+       "90  Carlos Plate Shack was the worst dining experi...   P\n",
+       "91  Olive Oil Garden was very disappointing. I exp...   P\n",
+       "\n",
+       "[92 rows x 2 columns]"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "neg_df = pd.DataFrame(neg)\n",
+    "pos_df = pd.DataFrame(pos)\n",
+    "pos_df['PoN'] = 'P'\n",
+    "neg_df['PoN'] = 'N'\n",
+    "all_df = neg_df.append(pos_df)\n",
+    "all_df.reset_index(drop=True,inplace=True)\n",
+    "all_df"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from collections import Counter\n",
+    "from nltk.sentiment.util import *\n",
+    "from nltk.tokenize import casual_tokenize\n",
+    "all_df['pos'] = all_df.apply(lambda x: nltk.pos_tag(Counter(casual_tokenize(x[0]))),axis=1)\n",
+    "\n",
+    "def get_pos_list(tuples):\n",
+    "#     print(tuples)\n",
+    "    return [t[1] for t in tuples]\n",
+    "    \n",
+    "all_df['pos_count'] = all_df.apply(lambda x: get_pos_list(x['pos']),axis=1)\n",
+    "all_df['pos_str'] = all_df.apply(lambda x: ' '.join(x['pos_count']),axis=1)\n",
+    "\n",
+    "# all_df['pos_no_sw'] = all_df.apply(lambda x: nltk.pos_tag(x['no_sw']),axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "mylist = all_df['pos_str'].tolist()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'. NNP NNP NNP NNP NNP NN NN CC JJ NN JJ NNS . DT NN VBZ RB JJ JJ JJ NNP NN TO VB DT JJ NN NN IN RB RB IN PRP VBP VBN IN DT JJ NNS DT JJ NN IN PRP$ NNS JJ VB NN NN DT JJS NN IN PRP VBP RB VBN IN VBZ RB DT NN VBD NNP CC NN . VBD DT NN NN VBD JJ NN WRB DT NN VBD PRP$ NN IN NN PRP VBD RB JJ : CC WRB VBD NN IN WDT VBD RB NN IN NN RB JJ TO IN NN VBD DT NN RB VBP VB NN FW VB DT RB IN VBG JJ NN . PRP VBP VBN TO DT JJ NN IN NNP NNP NN . DT NN VBZ VBN IN NNP CC NNP WRB VBP JJ NNS NN VBN NNP NN VBD JJ NN IN PRP IN NNP NN WDT VBD NN DT JJS NN PRP VBP VBN TO VBZ WRB VBD NNP IN PRP$ NNS DT NN RB RB JJ . NNP JJ VBD JJ RB RB . NN CC JJ WDT VBZ PRP VB VB IN RBR NNS RB VBG VBG IN PDT DT JJ IN VBG NN RB DT NN VBD RB JJ DT NNS IN PRP DT NN CC VBD RB . NN VBD JJ PRP VBD RB IN JJ NN NN VBD JJ NN NN DT NN IN NNP NNP VBD DT JJ NN . NN NN VBD DT JJS NN VBD IN PRP$ NN JJ JJ NNP NN IN PRP VBD IN JJ NNS VBP NN NN JJ NN JJ ( JJ JJ NN VBN IN JJ NN . ) CC RB JJ RB WP RB VBD PRP TO VB DT NN WRB JJ NN NNP NN CC PRP VBD VBN RB WDT VBZ NN IN NN NN RB VBD CD NN PRP VBD VBG IN IN VBG NN RB NNP RB RB RB NN : RB NN NN IN CD NN WRB NN RB VBG VBN RB CD NNS DT VBD JJ VBD NN DT JJ NN JJ NN NN NNS VBD JJ NN NN NN NN WP PRP$ NN RB VBD JJ NN NN IN VBN RB VB RBR JJ PRP RB VBD RB . RB VBD VBN RP CD NN NNS VBD JJ NN IN DT PRP PRP JJ VBD JJ NN RB IN NN PRP RB CD PRP$ JJS NN NNS VBG JJ VBN JJ NN IN NNS VBP NNP NNP VBZ $ CD NN NNP PRP VBP PRP NN RB VBD NNS NNS IN VBG PRP$ JJ NN CD PRP$ VBN IN PRP VBZ NN CC RB RB JJ IN JJ NN VBD RB NNP VBG NNP NNP JJ NN NNP VBZ IN NNP VBZ JJ NN : NNP JJ NNS VBD DT NNP RB VBG NN JJ NN VBZ NNP RB VBG NN PRP VBD NNS VBN RB VBN NN WDT JJ VBP JJ NN NNS MD VB RB DT JJ NN VBG NNS DT VBP RB RB JJ VBP VBN VB NNP NNP VBZ PRP$ JJ NNP NNP NNP . DT JJ NN CC PRP VBP DT NN NN VBP RB RB IN VBZ VB VB DT NN VBZ VBN IN DT CD NN IN NN . PRP VBP JJ CC JJ NN NN PRP VBP NNS DT NN RB IN PRP VBZ DT NN IN IN DT NN WRB VBP VBG IN DT NNS JJ VBP WP VBG NN : NNP NNP NNP NNP NNP NNP NNP NNP NNP NNP DT NN VBD VBD RB JJ IN DT NN PRP VBD IN DT NNP NN RB CD NN DT NN IN NNS . VBD IN RB CD NNS NN IN PRP VBD VBG NN NNS VBG NN IN JJ NN CC NN NNP NNP CD NNP JJ JJ NN NNS RB VBP JJ NN VBZ RB VBN RB JJ NN IN NN IN PRP VBP IN VBG DT NNS IN RB VBG TO DT PRP$ NNS VBP IN NNP NNP PRP VBD VB PRP RP . DT VBZ RB NN IN NN IN PRP IN VBP IN JJ NN CC NN NN NN . RB VBP RB IN VBD VB RB JJ NNS IN VBN NN EX VBD RB JJ NN VBG IN NNS VBN IN RB VBD JJR IN VBD JJ MD NN VB IN JJ NN NNP NN PRP VBD TO DT JJ NN IN NNP NNP ( VB DT NN ) CC PRP VBD IN NN . NNP NN NN JJ VBG NN RB RB JJ IN JJ NN CC JJ NNS NN RB RB PRP VBP NN JJ NN NN JJ PRP VBD RP VBG RP IN NN NN NN VBZ RBS NNP . IN DT JJ NNS IN WP RB VBG VB JJ RB NNP VBP RB NN RB RB IN DT CD NN NNS NN . PRP VBZ DT JJ NN TO VB RP IN PRP$ NNS DT NN RB RB RB RB JJ NN NN CC VBP VBP PRP MD VB PRP NN IN NN PRP VBD TO VB NN IN NNP IN NNP NNP . PRP VBD IN RB DT JJS NN NN VBP RB VBN PRP$ NN DT VBN RP VBG PRP JJ IN NNP NN EX DT NN NN JJ NN NN NN NN DT JJ NN CC VBG NNP PRP VBD CD IN NNS MD VB NN NN CC NN RB IN VBZ JJS JJ NNS . NNS NN VBZ DT NNP . DT NNS VBP DT JJ JJ CC NN NNP NNP NNP . PRP VBD VBN RB NN VBN IN NNP NNP PRP VBD RB $ CD VBG IN JJ VBG IN IN JJ NNS VBP NNP NN RB PRP VBG JJ NNS JJ NNS JJ NNS VBG IN IN PRP VBP IN NNS CC IN PRP VBG NN NN DT JJS NN PRP VBP RB VBN VBD DT JJ NN IN NNP VBD IN NNS . NN JJ : DT VBD NN NN CC NN NN PRP DT JJ NN IN RB NN NNS EX PRP JJ NN IN NN JJ NN NNP VBZ NN . PRP VBP VBN RB JJ NNS DT NN VBZ PRP$ NN NNPS DT NN VB VBG RB TO NN JJ ( DT NN IN NN NNP RB VB JJ ) PRP JJ NNS IN NN NN RB VBG DT JJ NN DT NN JJ NN IN PRP CC VB RP IN DT NN CC IN DT JJ NN IN JJ NNS PRP VBD TO NNP ( RB ) RB CC PRP VBD DT NN . DT NN IN JJ NN DT NNS VBD IN NN VBD RB JJ NN JJ NN EX VBD RB DT JJ NNS IN . RB VBN IN WRB RB JJ NNS RB JJ NN NN VBD RB JJ NNP NNP NNP VBZ PRP$ JJ JJ NN IN NN . RB IN DT NN NN TO VB NN NN VBD IN NNS PRP VBD NNP RB JJ CC EX DT NN IN NN IN NN NN CC NN NNS WDT RB NN JJ NNS NNS VBZ DT RB VBN NN IN NNP . DT NN NN CC NN VBG NNP JJ NN VBD RB DT NN RB JJ NN JJ NNS VBG IN PRP$ NN NN NN NN NN NN IN PRP VBD VBD VBN VBN TO VB PRP VBD TO NNP NN JJ NN CC VBD RB JJ . DT NN NN NN IN DT NN RB VBD IN PRP VBD VBN VBG RP JJ NNS VBP NNP RB DT JJ NN IN JJ NNS VBG NN NN RP DT JJS NN PRP VBP RB VBN TO VBN RP IN DT NN VBG DT NN . PRP VBD PRP NN IN NN NNS VBD NN IN NN WDT VBD NN IN PRP VBD PRP PRP VBD DT RB JJ JJ NN . DT NN VBZ RB JJ NN VBZ RB JJ CC DT NN NN PRP VBP DT NNP IN NNP IN PRP$ JJ NNS CC NNS PRP VBP RP CD IN JJS NN IN NN . VBN JJ NNP ( JJ ) IN NN NN WDT VBZ PRP DT NN CD NN VBG JJ NN RB RB JJ NN NN IN NN PRP RB VBP RB VB TO VB VBG NNS VBN JJ NNS DT NN VBZ JJ NN NN PRP VBZ JJ IN RBR NN NNS IN NN NNS VBP VBN RB RB NN NNP JJ VBZ NN RP PRP$ NN JJ NN : CD PRP VBD TO DT NN WRB VBD VBN IN DT JJ NN . DT NN VBD DT JJ NN WRB VBD PRP RB VBD VBG NN RB VBD RB CC VBD WRB VBD PRP NN NNS VB PRP VBD JJ NN PRP PRP RB RB MD RB RB VBP IN DT NN IN DT NN VBZ RB RB . NN IN PRP$ NN RB VBP PRP VBP TO VB CD NN NN JJ NN NN CC NN NN WDT JJ NNP NNP NNP NNP DT JJ NN NN VBG RB IN VBZ DT NN JJ NN . VB RB JJ CC JJ NNP NNP NN VBP JJ NNP VBP TO VB JJ NNS IN NN NNP VBZ DT JJ NN PRP VBP RB VBN . DT IN NNS PRP VBD RB JJ PRP VBD RB VB DT PRP PRP$ NN CC PRP VBP IN DT NN VBD NNP . DT JJ NN NN IN DT VBD RB VBG PRP RB VBD JJ JJ VBD RB JJ PRP$ DT NN NN IN NNP VBP NNP NN NN RB VBD PRP JJS NN PRP VBD RB PRP JJ NN NNS WDT VBD DT JJ MD RB VB PRP DT JJ NN WRB VBP PRP RB VBP DT JJS NN IN NNP NNP NNP . PRP$ JJ TO VB DT JJ JJ NN RB IN DT NNP NNPS : WP PRP VBP IN IN NN VBZ RB JJ IN JJ NNS . ( RB RB JJ CC RB RB VBN ) DT NN IN NN NN IN VBG CC PRP$ JJ NNP VBN JJ NNS VBP DT WP NN IN PRP WRB PRP$ NN NNS RB JJ NNP NNP VBP NN JJ DT JJ NN DT NN VBD RB IN DT RB TO NN . NNP VBN JJ NNS CC VB JJ NN RB EX JJ NN IN PRP$ DT NN IN NN NN CC PRP VBD IN NN EX DT NN IN DT JJ NN PRP$ NNS VBP NNP IN WP VBZ JJ NNP NN CC JJ NN CC JJ NN NN DT NN VBD JJ IN DT NN . PRP$ NN CC PRP VBD RB IN VBG EX VBD IN CD NNS RB VBG PRP VBP IN DT JJ CD NNS IN NNS CC NN IN NN NNP NN VBD VBN PRP DT VBD JJ NN NN VBD NN VBD JJ NN NN VBD NN TO PRP RB VBD PRP$ VBG VBN PRP IN JJ NN DT CD NNS NNS CC PRP VBP IN VBG JJ NN IN DT JJ JJ NN PRP VBD PRP PRP$ JJ JJ NNP NN IN NNP NNP . VBP VBN EX IN CC VBD DT NN IN NNS PRP PRP$ NN RB JJ NN NN NNS VBD VBN TO VB PRP RP JJ PRP VBD IN VBN JJ NNS IN JJ NN VBD RB VBN IN NN NN IN CD NN DT NN VBZ RB JJ RB . NN RB IN CD IN PRP$ NNS IN CD RB JJ NN PRP VBD IN RB CD NNS TO VB VBN NNP VBD JJ PRP VBD RB JJ VBP RB WP PRP$ NNS VBG IN DT NN RB JJ IN PRP VBG IN PRP VBZ NN VBN NNP NNP NN WRB PRP$ NNP RB RB PRP NNS VBP VBG JJ NN IN DT NN NN . DT JJ NN PRP VBD TO NNP NN VBD RB JJ NN DT NNS WDT VBD VBN IN NN IN JJ VBG VBN DT NN VBG JJ NNP NNP NN CC NN NN VBD RB VBN RB TO VB PRP IN VBG NN RB VBD PRP$ NN RB WRB PRP VBP IN NNP MD RB VB DT JJS NNS . DT NN VBZ JJ NN CC RB VB DT JJ JJ CC RB JJ NN NNS NN VBP PRP$ NN : JJ NN IN IN NN NNP NN VBG NNS JJ NN NN . DT NN NN VBZ JJ CC PRP MD VB NNS RB . NNS VBP RB IN TO VB RB JJ PRP VBD CD IN DT WDT RB VBP NN DT NN VBD RB JJ CC DT NN DT JJ . EX VBD NNS CC NN IN RB RB NNS VBG IN NN NNP RB JJ RB JJ IN DT NN PRP$ JJS NN VBZ NNP NNP NNP IN PRP$ NN . PRP VBZ JJ JJ NN PRP RB VBP PRP$ NNP NNP CC NNP IN NN VBP NNP NN VBD DT RB VBN JJ NN PRP$ NN WDT VBZ PRP DT NN WDT MD VB NNS NN WP VBP RB VBN TO IN RB VBG IN NN NN DT NN VBN TO VB JJ . PRP VBP VB PRP$ JJ NN RB IN DT JJ JJ NN WDT VBD IN DT JJ RB VBP DT NN VBZ DT NN NN VBZ JJ JJR NNS VBG NN NN NN CC JJ VBP PRP$ NN RB . DT JJ NN VBZ IN DT NN IN NN CC NN IN . DT NN RB JJ IN VBZ PRP VB JJ NNP WDT PRP$ JJ NN PRP RB VBP VBP RB JJ NNP RB VBP TO PRP RB VB WP PRP VBP JJ VB RB JJ IN PRP . NNP NN NN . NNP VB IN PRP VBP PRP RB VBD TO DT NN WDT VBD RB RB JJ . CC DT VBZ DT JJS NN VBD VBN JJ NN IN PRP$ NN VBP NNP WRB VBN NN MD VB VBN PRP RB IN CD NNS NN IN CD NN RBR DT JJ NN RB VBD NN DT JJS JJ NN IN PRP$ NN VBD IN NNP NNP IN NNP NNP . PRP VBD IN CD NNP IN DT NNP WDT VBZ NN NNS CC PRP VBZ JJ RB PRP$ NN VBD RB JJ CC PRP VBP JJ JJ NN IN PRP$ NN PRP VBD RP VBG NN IN VBG VBN JJ NN RB RB VBG NN NN NN VBD RP JJ JJ NN NNP VBD RB DT NN JJ NN VBD DT VBD JJ VBN IN PRP RB VBP NNS VBD TO VB NN IN VBD VBN RP NNS RB NNP VBP NN VB RB PRP VBD DT NN CC VBD PRP RP NN WRB VBN IN VBD RB VBN DT NN IN NN . PRP RB VBG IN VBD RB RB IN VBG NN TO VB JJ RB VBP RB NNP NNP VBD NNP NNP NNP VBD DT JJS NN NN CC PRP JJR VBP PRP . DT NN VBZ RB VBN JJ TO VB RB . JJ PRP VBD EX VBD RB JJ NNS WDT NN VBG NN NN NNP JJ NN CC JJ JJ VBN IN JJ NN IN VBD JJ NNP NNP DT NN VBZ CD IN PRP$ JJ NNS . PRP VBP NN WDT VBZ RB WRB NN IN DT NN NN CC NN NN RBR IN DT JJ VBD PRP DT JJ JJ CC VBP PRP JJ CD JJ NN NN TO VB PRP$ NN IN NNP NNP CD IN DT JJS NN NNS IN NNS NN TO VB PRP IN NNS CC NN RB VBP PRP$ JJ NNS IN VBG NN IN DT NN NN IN NN IN NNP MD VB NN . JJ NNS NNP NNP NNP NNS JJ NN TO VB RP PRP$ NN DT VBZ VBN NN NN VBP RB JJ IN PRP VBP CC VBD RB JJ JJ NNP NN VBD PRP VBP VB RB JJ PRP VBD IN NNS VBG RP JJ NN NN RB JJ NN DT VBZ VBZ NN RB NNP RB VB RB RB NNS JJR NN PRP$ NN PRP VBZ DT NNP NN WDT VBZ NNP CD NNS . WRB PRP VBP DT MD VB IN NN IN JJ NN DT NN NNS TO PRP$ NN PRP VBP VBP JJ NN IN PRP CC PRP VBP NN NN VB IN JJ CD NNS NN JJ NN VBG VBP CD NNS PRP$ JJ TO VB DT JJ NN NN IN NNP NNP . DT NN VBZ RB JJ DT NN RB JJ : PRP$ NN VBZ IN PRP$ JJS JJ NNS VBD IN IN NNP CC PRP MD VB . PRP VBD IN CD NNS RB IN IN JJS PRP$ NN RB PRP VBP RB VBN RP NNP JJ NN JJ NN VBD JJ IN NN RB VBG NNS RB VBP IN EX NN PRP VBD CD NN VB PRP ( JJ RB IN VBG NNS NN ) NN NNS VBP JJ NN NN JJ NNS JJ NNS RB RB PRP VBP IN DT NN VBD NNP NNP . IN VBD DT RB JJ NN VBD JJ NN CC JJ NN IN NN JJ NN VBP DT NN VBD RB JJ NN VBD NN EX DT NN NN IN WDT RB VBD CD NNS IN IN MD RB VB NNP NNP NNP VBD VBG . DT NN RB JJ CC JJ IN VBG DT IN PRP$ NNS . PRP VBD DT NN JJ VBD JJ NN RB RB VBZ NNS TO VB IN IN DT JJ NN NN NN WDT VBZ NN VBD JJ NNS JJ NNS NNS VBD JJ NNS VBN VBP RP NNS DT VBD JJ NNS IN NN PRP NNP NNP NNP NNP NNP NNP VBZ NNS IN JJ NNP NNP JJ NN VBD CD NNS NNP VBD RB VBN VBN NN NNS VBD JJ NN VBD NNS VB JJ VBN JJ JJ VBG NN RB JJ NN JJ NNS IN DT NN NN NNP VB RB JJ PRP RB VBP IN DT NN VBN NNP NNP CC PRP VBD NN IN . VBD TO VB CD NNS IN DT NN VBD PRP$ JJ NN NN RB IN RB JJ DT CD IN NN VBD JJ NN IN NNS NNP IN DT JJ RB VBN JJ JJ NNS NNS VBD JJ JJ NN WRB VBD NNS WDT MD VB JJ NN PRP VBD RB VBN JJ TO VB DT WRB VBN RP JJ VBD NN : VBN IN VBG RB JJ NN NN NN NNP NNP NNP NNP DT NN VBZ RB JJ RB : VBG DT JJ NN . NNP JJ NN CC JJ NN NNS VBZ DT NN VBP JJ . DT NN VBD CD IN DT JJS NN PRP VBP VBN . DT NN VBZ JJ JJ CC NN CC NN RB NN VBD RB IN PRP$ NN PRP VBD CD NNS PRP VBD DT RB VBN PRP$ NN RB VBD NNS VBD WRB VBN PRP IN VBG TO VB IN MD RB VB PRP NN VBG DT PRP VBP RB JJ NNS IN NNP CC PRP$ NN IN DT NNP NNP VBD RB JJ WDT VBD TO NN . PRP VBD JJ NNS RB IN PRP VB VBN DT JJ NNP CC NNP NNP PRP$ NN JJ NNP NN CC WRB PRP VBD NN PRP VBD RB DT NNS RB VBD IN RB . IN VBP JJ JJ IN NN PRP VBZ IN JJS CC DT NN NN IN NN WDT VBZ NNP NNP DT NNP DT NN DT NNS PRP VBD IN DT NN PRP VBD RB IN DT JJ NN CC JJ NNS WDT VBD NN NN IN PRP$ NN IN JJ NN NN VBG IN NN NN JJR JJ NN . DT JJS NN NN PRP VBP RB VBN VBZ WRB DT NN IN NNP DT NN VBD RB JJ VBD JJ JJ CC JJ NN PRP$ NN NN RB VBD . NN RB JJ WDT VBD PRP VB TO VB RB RB RB PRP VBP UH TO VB NN . DT MD VB NNS VB PRP IN JJ NN CC PRP VBZ JJ NNS VBP PRP DT JJ NN DT NN NN DT NN NN IN NNP NNP NN CC RB PRP JJS NN VBD IN NN VBD JJ PRP VBZ NNS WDT VBP JJ NNS MD RB DT DT WRB VBD NN PRP VBD VBN VBP IN PRP NNP . DT NN VBZ JJ DT NN VBD RB VB PRP PRP RB VBD EX CC VBD IN CD NNS NN VBD RB VBN IN NNP PRP$ NN VBD DT NN IN JJ JJ NN VBD JJ DT NN RB JJ IN NNS NNP NN VBD RB VBP IN PRP VBP DT NN . DT NN VBD NN IN JJ CC PRP VBD TO VB CD NNS RB MD VB VBN . RB CD DT NN VBN PRP VB PRP VB PRP IN NN IN NNP NNP NNP NNP CC NNP JJ . NNS VBD IN VBN NN IN : JJ JJ NN JJ NNP PRP VBP JJR . RB RB IN DT NN RB . PRP VBP JJS NN IN NN RB JJ CC NN VBZ DT JJ NN RB RB MD RB VBG RB RB PRP VBD TO NNP CC VBD DT JJS NN IN NN : RB IN IN DT NN . PRP VBP JJ NN JJ NN IN CD NNS WDT VBD JJ DT JJ NN JJ NNS DT JJ NN NNP NN VBP RB . DT NN NNP . PRP VBP DT NN VBZ JJ CC NNS VBP . NNP RB VB PRP IN IN PRP$ JJ NN NNP NNP . DT JJ IN NN VBZ DT JJS IN DT NN PRP VBP PRP RB JJ CC VB NNS DT NN VBN NNP IN TO NNP NNP NNP WDT VBZ JJ NNP . PRP MD VB NN PRP$ NN IN DT NN IN NN NN DT VBZ DT NN IN VBZ RB VBG PRP VBD IN DT NN CD NNS JJ CD NN PRP VBD CD NNPS ( NNP ) NNP NNP NNP NNP CC NNP NNP PRP VBD VBN VB VBN IN CD NNS IN NN WP VBD NN RB NN IN JJ JJ NNS IN PRP VBZ VBN IN PRP$ JJ CD IN VBG JJ VBN RP NN JJ JJ VBD NNS VBZ PRP$ IN NN JJ NN NN IN VBD VBN NNS VBN IN JJ NN NN MD RB RB DT NN WRB JJ NNS : NN CD NNP CD NNP NNP NNP NNP CD NN JJ NN RB RB JJ IN NNS VBG VB NNP NNS VBP NN NN VBP RB RB JJ NN DT NNS NNP RB . NNS VBP JJR JJ JJ NN WRB PRP RB VB NN PRP VBD TO DT JJ JJ NNP . NNP VBD PRP$ RB NN CC RB IN DT NN NN WRB VBN NN VB PRP NN IN NNP CC NNP RB VBG NNP NN VBD $ CD PRP VBZ JJ VBP RB VBN IN PRP$ NNS VBP RB VBZ RB VB IN JJR NNS VBP PRP MD VB NNP VBZ VB WRB JJ NN NNP VBZ DT JJS NN IN JJ NN IN NN . PRP VBD DT JJ NN RB RB CC VBD DT NN IN JJ NN NN PRP VBP NN . PRP VBD VBG VBP JJ JJ DT JJS NN PRP RB VBD VBN IN NNP NNP . PRP VBD PRP JJ NN DT NNP NN NN NN VBD RB RB JJ ( PRP VBD VBN DT NN ) CC DT IN RB JJ NN DT NN VBZ JJ . PRP VBD IN NN VBD JJ NN RB WRB NN IN DT JJ NN NN NN . RB JJ VBG RB IN JJ NN NN RB CC JJ NNS JJ NN NNP RB JJ CD NNS IN PRP VBD TO DT NN NN IN NNP WDT VBD NN . PRP VBD CD IN NN VBP RB VBD DT NN IN JJ NN CC MD VB DT NNP NNP NNP IN JJ NNS NNP NNP NNP NNP NN NNP NNP NN NNP JJ NN NN DT NN PRP VBD TO DT NNP IN NNP NNP CC VBD JJS NN IN PRP$ NN . PRP VBD VBD CD NNS IN DT NN RB VBD VBN IN NN WP VBD RB IN JJ NN NN VBZ PRP VBD PRP CD NN PRP DT JJ NNS WDT RB VBD RB PRP DT JJ NN CD NN NN NNS IN NN RB VBN NN NNP VB PRP VBD VBN IN NNP NN VBZ DT JJ NN TO VB IN CC JJ PRP$ NN VBD RB RB JJ . VBN NN JJ NN NN NN CC VB DT RB JJ IN NN VBD NN NNP JJ JJ WRB IN DT JJ JJ NN IN NN JJ RB VBN IN DT RB JJ JJ NN PRP VBD RB IN CD NNS IN CD . JJ NN VBD CC PRP VBZ VB PRP RB TO VB DT NN NN CC VBD IN DT NN PRP VBD NNP NNP DT NNS CC NNS VBD VBN JJ NN RB JJ JJ PRP$ IN PRP$ NN NN NN NN WDT JJ PRP VBD RB $ CD RB JJ MD RB VB DT JJR PRP VBD TO NNP NN CD NNS RB CC VBD DT NN NN . PRP VBD VBN VBG IN IN DT NN RB VB VBN RB PRP VBD PRP$ VBD RP JJ NN PRP VBD JJ : RB VB RB JJ RB MD RB VB VBG RB RB IN NN IN DT NN . DT NNP NNP NN VBD RB VBN IN DT JJ NN CC WP PRP VBD JJ NN NN . NN MD RB VB PRP IN VBD PRP CD NNS TO VB DT NN NN NN CC PRP VBD PRP IN CD NNS VBP IN PRP VBD VBN NN CC VBP VBG JJR RB DT VBZ DT JJ NN PRP MD VB TO VB IN . DT NN RB IN JJ CC NN CC NN NN WRB PRP PRP$ NN VBD JJ CD NNP VBD NNS IN JJ NNS PRP VBP VBN PRP VBP PRP VBP IN CD NNS RB VBD PRP$ NN NN VBD NN RP NNS CC JJ NN PRP VBP PRP JJ RB VBD NN WRB RB RB VBN NN NNS NN VBD CD VBD DT RB VBN NN VBD IN PRP VBD IN VBD IN NN PRP RB JJ PRP VBD TO DT JJ NN IN NNP NNP NNP WDT VBZ VBN IN PRP$ JJ CC JJ NN . VBD DT NN IN NN IN IN RB NNP JJ NNP NNP VBD JJ NN DT VBD VBN IN NN VBG NN NN NN NN VBP DT NN NNS VBD JJ NN JJ NN NNP VBZ DT JJS . DT NN IN PRP VBD IN JJ NNP TO VB DT NNS NN CC PRP VBD VBN . NNP NN VBG NN RB JJ JJ NN IN NN WP VBZ VBP : PRP$ JJ NN VBD JJ PRP MD RB VB VBG RB IN NN NN IN IN DT IN DT NN NN EX VBP IN JJS CD NN IN PRP . PRP VBG IN DT NN VBD VBN DT NN VBZ PRP DT NN IN PRP RB VBP TO VB DT JJR CC WRB NN VBZ VBN MD VB JJ RB VBP RP NN NNS JJ RB JJ NN DT NN RB PRP VBD TO NNP NN CC VBD DT JJ NN . NNP NNP NNP NN WDT MD VB VBN IN VBG IN DT DT NN VBG PRP VBD RB JJ NNS VBP WRB VBD PRP IN PRP PRP RB VBD RP VBG RB RB VBD JJ NN IN PRP VBP PRP VBD PRP VBP NN JJ NN VB JJ JJ IN VBN PRP$ NN IN JJ NN JJ NNS IN VBZ RB JJ NN NN RB RB IN DT NN NN IN NNP NN . PRP VBP DT NN IN JJ JJ JJ CC JJ NNS PRP RB VBD JJ NN NN EX VBP JJ NNS VBP DT NN VBZ RB JJ PRP RB JJ VBN IN JJ JJ NN MD RB VBG RB RB DT JJ NN VBZ RB JJ RB IN IN DT NN NN PRP VBP TO VB NN . NN RB IN CD RB JJ NN DT NN JJ JJ NN CC NN NNS VBD RB VBG NN NNP NN IN VBG DT JJ NN NN IN CD NNS JJ VB JJ NNS VB PRP$ NN JJ . JJ JJ IN NN NNP RB RB JJ CC JJ NNP CD NNS IN PRP CC JJ NN NNP RB NN RB PRP RB VBD TO NNP IN NNP NNP VBP PRP$ NN . DT NN VBZ JJ . WRB VBD NN VBD IN EX VBD DT NN CC NN CC VBP DT NN NNP MD DT NNP JJR NN NNP DT NN IN NN VBP NNS MD RB VB IN JJ NNS RBR JJ NN PRP VBD TO DT NN VBN NNP CC VB JJ VB IN DT NN IN JJ NNS . MD VB NN VBD RB CC PRP VBZ IN NN RB RB VBZ VBN JJ NNP NN RB VB PRP$ NNS MD VB RB IN JJ PDT PRP$ RB JJ NNP DT NN VBZ JJ CC PRP RB VBD JJ NN . VBZ NNS RB VBP PRP VBP TO VB WRB IN DT NN IN NN NN NN IN NN IN PRP VBP CC EX RB NN IN NN NNS VBP VBG NN NNP NNP NNP NNP NNP NNP VBD RB JJ CC DT NN JJ . PRP MD VB PRP VBP IN JJS WRB TO VB JJ NN RB NNP JJ NNS IN NN NN CC DT NN MD VB VBG RB WRB IN PRP VBD VBG IN DT IN PRP$ NN PRP TO NNP NN IN NN . VBN NN IN CD DT NNS PRP VBD DT NN CC DT NN VBD IN IN VBG VBG JJ NN IN NN VBD RB JJ PRP . RB PRP RB VBD JJ CC DT CD RB VB PRP IN VBD RB TO VB NN NN NN NNP NN RB RB VBD RBS JJ IN PRP$ NN VBD DT NN NN VBD JJ NNS VBD VB JJ RB VBP RB DT VBZ NN WDT MD RB VB NNP NNP NNP VBD DT JJS VBG NN IN PRP$ NN . IN JJ NNP VBD TO VB IN NN RB JJ IN DT NN PRP VBD RP IN NNS PRP VBD DT JJ NNP NN CC NNS JJ VBD CC NN JJ NN ( NN RB VBD VBN ) RB PRP$ NN VBD RB NN RB VBP NNS VBN IN JJ NNP NNP NNP NNP DT VBD RP RB JJ CD NNS IN NNS VBP JJ CD VBD RP VBG RB NN NN WRB PRP PRP$ VBD NN RB VB IN PRP IN PRP VBD RB RB VBP VB DT NN NN PRP$ JJ JJ NNS JJ JJ NN NN NN JJ NNP NNP VBD RB JJ . PRP VBP JJ NN CC NN ( IN JJS . ) WRB VB RP TO VB DT NN NN PRP VBD PRP DT NN VBD DT NNS RB NNP'"
+      ]
+     },
+     "execution_count": 38,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "' '.join(mylist)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

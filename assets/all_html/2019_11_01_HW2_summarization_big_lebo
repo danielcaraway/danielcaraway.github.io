@@ -1,0 +1,442 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 59,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# file = open('HP1.txt').readlines()\n",
+    "\n",
+    "# all_text = \"\"\n",
+    "# for line in file:\n",
+    "#     all_text += line\n",
+    "\n",
+    "# all_text = all_text.replace(\"\\n\", \" \")\n",
+    "# all_text = all_text.replace(\"\\'\", \"\")\n",
+    "\n",
+    "# import re\n",
+    "# all_text = re.sub(r'[0-9]', '', all_text)\n",
+    "# chapters = all_text.split('CHAPTER ')\n",
+    "# ch1 = chapters[1]\n",
+    "\n",
+    "# file = open('../WK5/wk5_pdf.txt').readlines()\n",
+    "file = open('../WK5/biglebowski_dialogue_only_v4.txt').readlines()\n",
+    "\n",
+    "all_text = \"\"\n",
+    "for line in file:\n",
+    "    all_text += line\n",
+    "\n",
+    "all_text = all_text.replace(\"@\", \". \")\n",
+    "all_text = all_text.replace(\".\", \". \")\n",
+    "all_text = all_text.replace(\"\\'\", \"\")\n",
+    "\n",
+    "import re\n",
+    "# all_text = re.sub(r'[0-9]', '', all_text)\n",
+    "# chapters = all_text.split('CHAPTER ')\n",
+    "ch1 = all_text\n",
+    "\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 60,
+   "metadata": {
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['.',\n",
+       " 'A way out west there was a fella, fella I want to tell you about, fella by the name of Jeff Lebowski.',\n",
+       " 'At least, that was the handle his lovin parents gave him, but he never had much use for it himself.',\n",
+       " 'This Lebowski, he called himself the Dude.',\n",
+       " 'Now, Dude, thats a name no one would self-apply where I come from.',\n",
+       " 'But then, there was a lot about the Dude that didnt make a whole lot of sense to me.',\n",
+       " 'And a lot about where he lived, like- wise.',\n",
+       " 'But then again, maybe thats why I found the place sdurned innarestin.',\n",
+       " '.',\n",
+       " 'They call Los Angeles the City of Angels.']"
+      ]
+     },
+     "execution_count": 60,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import nltk\n",
+    "sentence_list = nltk.sent_tokenize(ch1)\n",
+    "sentence_list[:10]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 61,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "stopwords = nltk.corpus.stopwords.words('english')\n",
+    "word_frequencies = {}\n",
+    "for word in nltk.word_tokenize(ch1):\n",
+    "    if word not in stopwords:\n",
+    "        if word not in word_frequencies.keys():\n",
+    "            word_frequencies[word] = 1\n",
+    "        else:\n",
+    "            word_frequencies[word] += 1"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 62,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "max_frequency = max(word_frequencies.values())\n",
+    "for word in word_frequencies.keys():\n",
+    "    word_frequencies[word] = (word_frequencies[word]/max_frequency)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 63,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      ".\n"
+     ]
+    }
+   ],
+   "source": [
+    "for sent in sentence_list[:1]:\n",
+    "    for word in nltk.word_tokenize(sent.lower()):\n",
+    "        print(word)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 64,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      ".\n"
+     ]
+    }
+   ],
+   "source": [
+    "for sent in sentence_list[:1]:\n",
+    "    for word in nltk.word_tokenize(sent.lower()):\n",
+    "        if word in word_frequencies.keys():\n",
+    "            print(word)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 65,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sentence_scores = {}\n",
+    "for sent in sentence_list:\n",
+    "    for word in nltk.word_tokenize(sent.lower()):\n",
+    "        if word in word_frequencies.keys():\n",
+    "            if len(sent.split(' ')) < 30:\n",
+    "                if sent not in sentence_scores.keys():\n",
+    "                    sentence_scores[sent] = word_frequencies[word]\n",
+    "                else:\n",
+    "                    sentence_scores[sent] += word_frequencies[word]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 78,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[('.', 659.0),\n",
+       " ('Huh?.', 19.517693315858455),\n",
+       " ('Yeah.', 16.111839231105286),\n",
+       " ('Uh-huh.', 13.0),\n",
+       " ('Is this your homework, Larry?.', 8.044997815640016),\n",
+       " ('Shut the fuck up, Donny.', 5.9327217125382266),\n",
+       " ('Huh.', 5.015290519877675),\n",
+       " ('Yeah, but--.', 4.7824377457404985),\n",
+       " ('Am I wrong?.', 4.606378331148974),\n",
+       " ('Hes a good man, and thorough.', 4.564875491480995),\n",
+       " ('I just want to say, sir, that were both enormous--on a personal level, Branded, especially the early episodes, has been a source of, uh, inspir---.',\n",
+       "  4.531236347750109),\n",
+       " ('Walter--.', 4.506771515945828),\n",
+       " ('I just got a, an informal report, uh, that a uh, a member of your team, uh, Walter Sobchak, drew a loaded weapon during league play--.',\n",
+       "  4.4491044124071655),\n",
+       " ('And lets also not forget--lets not forget, Dude--that keeping wildlife, an amphibious rodent, for uh, domestic, you know, within the city--that isnt legal either.',\n",
+       "  4.2140672782874615),\n",
+       " ('Okay.', 4.010484927916121),\n",
+       " ('Yeah, well, right man, there are many facets to this, uh, you know, many interested parties.',\n",
+       "  3.8899082568807346),\n",
+       " ('And you will, uh, you know, youll, uh, you know what Im trying to say--.',\n",
+       "  3.5495849716033208),\n",
+       " ('Yeah?.', 3.4560943643512454),\n",
+       " ('Excuse me?.', 3.4351245085190043),\n",
+       " ('Yeah well, thats just, ya know, like, your opinion, man.',\n",
+       "  3.417212756662298),\n",
+       " ('money, yeah, I gotta respecfully, 69 you know, tender my resignation on that matter, cause it looks like your mother really was kidnapped after all.',\n",
+       "  3.413280908693753),\n",
+       " ('Walter!.', 3.4076015727391873),\n",
+       " ('Well, okay, youre not privy to all the new shit, so uh, you know, but thats what you pay me for.',\n",
+       "  3.398427260812582),\n",
+       " ('He suspects that the culprits might be the very people who, uh, soiled your rug, and youre in a unique position to confirm or, uh, disconfirm that suspicion.',\n",
+       "  3.383136740934906),\n",
+       " ('Wheres the money, Lebowski!.', 3.2407164700742683),\n",
+       " ('--so, like I say, just thought, you know, fair warning.',\n",
+       "  3.0266491917868064),\n",
+       " ('Across this line you do not, uh--and also, Dude, Chinaman is not the preferred, uh.',\n",
+       "  3.0218435998252513),\n",
+       " ('Fuckin A, man.', 3.0187854958497162),\n",
+       " ('Well.', 3.018348623853211),\n",
+       " ('Okay sir, youre a Lebowski, Im a Lebowski, thats terrific, Im very busy so what can I do for you?.',\n",
+       "  3.016164263870686),\n",
+       " ('And yes, well be near the, uh--some burgers, some beers, a few laughs.',\n",
+       "  3.006553079947575),\n",
+       " ('Jeez.', 3.0),\n",
+       " ('Thank you.', 3.0),\n",
+       " ('Jesus.', 3.0),\n",
+       " ('No.', 3.0),\n",
+       " ('Well, yeah I did, but I spent most of my time occupying various, um, administration buildings--.',\n",
+       "  2.9908256880733948),\n",
+       " ('Vee vant zat money, Lebowski.', 2.982961992136304),\n",
+       " ('First of all, Dude, you dont have an ex, secondly, its a fucking show dog with fucking papers.',\n",
+       "  2.969418960244649),\n",
+       " ('Oh, shit.', 2.943643512450852),\n",
+       " ('Hey, cool it Walter.', 2.927916120576671),\n",
+       " ('Its a complicated case, Maude.', 2.926168632590651),\n",
+       " ('Fortunately Ive been adhering to a pretty strict, uh, drug regimen to keep my mind, you know, limber.',\n",
+       "  2.90694626474443),\n",
+       " ('Well, you know, sometimes you eat the bear, and, uh.', 2.90694626474443),\n",
+       " ('You thought, hey, a deadbeat, a loser, someone the square community wont give a shit about.',\n",
+       "  2.868501529051988),\n",
+       " ('Some brown, or, uh, rust, coloration.', 2.8671909130624726),\n",
+       " ('Wal, a wiser fella than mself once said, sometimes you eat the bar and sometimes the bar, wal, he eats you.',\n",
+       "  2.8623853211009176),\n",
+       " ('Listen, Maude, Im sorry if your stepmother is a nympho, but I dont see what it has to do with--do you have any kalhua?.',\n",
+       "  2.6985583224115333),\n",
+       " ('THEN WHY CANT YOU--fuck, never mind, just call Donny then, and ask him to--.',\n",
+       "  2.6819571865443423),\n",
+       " ('And so, Theodore--Donald--Karabotsos, in accordance with what we think   your dying wishes might well have been, we commit your mortal remains to the bosom of.',\n",
+       "  2.6513761467889916),\n",
+       " ('Im not a--ah, fuck it, just stay away from my fucking lady friend, man.',\n",
+       "  2.636085626911315)]"
+      ]
+     },
+     "execution_count": 78,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sorted_sentences = sorted(sentence_scores.items(), key=lambda kv: kv[1], reverse=True)\n",
+    "sorted_sentences[:50]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 67,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'.Huh?.Yeah.Uh-huh.Is this your homework, Larry?.Shut the fuck up, Donny.Huh.Yeah, but--.Am I wrong?.Hes a good man, and thorough.'"
+      ]
+     },
+     "execution_count": 67,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "summary = [sent[0] for sent in sorted_sentences[:10]]\n",
+    "''.join(summary)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 68,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[('.', 659.0),\n",
+       " ('A way out west there was a fella, fella I want to tell you about, fella by the name of Jeff Lebowski.',\n",
+       "  1.9563128003494976),\n",
+       " ('At least, that was the handle his lovin parents gave him, but he never had much use for it himself.',\n",
+       "  1.9370904325032767),\n",
+       " ('This Lebowski, he called himself the Dude.', 1.4626474442988204),\n",
+       " ('Now, Dude, thats a name no one would self-apply where I come from.',\n",
+       "  1.9480122324159022),\n",
+       " ('But then, there was a lot about the Dude that didnt make a whole lot of sense to me.',\n",
+       "  1.4853647881170817),\n",
+       " ('And a lot about where he lived, like- wise.', 1.4652686762778506),\n",
+       " ('But then again, maybe thats why I found the place sdurned innarestin.',\n",
+       "  1.4740061162079512),\n",
+       " ('They call Los Angeles the City of Angels.', 1.0078636959370904),\n",
+       " ('I didnt find it to be that exactly, but Ill allow as there are some nice folks there.',\n",
+       "  1.4788117081695065)]"
+      ]
+     },
+     "execution_count": 68,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "list(sentence_scores.items())[:10]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 76,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "newly_sorted = [sent[0] for sent in sentence_scores.items() if sent[1] > 4]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 77,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'.Huh?.Am I wrong?.Yeah, but--.Okay.Uh-huh.Walter--.Huh.I just got a, an informal report, uh, that a uh, a member of your team, uh, Walter Sobchak, drew a loaded weapon during league play--.Shut the fuck up, Donny.Yeah.Hes a good man, and thorough.And lets also not forget--lets not forget, Dude--that keeping wildlife, an amphibious rodent, for uh, domestic, you know, within the city--that isnt legal either.I just want to say, sir, that were both enormous--on a personal level, Branded, especially the early episodes, has been a source of, uh, inspir---.Is this your homework, Larry?.'"
+      ]
+     },
+     "execution_count": 77,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "newly_sorted\n",
+    "''.join(newly_sorted)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 71,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      ".Huh?.Uh-huh.Huh.Shut the fuck up, Donny.Yeah.Is this your homework, Larry?.\n"
+     ]
+    }
+   ],
+   "source": [
+    "import nltk\n",
+    "def get_sentence_list(many_sentences):\n",
+    "    return nltk.sent_tokenize(many_sentences)\n",
+    "    \n",
+    "def get_word_frequencies(many_sentences):\n",
+    "    stopwords = nltk.corpus.stopwords.words('english')\n",
+    "    word_frequencies = {}\n",
+    "    for word in nltk.word_tokenize(many_sentences):\n",
+    "        if word not in stopwords:\n",
+    "            if word not in word_frequencies.keys():\n",
+    "                word_frequencies[word] = 1\n",
+    "            else:\n",
+    "                word_frequencies[word] += 1\n",
+    "    return word_frequencies\n",
+    "                       \n",
+    "def get_weighted_frequencies(word_frequencies):\n",
+    "    max_frequency = max(word_frequencies.values())\n",
+    "    for word in word_frequencies.keys():\n",
+    "        word_frequencies[word] = (word_frequencies[word]/max_frequency)\n",
+    "    return word_frequencies\n",
+    "\n",
+    "def get_sentence_scores(sentence_list, word_frequencies):\n",
+    "    sentence_scores = {}\n",
+    "    for sent in sentence_list:\n",
+    "        for word in nltk.word_tokenize(sent.lower()):\n",
+    "            if word in word_frequencies.keys():\n",
+    "                if len(sent.split(' ')) < 30:\n",
+    "                    if sent not in sentence_scores.keys():\n",
+    "                        sentence_scores[sent] = word_frequencies[word]\n",
+    "                    else:\n",
+    "                        sentence_scores[sent] += word_frequencies[word]\n",
+    "    return sentence_scores\n",
+    "    \n",
+    "\n",
+    "def get_summary(many_sentences):\n",
+    "    sentence_list = get_sentence_list(many_sentences)\n",
+    "    word_frequencies = get_word_frequencies(many_sentences)\n",
+    "    weighted_word_frequencies = get_weighted_frequencies(word_frequencies)\n",
+    "    sentence_scores = get_sentence_scores(sentence_list, weighted_word_frequencies)\n",
+    "\n",
+    "    newly_sorted = [sent[0] for sent in sentence_scores.items() if sent[1] > 5]\n",
+    "    print(''.join(newly_sorted))\n",
+    "    \n",
+    "def get_summary_by_chapters(chapters):\n",
+    "    for ch,chapter in enumerate(chapters):\n",
+    "        print('****** CHAPTER ' + str(ch) + '*******')\n",
+    "        get_summary(chapter)\n",
+    "\n",
+    "# get_summary_by_chapters(chapters)\n",
+    "\n",
+    "get_summary(all_text)\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

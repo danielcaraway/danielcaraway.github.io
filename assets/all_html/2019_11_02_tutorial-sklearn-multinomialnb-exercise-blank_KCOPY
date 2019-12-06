@@ -1,0 +1,2533 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Tutorial - build MNB with sklearn"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "This tutorial demonstrates how to use the Sci-kit Learn (sklearn) package to build Multinomial Naive Bayes model, rank features, and use the model for prediction. \n",
+    "\n",
+    "The data from the Kaggle Sentiment Analysis on Movie Review Competition are used in this tutorial. Check out the details of the data and the competition on Kaggle.\n",
+    "https://www.kaggle.com/c/sentiment-analysis-on-movie-reviews\n",
+    "\n",
+    "The tutorial also includes sample code to prepare your prediction result for submission to Kaggle. Although the competition is over, you can still submit your prediction to get an evaluation score."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "This revised script changed two places in the original script:\n",
+    "(1) Exercise A: replaced the outdated \"itemfreq\" function with new one so no more warnings\n",
+    "(2) Exercise C: replace the \"coef_\" variable with the \"feature_log_prob_\" variable. Although the sklearn manual said coef_ mirrors feature_log_prob_, we found that in case of binary classification, coef_ has only one dimension but feature_log_prob_ keeps the original two dimensions of positive and negative conditional probs. The code was also cleaned and simplified.# Step 1: Read in data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>PhraseId</th>\n",
+       "      <th>SentenceId</th>\n",
+       "      <th>Phrase</th>\n",
+       "      <th>Sentiment</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>A series of escapades demonstrating the adage ...</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>1</td>\n",
+       "      <td>A series of escapades demonstrating the adage ...</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>3</td>\n",
+       "      <td>1</td>\n",
+       "      <td>A series</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>4</td>\n",
+       "      <td>1</td>\n",
+       "      <td>A</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>5</td>\n",
+       "      <td>1</td>\n",
+       "      <td>series</td>\n",
+       "      <td>2</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   PhraseId  SentenceId                                             Phrase  \\\n",
+       "0         1           1  A series of escapades demonstrating the adage ...   \n",
+       "1         2           1  A series of escapades demonstrating the adage ...   \n",
+       "2         3           1                                           A series   \n",
+       "3         4           1                                                  A   \n",
+       "4         5           1                                             series   \n",
+       "\n",
+       "   Sentiment  \n",
+       "0          1  \n",
+       "1          2  \n",
+       "2          2  \n",
+       "3          2  \n",
+       "4          2  "
+      ]
+     },
+     "execution_count": 1,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "\n",
+    "\n",
+    "# read in the training data\n",
+    "\n",
+    "# the data set includes four columns: PhraseId, SentenceId, Phrase, Sentiment\n",
+    "# In this data set a sentence is further split into phrases \n",
+    "# in order to build a sentiment classification model\n",
+    "# that can not only predict sentiment of sentences but also shorter phrases\n",
+    "\n",
+    "# A data example:\n",
+    "# PhraseId SentenceId Phrase Sentiment\n",
+    "# 1 1 A series of escapades demonstrating the adage that what is good for the goose is also good for the gander , some of which occasionally amuses but none of which amounts to much of a story .1\n",
+    "\n",
+    "# the Phrase column includes the training examples\n",
+    "# the Sentiment column includes the training labels\n",
+    "# \"0\" for very negative\n",
+    "# \"1\" for negative\n",
+    "# \"2\" for neutral\n",
+    "# \"3\" for positive\n",
+    "# \"4\" for very positive\n",
+    "\n",
+    "import numpy as np\n",
+    "import pandas as p\n",
+    "train=p.read_csv(\"kaggle-sentiment/train.tsv\", delimiter='\\t')\n",
+    "y=train['Sentiment'].values\n",
+    "X=train['Phrase'].values\n",
+    "\n",
+    "train[:5]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 2: Split train/test data for hold-out test"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(117045,) (117045,) (39015,) (39015,)\n",
+      "illusion\n",
+      "2\n",
+      "escape movie\n",
+      "2\n"
+     ]
+    }
+   ],
+   "source": [
+    "# check the sklearn documentation for train_test_split\n",
+    "# http://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html\n",
+    "# \"test_size\" : float, int, None, optional\n",
+    "# If float, should be between 0.0 and 1.0 and represent the proportion of the dataset to include in the test split. \n",
+    "# If int, represents the absolute number of test samples. \n",
+    "# If None, the value is set to the complement of the train size. \n",
+    "# By default, the value is set to 0.25. The default will change in version 0.21. It will remain 0.25 only if train_size is unspecified, otherwise it will complement the specified train_size.    \n",
+    "\n",
+    "from sklearn.model_selection import train_test_split\n",
+    "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=None, random_state=0)\n",
+    "\n",
+    "print(X_train.shape, y_train.shape, X_test.shape, y_test.shape)\n",
+    "print(X_train[0])\n",
+    "print(y_train[0])\n",
+    "print(X_test[0])\n",
+    "print(y_test[0])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Sample output from the code above:\n",
+    "\n",
+    "(93636,) (93636,) (62424,) (62424,)\n",
+    "almost in a class with that of Wilde\n",
+    "3\n",
+    "escape movie\n",
+    "2"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 2.1 Data Checking"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[[    0     1     2     3     4]\n",
+      " [ 5228 20482 59601 24837  6897]]\n",
+      "[[    0     1     2     3     4]\n",
+      " [ 1844  6791 19981  8090  2309]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Check how many training examples in each category\n",
+    "# this is important to see whether the data set is balanced or skewed\n",
+    "\n",
+    "unique, counts = np.unique(y_train, return_counts=True)\n",
+    "print(np.asarray((unique, counts)))\n",
+    "\n",
+    "unique, counts = np.unique(y_test, return_counts=True)\n",
+    "print(np.asarray((unique, counts))) "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The sample output shows that the data set is skewed with 47718/93636=51% \"neutral\" examples. All other categories are smaller.\n",
+    "\n",
+    "{0, 1, 2, 3, 4}\n",
+    "[[    0  4141]\n",
+    " [    1 16449]\n",
+    " [    2 47718]\n",
+    " [    3 19859]\n",
+    " [    4  5469]]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Exercise A"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{0, 1, 2, 3, 4}\n",
+      "[[    0  5228]\n",
+      " [    1 20482]\n",
+      " [    2 59601]\n",
+      " [    3 24837]\n",
+      " [    4  6897]]\n",
+      "(array([0, 1, 2, 3, 4]), array([ 1844,  6791, 19981,  8090,  2309]))\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/usr/local/lib/python3.7/site-packages/ipykernel_launcher.py:8: DeprecationWarning: `itemfreq` is deprecated!\n",
+      "`itemfreq` is deprecated and will be removed in a future version. Use instead `np.unique(..., return_counts=True)`\n",
+      "  \n"
+     ]
+    }
+   ],
+   "source": [
+    "# Print out the category distribution in the test data set. \n",
+    "# Is the test data set's category distribution similar to the training data set's?\n",
+    "\n",
+    "# Your code starts here\n",
+    "training_labels = set(y_train)\n",
+    "print(training_labels)\n",
+    "from scipy.stats import itemfreq\n",
+    "training_category_dist = itemfreq(y_train)\n",
+    "# ^^ apparently being depreciated \n",
+    "training_cateory_dist = np.unique(y_train, return_counts=True)\n",
+    "print(training_category_dist)\n",
+    "testing_category_dist = np.unique(y_test, return_counts=True)\n",
+    "print(testing_category_dist)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Figure size 640x480 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "import matplotlib.pyplot as plt\n",
+    "plt.bar(testing_category_dist[0], testing_category_dist[1], align='center', alpha=0.5)\n",
+    "plt.ylabel('Num Reviews')\n",
+    "plt.title('Test Distribution')\n",
+    "plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{0, 1, 2, 3, 4}\n",
+      "[[    0  5228]\n",
+      " [    1 20482]\n",
+      " [    2 59601]\n",
+      " [    3 24837]\n",
+      " [    4  6897]]\n",
+      "(array([0, 1, 2, 3, 4]), array([ 1844,  6791, 19981,  8090,  2309]))\n"
+     ]
+    }
+   ],
+   "source": [
+    "## REPLICATING THE CODE\n",
+    "training_labels = set(y_train)\n",
+    "print(training_labels)\n",
+    "from scipy.stats import itemfreq\n",
+    "# training_category_dist = itemfreq(y_train)\n",
+    "# ^^ being depreciated \n",
+    "training_cateory_dist = np.unique(y_train, return_counts=True)\n",
+    "print(training_category_dist)\n",
+    "testing_category_dist = np.unique(y_test, return_counts=True)\n",
+    "print(testing_category_dist)\n",
+    "\n",
+    "## PLOTTING TEST AND TRAIN\n",
+    "import pandas as pd\n",
+    "import seaborn as sns\n",
+    "import matplotlib.pyplot as plt\n",
+    "\n",
+    "unique, counts = np.unique(y_train, return_counts=True)\n",
+    "train_arr = np.asarray((unique, counts))\n",
+    "\n",
+    "unique, counts = np.unique(y_test, return_counts=True)\n",
+    "test_arr = np.asarray((unique, counts))\n",
+    "\n",
+    "# x = testing_category_dist[0].tolist()\n",
+    "# print(x)\n",
+    "# train = train_arr[1].tolist()\n",
+    "# print(z)\n",
+    "# test = test_arr[1].tolist()\n",
+    "# print(k)\n",
+    "\n",
+    "# df = pd.DataFrame(zip(x*2, [\"train\"]*len(x)+[\"test\"]*len(x), train+test), columns=[\"sentiment\", \"dataset\", \"reviews\"])\n",
+    "# print(df)\n",
+    "# plt.figure(figsize=(10, 6))\n",
+    "# sns.barplot(x=\"sentiment\", hue=\"dataset\", y=\"reviews\", data=df)\n",
+    "# plt.show()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# df = pd.DataFrame(zip(x*2, [\"z\"]*5+[\"k\"]*5, z+k), columns=[\"sentiment\", \"kind\", \"reviews\"])\n",
+    "# [\"z\"]*5+[\"k\"]*5\n",
+    "# z+k"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 3: Vectorization"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# sklearn contains two vectorizers\n",
+    "\n",
+    "# CountVectorizer can give you Boolean or TF vectors\n",
+    "# http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html\n",
+    "\n",
+    "# TfidfVectorizer can give you TF or TFIDF vectors\n",
+    "# http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html\n",
+    "\n",
+    "# Read the sklearn documentation to understand all vectorization options\n",
+    "\n",
+    "from sklearn.feature_extraction.text import CountVectorizer\n",
+    "from sklearn.feature_extraction.text import TfidfVectorizer\n",
+    "\n",
+    "# several commonly used vectorizer setting\n",
+    "\n",
+    "#  unigram boolean vectorizer, set minimum document frequency to 5\n",
+    "unigram_bool_vectorizer = CountVectorizer(encoding='latin-1', binary=True, min_df=5, stop_words='english')\n",
+    "\n",
+    "#  unigram term frequency vectorizer, set minimum document frequency to 5\n",
+    "unigram_count_vectorizer = CountVectorizer(encoding='latin-1', binary=False, min_df=5, stop_words='english')\n",
+    "\n",
+    "#  unigram and bigram term frequency vectorizer, set minimum document frequency to 5\n",
+    "gram12_count_vectorizer = CountVectorizer(encoding='latin-1', ngram_range=(1,2), min_df=5, stop_words='english')\n",
+    "\n",
+    "#  unigram tfidf vectorizer, set minimum document frequency to 5\n",
+    "unigram_tfidf_vectorizer = TfidfVectorizer(encoding='latin-1', use_idf=True, min_df=5, stop_words='english')\n",
+    "\n",
+    "\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Step 3.1: Vectorize the training data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "13247\n",
+      "[('illusion', 5790), ('gore', 5084), ('entertaining', 3918), ('somewhat', 10851), ('standardized', 11090), ('surprise', 11484), ('mayhem', 7255), ('geared', 4915), ('maximum', 7253), ('comfort', 2241)]\n",
+      "5800\n"
+     ]
+    }
+   ],
+   "source": [
+    "# The vectorizer can do \"fit\" and \"transform\"\n",
+    "# fit is a process to collect unique tokens into the vocabulary\n",
+    "# transform is a process to convert each document to vector based on the vocabulary\n",
+    "# These two processes can be done together using fit_transform(), or used individually: fit() or transform()\n",
+    "\n",
+    "# fit vocabulary in training documents and transform the training documents into vectors\n",
+    "X_train_vec = unigram_count_vectorizer.fit_transform(X_train)\n",
+    "\n",
+    "# check the content of a document vector\n",
+    "\n",
+    "# check the size of the constructed vocabulary\n",
+    "print(len(unigram_count_vectorizer.vocabulary_))\n",
+    "\n",
+    "# print out the first 10 items in the vocabulary\n",
+    "print(list(unigram_count_vectorizer.vocabulary_.items())[:10])\n",
+    "\n",
+    "# check word index in vocabulary\n",
+    "print(unigram_count_vectorizer.vocabulary_.get('imaginative'))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Sample output:\n",
+    "\n",
+    "(93636, 11967)\n",
+    "[[0 0 0 ..., 0 0 0]]\n",
+    "11967\n",
+    "[('imaginative', 5224), ('tom', 10809), ('smiling', 9708), ('easy', 3310), ('diversity', 3060), ('impossibly', 5279), ('buy', 1458), ('sentiments', 9305), ('households', 5095), ('deteriorates', 2843)]\n",
+    "5224"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Step 3.2: Vectorize the test data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(39015, 6429)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# use the vocabulary constructed from the training data to vectorize the test data. \n",
+    "# Therefore, use \"transform\" only, not \"fit_transform\", \n",
+    "# otherwise \"fit\" would generate a new vocabulary from the test data\n",
+    "\n",
+    "X_test_vec = unigram_count_vectorizer.fit_transform(X_test)\n",
+    "\n",
+    "# print out #examples and #features in the test set\n",
+    "print(X_test_vec.shape)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Sample output:\n",
+    "\n",
+    "(62424, 14324)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Exercise B"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# In the above sample code, the term-frequency vectors were generated for training and test data.\n",
+    "\n",
+    "# Some people argue that \n",
+    "# because the MultinomialNB algorithm is based on word frequency, \n",
+    "# we should not use boolean representation for MultinomialNB.\n",
+    "# While in theory it is true, you might see people use boolean representation for MultinomialNB\n",
+    "# especially when the chosen tool, e.g. Weka, does not provide the BernoulliNB algorithm.\n",
+    "\n",
+    "# sklearn does provide both MultinomialNB and BernoulliNB algorithms.\n",
+    "# http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.BernoulliNB.html\n",
+    "# You will practice that later\n",
+    "\n",
+    "# In this exercise you will vectorize the training and test data using boolean representation\n",
+    "# You can decide on other options like ngrams, stopwords, etc.\n",
+    "\n",
+    "# Your code starts here\n",
+    "# test_bool = unigram_count_vectorizer.transform(X_test)\n",
+    "# train_bool = unigram_count_vectorizer.transform(X_train)\n",
+    "\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<39015x6429 sparse matrix of type '<class 'numpy.int64'>'\n",
+       "\twith 124934 stored elements in Compressed Sparse Row format>"
+      ]
+     },
+     "execution_count": 20,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# This kept giving me this error\n",
+    "# NotFittedError: CountVectorizer - Vocabulary wasn't fitted.\n",
+    "\n",
+    "test_bool = unigram_bool_vectorizer.fit_transform(X_test)\n",
+    "train_bool = unigram_bool_vectorizer.fit_transform(X_train)\n",
+    "\n",
+    "# # So I did this\n",
+    "# import sklearn\n",
+    "# vocabulary_to_load = X_test\n",
+    "# loaded_vectorizer = sklearn.feature_extraction.text.CountVectorizer(ngram_range=(1,\n",
+    "#                                         2), binary = True, min_df=1, vocabulary=vocabulary_to_load)\n",
+    "# loaded_vectorizer._validate_vocabulary()\n",
+    "# print('loaded_vectorizer.get_feature_names(): {0}'.\n",
+    "#   format(loaded_vectorizer.get_feature_names()))\n",
+    "train_bool\n",
+    "test_bool"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 4: Train a MNB classifier"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True)"
+      ]
+     },
+     "execution_count": 21,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# import the MNB module\n",
+    "from sklearn.naive_bayes import MultinomialNB\n",
+    "\n",
+    "# initialize the MNB model\n",
+    "nb_clf= MultinomialNB()\n",
+    "\n",
+    "# use the training data to train the MNB model\n",
+    "nb_clf.fit(X_train_vec,y_train)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 4.1 Interpret a trained MNB model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "-10.686292605026608\n",
+      "-9.943179308577442\n",
+      "-10.682714947521708\n",
+      "-11.695088675894803\n",
+      "-10.832635277912791\n"
+     ]
+    }
+   ],
+   "source": [
+    "## interpreting naive Bayes models\n",
+    "## by consulting the sklearn documentation you can also find out feature_log_prob_, \n",
+    "## which are the conditional probabilities\n",
+    "## http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html\n",
+    "\n",
+    "# the code below will print out the conditional prob of the word \"worthless\" in each category\n",
+    "# sample output\n",
+    "# -8.98942647599 -> logP('worthless'|very negative')\n",
+    "# -11.1864401922 -> logP('worthless'|negative')\n",
+    "# -12.3637684625 -> logP('worthless'|neutral')\n",
+    "# -11.9886066961 -> logP('worthless'|positive')\n",
+    "# -11.0504454621 -> logP('worthless'|very positive')\n",
+    "# the above output means the word feature \"worthless\" is indicating \"very negative\" \n",
+    "# because P('worthless'|very negative) is the greatest among all conditional probs\n",
+    "\n",
+    "unigram_count_vectorizer.vocabulary_.get('worthless')\n",
+    "for i in range(0,5):\n",
+    "    print(nb_clf.feature_log_prob_[i][unigram_count_vectorizer.vocabulary_.get('worthless')])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Sample output:\n",
+    "\n",
+    "-8.5389826392\n",
+    "-10.6436375867\n",
+    "-11.8419845779\n",
+    "-11.4778370023\n",
+    "-10.6297551464"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[(-6.409626486010553, 'anachronistic'), (-6.368804491490298, 'sharp'), (-6.304265970352727, 'knowing'), (-6.142997822756604, 'mermaid'), (-6.051563616796972, 'anakin'), (-5.994944722797465, 'lovely'), (-5.803490682440238, 'fleshed'), (-5.7959434768048546, 'enduring'), (-4.8993952236599005, 'chiefly'), (-4.8226614294285115, 'purpose')]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# sort the conditional probability for category 0 \"very negative\"\n",
+    "# print the words with highest conditional probs\n",
+    "# these can be words popular in the \"very negative\" category alone, or words popular in all cateogires\n",
+    "\n",
+    "feature_ranks = sorted(zip(nb_clf.feature_log_prob_[0], unigram_count_vectorizer.get_feature_names()))\n",
+    "very_negative_features = feature_ranks[-10:]\n",
+    "print(very_negative_features)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Exercise C"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[(-10.686292605026608, '12'),\n",
+       " (-10.686292605026608, '163'),\n",
+       " (-10.686292605026608, '18'),\n",
+       " (-10.686292605026608, '19'),\n",
+       " (-10.686292605026608, '1920'),\n",
+       " (-10.686292605026608, '1940s'),\n",
+       " (-10.686292605026608, '1958'),\n",
+       " (-10.686292605026608, '1970s'),\n",
+       " (-10.686292605026608, '1984'),\n",
+       " (-10.686292605026608, '1999'),\n",
+       " (-10.686292605026608, '19th'),\n",
+       " (-10.686292605026608, '20'),\n",
+       " (-10.686292605026608, '2000'),\n",
+       " (-10.686292605026608, '2002'),\n",
+       " (-10.686292605026608, '21st'),\n",
+       " (-10.686292605026608, '30'),\n",
+       " (-10.686292605026608, '300'),\n",
+       " (-10.686292605026608, '3000'),\n",
+       " (-10.686292605026608, '3d'),\n",
+       " (-10.686292605026608, '40'),\n",
+       " (-10.686292605026608, '50'),\n",
+       " (-10.686292605026608, '50s'),\n",
+       " (-10.686292605026608, '52'),\n",
+       " (-10.686292605026608, '7th'),\n",
+       " (-10.686292605026608, '80s'),\n",
+       " (-10.686292605026608, '84'),\n",
+       " (-10.686292605026608, '85'),\n",
+       " (-10.686292605026608, '88'),\n",
+       " (-10.686292605026608, '90s'),\n",
+       " (-10.686292605026608, '95'),\n",
+       " (-10.686292605026608, 'abagnale'),\n",
+       " (-10.686292605026608, 'abc'),\n",
+       " (-10.686292605026608, 'abhors'),\n",
+       " (-10.686292605026608, 'ability'),\n",
+       " (-10.686292605026608, 'able'),\n",
+       " (-10.686292605026608, 'abrasive'),\n",
+       " (-10.686292605026608, 'abrupt'),\n",
+       " (-10.686292605026608, 'absolute'),\n",
+       " (-10.686292605026608, 'absolutely'),\n",
+       " (-10.686292605026608, 'absorb'),\n",
+       " (-10.686292605026608, 'abstract'),\n",
+       " (-10.686292605026608, 'absurdities'),\n",
+       " (-10.686292605026608, 'abundant'),\n",
+       " (-10.686292605026608, 'academy'),\n",
+       " (-10.686292605026608, 'accent'),\n",
+       " (-10.686292605026608, 'accents'),\n",
+       " (-10.686292605026608, 'accepting'),\n",
+       " (-10.686292605026608, 'accident'),\n",
+       " (-10.686292605026608, 'accomplished'),\n",
+       " (-10.686292605026608, 'accurate'),\n",
+       " (-10.686292605026608, 'accurately'),\n",
+       " (-10.686292605026608, 'ache'),\n",
+       " (-10.686292605026608, 'achievements'),\n",
+       " (-10.686292605026608, 'achingly'),\n",
+       " (-10.686292605026608, 'acknowledges'),\n",
+       " (-10.686292605026608, 'acquired'),\n",
+       " (-10.686292605026608, 'acted'),\n",
+       " (-10.686292605026608, 'actions'),\n",
+       " (-10.686292605026608, 'actress'),\n",
+       " (-10.686292605026608, 'acts'),\n",
+       " (-10.686292605026608, 'actual'),\n",
+       " (-10.686292605026608, 'ad'),\n",
+       " (-10.686292605026608, 'adams'),\n",
+       " (-10.686292605026608, 'added'),\n",
+       " (-10.686292605026608, 'addict'),\n",
+       " (-10.686292605026608, 'adds'),\n",
+       " (-10.686292605026608, 'admirably'),\n",
+       " (-10.686292605026608, 'admission'),\n",
+       " (-10.686292605026608, 'admit'),\n",
+       " (-10.686292605026608, 'admittedly'),\n",
+       " (-10.686292605026608, 'adolescent'),\n",
+       " (-10.686292605026608, 'adrian'),\n",
+       " (-10.686292605026608, 'adult'),\n",
+       " (-10.686292605026608, 'adventures'),\n",
+       " (-10.686292605026608, 'advice'),\n",
+       " (-10.686292605026608, 'aesthetic'),\n",
+       " (-10.686292605026608, 'aesthetics'),\n",
+       " (-10.686292605026608, 'affair'),\n",
+       " (-10.686292605026608, 'affect'),\n",
+       " (-10.686292605026608, 'affected'),\n",
+       " (-10.686292605026608, 'affirming'),\n",
+       " (-10.686292605026608, 'afflicts'),\n",
+       " (-10.686292605026608, 'aficionados'),\n",
+       " (-10.686292605026608, 'afloat'),\n",
+       " (-10.686292605026608, 'afterlife'),\n",
+       " (-10.686292605026608, 'agenda'),\n",
+       " (-10.686292605026608, 'agent'),\n",
+       " (-10.686292605026608, 'ages'),\n",
+       " (-10.686292605026608, 'aggrandizing'),\n",
+       " (-10.686292605026608, 'agonizing'),\n",
+       " (-10.686292605026608, 'ah'),\n",
+       " (-10.686292605026608, 'ai'),\n",
+       " (-10.686292605026608, 'aid'),\n",
+       " (-10.686292605026608, 'aim'),\n",
+       " (-10.686292605026608, 'aimed'),\n",
+       " (-10.686292605026608, 'aimless'),\n",
+       " (-10.686292605026608, 'al'),\n",
+       " (-10.686292605026608, 'alabama'),\n",
+       " (-10.686292605026608, 'alan'),\n",
+       " (-10.686292605026608, 'album'),\n",
+       " (-10.686292605026608, 'alert'),\n",
+       " (-10.686292605026608, 'ali'),\n",
+       " (-10.686292605026608, 'alien'),\n",
+       " (-10.686292605026608, 'alienating'),\n",
+       " (-10.686292605026608, 'alienation'),\n",
+       " (-10.686292605026608, 'aliens'),\n",
+       " (-10.686292605026608, 'alike'),\n",
+       " (-10.686292605026608, 'allegory'),\n",
+       " (-10.686292605026608, 'allen'),\n",
+       " (-10.686292605026608, 'allow'),\n",
+       " (-10.686292605026608, 'allowed'),\n",
+       " (-10.686292605026608, 'allusions'),\n",
+       " (-10.686292605026608, 'alternate'),\n",
+       " (-10.686292605026608, 'alternative'),\n",
+       " (-10.686292605026608, 'altman'),\n",
+       " (-10.686292605026608, 'altogether'),\n",
+       " (-10.686292605026608, 'amateur'),\n",
+       " (-10.686292605026608, 'amazingly'),\n",
+       " (-10.686292605026608, 'ambiguous'),\n",
+       " (-10.686292605026608, 'ambition'),\n",
+       " (-10.686292605026608, 'ambitious'),\n",
+       " (-10.686292605026608, 'amble'),\n",
+       " (-10.686292605026608, 'america'),\n",
+       " (-10.686292605026608, 'american'),\n",
+       " (-10.686292605026608, 'americans'),\n",
+       " (-10.686292605026608, 'amiable'),\n",
+       " (-10.686292605026608, 'amish'),\n",
+       " (-10.686292605026608, 'amoral'),\n",
+       " (-10.686292605026608, 'amounts'),\n",
+       " (-10.686292605026608, 'analytical'),\n",
+       " (-10.686292605026608, 'analyze'),\n",
+       " (-10.686292605026608, 'ancient'),\n",
+       " (-10.686292605026608, 'anew'),\n",
+       " (-10.686292605026608, 'angels'),\n",
+       " (-10.686292605026608, 'angle'),\n",
+       " (-10.686292605026608, 'animation'),\n",
+       " (-10.686292605026608, 'animatronic'),\n",
+       " (-10.686292605026608, 'annals'),\n",
+       " (-10.686292605026608, 'anne'),\n",
+       " (-10.686292605026608, 'annex'),\n",
+       " (-10.686292605026608, 'anniversary'),\n",
+       " (-10.686292605026608, 'anomie'),\n",
+       " (-10.686292605026608, 'anonymous'),\n",
+       " (-10.686292605026608, 'answers'),\n",
+       " (-10.686292605026608, 'anti'),\n",
+       " (-10.686292605026608, 'anticipated'),\n",
+       " (-10.686292605026608, 'antidote'),\n",
+       " (-10.686292605026608, 'antiseptic'),\n",
+       " (-10.686292605026608, 'antonio'),\n",
+       " (-10.686292605026608, 'ants'),\n",
+       " (-10.686292605026608, 'antwone'),\n",
+       " (-10.686292605026608, 'anybody'),\n",
+       " (-10.686292605026608, 'apart'),\n",
+       " (-10.686292605026608, 'aplenty'),\n",
+       " (-10.686292605026608, 'aplomb'),\n",
+       " (-10.686292605026608, 'apollo'),\n",
+       " (-10.686292605026608, 'appalling'),\n",
+       " (-10.686292605026608, 'apparatus'),\n",
+       " (-10.686292605026608, 'apparent'),\n",
+       " (-10.686292605026608, 'apparently'),\n",
+       " (-10.686292605026608, 'appeal'),\n",
+       " (-10.686292605026608, 'appealing'),\n",
+       " (-10.686292605026608, 'appeared'),\n",
+       " (-10.686292605026608, 'appears'),\n",
+       " (-10.686292605026608, 'applauded'),\n",
+       " (-10.686292605026608, 'apply'),\n",
+       " (-10.686292605026608, 'appointed'),\n",
+       " (-10.686292605026608, 'appreciate'),\n",
+       " (-10.686292605026608, 'appreciated'),\n",
+       " (-10.686292605026608, 'approach'),\n",
+       " (-10.686292605026608, 'appropriate'),\n",
+       " (-10.686292605026608, 'ararat'),\n",
+       " (-10.686292605026608, 'arbitrary'),\n",
+       " (-10.686292605026608, 'arc'),\n",
+       " (-10.686292605026608, 'arcane'),\n",
+       " (-10.686292605026608, 'archibald'),\n",
+       " (-10.686292605026608, 'architect'),\n",
+       " (-10.686292605026608, 'archival'),\n",
+       " (-10.686292605026608, 'ardently'),\n",
+       " (-10.686292605026608, 'arduous'),\n",
+       " (-10.686292605026608, 'area'),\n",
+       " (-10.686292605026608, 'argentine'),\n",
+       " (-10.686292605026608, 'argue'),\n",
+       " (-10.686292605026608, 'arguments'),\n",
+       " (-10.686292605026608, 'armageddon'),\n",
+       " (-10.686292605026608, 'armed'),\n",
+       " (-10.686292605026608, 'armenia'),\n",
+       " (-10.686292605026608, 'arms'),\n",
+       " (-10.686292605026608, 'array'),\n",
+       " (-10.686292605026608, 'arrest'),\n",
+       " (-10.686292605026608, 'arresting'),\n",
+       " (-10.686292605026608, 'artful'),\n",
+       " (-10.686292605026608, 'artfully'),\n",
+       " (-10.686292605026608, 'articulate'),\n",
+       " (-10.686292605026608, 'artifice'),\n",
+       " (-10.686292605026608, 'artificial'),\n",
+       " (-10.686292605026608, 'artistes'),\n",
+       " (-10.686292605026608, 'artistry'),\n",
+       " (-10.686292605026608, 'arts'),\n",
+       " (-10.686292605026608, 'artsy'),\n",
+       " (-10.686292605026608, 'ascends'),\n",
+       " (-10.686292605026608, 'ash'),\n",
+       " (-10.686292605026608, 'ashley'),\n",
+       " (-10.686292605026608, 'asian'),\n",
+       " (-10.686292605026608, 'ask'),\n",
+       " (-10.686292605026608, 'asking'),\n",
+       " (-10.686292605026608, 'asks'),\n",
+       " (-10.686292605026608, 'asleep'),\n",
+       " (-10.686292605026608, 'aspect'),\n",
+       " (-10.686292605026608, 'aspects'),\n",
+       " (-10.686292605026608, 'aspires'),\n",
+       " (-10.686292605026608, 'assassin'),\n",
+       " (-10.686292605026608, 'assembly'),\n",
+       " (-10.686292605026608, 'assets'),\n",
+       " (-10.686292605026608, 'associated'),\n",
+       " (-10.686292605026608, 'association'),\n",
+       " (-10.686292605026608, 'astonishingly'),\n",
+       " (-10.686292605026608, 'athletes'),\n",
+       " (-10.686292605026608, 'atmospheric'),\n",
+       " (-10.686292605026608, 'attached'),\n",
+       " (-10.686292605026608, 'attackers'),\n",
+       " (-10.686292605026608, 'attempt'),\n",
+       " (-10.686292605026608, 'attempts'),\n",
+       " (-10.686292605026608, 'attention'),\n",
+       " (-10.686292605026608, 'attitude'),\n",
+       " (-10.686292605026608, 'attraction'),\n",
+       " (-10.686292605026608, 'audiard'),\n",
+       " (-10.686292605026608, 'audience'),\n",
+       " (-10.686292605026608, 'audiences'),\n",
+       " (-10.686292605026608, 'auschwitz'),\n",
+       " (-10.686292605026608, 'austerity'),\n",
+       " (-10.686292605026608, 'australia'),\n",
+       " (-10.686292605026608, 'auteil'),\n",
+       " (-10.686292605026608, 'auteur'),\n",
+       " (-10.686292605026608, 'author'),\n",
+       " (-10.686292605026608, 'auto'),\n",
+       " (-10.686292605026608, 'averting'),\n",
+       " (-10.686292605026608, 'awakening'),\n",
+       " (-10.686292605026608, 'awards'),\n",
+       " (-10.686292605026608, 'awfully'),\n",
+       " (-10.686292605026608, 'awkward'),\n",
+       " (-10.686292605026608, 'awkwardly'),\n",
+       " (-10.686292605026608, 'awkwardness'),\n",
+       " (-10.686292605026608, 'baby'),\n",
+       " (-10.686292605026608, 'backdrops'),\n",
+       " (-10.686292605026608, 'backlash'),\n",
+       " (-10.686292605026608, 'bad'),\n",
+       " (-10.686292605026608, 'badly'),\n",
+       " (-10.686292605026608, 'badness'),\n",
+       " (-10.686292605026608, 'baffled'),\n",
+       " (-10.686292605026608, 'baffling'),\n",
+       " (-10.686292605026608, 'bag'),\n",
+       " (-10.686292605026608, 'bai'),\n",
+       " (-10.686292605026608, 'baker'),\n",
+       " (-10.686292605026608, 'balanced'),\n",
+       " (-10.686292605026608, 'balances'),\n",
+       " (-10.686292605026608, 'balancing'),\n",
+       " (-10.686292605026608, 'balding'),\n",
+       " (-10.686292605026608, 'banal'),\n",
+       " (-10.686292605026608, 'banderas'),\n",
+       " (-10.686292605026608, 'bank'),\n",
+       " (-10.686292605026608, 'barbarism'),\n",
+       " (-10.686292605026608, 'barbershop'),\n",
+       " (-10.686292605026608, 'bare'),\n",
+       " (-10.686292605026608, 'barely'),\n",
+       " (-10.686292605026608, 'barf'),\n",
+       " (-10.686292605026608, 'barney'),\n",
+       " (-10.686292605026608, 'baroque'),\n",
+       " (-10.686292605026608, 'barrel'),\n",
+       " (-10.686292605026608, 'barrels'),\n",
+       " (-10.686292605026608, 'barry'),\n",
+       " (-10.686292605026608, 'barrymore'),\n",
+       " (-10.686292605026608, 'bars'),\n",
+       " (-10.686292605026608, 'bartleby'),\n",
+       " (-10.686292605026608, 'bartlett'),\n",
+       " (-10.686292605026608, 'base'),\n",
+       " (-10.686292605026608, 'bates'),\n",
+       " (-10.686292605026608, 'bathing'),\n",
+       " (-10.686292605026608, 'bathtub'),\n",
+       " (-10.686292605026608, 'battle'),\n",
+       " (-10.686292605026608, 'battlefield'),\n",
+       " (-10.686292605026608, 'beach'),\n",
+       " (-10.686292605026608, 'bearable'),\n",
+       " (-10.686292605026608, 'bears'),\n",
+       " (-10.686292605026608, 'beast'),\n",
+       " (-10.686292605026608, 'beat'),\n",
+       " (-10.686292605026608, 'beautiful'),\n",
+       " (-10.686292605026608, 'bed'),\n",
+       " (-10.686292605026608, 'befallen'),\n",
+       " (-10.686292605026608, 'begin'),\n",
+       " (-10.686292605026608, 'begins'),\n",
+       " (-10.686292605026608, 'begrudge'),\n",
+       " (-10.686292605026608, 'beguiling'),\n",
+       " (-10.686292605026608, 'behold'),\n",
+       " (-10.686292605026608, 'belgian'),\n",
+       " (-10.686292605026608, 'believing'),\n",
+       " (-10.686292605026608, 'belly'),\n",
+       " (-10.686292605026608, 'belt'),\n",
+       " (-10.686292605026608, 'beneath'),\n",
+       " (-10.686292605026608, 'benefit'),\n",
+       " (-10.686292605026608, 'bent'),\n",
+       " (-10.686292605026608, 'bernard'),\n",
+       " (-10.686292605026608, 'best'),\n",
+       " (-10.686292605026608, 'betrayal'),\n",
+       " (-10.686292605026608, 'better'),\n",
+       " (-10.686292605026608, 'bewilderingly'),\n",
+       " (-10.686292605026608, 'bewitched'),\n",
+       " (-10.686292605026608, 'bible'),\n",
+       " (-10.686292605026608, 'bielinsky'),\n",
+       " (-10.686292605026608, 'big'),\n",
+       " (-10.686292605026608, 'bigger'),\n",
+       " (-10.686292605026608, 'bilked'),\n",
+       " (-10.686292605026608, 'billy'),\n",
+       " (-10.686292605026608, 'bind'),\n",
+       " (-10.686292605026608, 'bio'),\n",
+       " (-10.686292605026608, 'biographical'),\n",
+       " (-10.686292605026608, 'biography'),\n",
+       " (-10.686292605026608, 'biopic'),\n",
+       " (-10.686292605026608, 'birkenau'),\n",
+       " (-10.686292605026608, 'birot'),\n",
+       " (-10.686292605026608, 'bit'),\n",
+       " (-10.686292605026608, 'bite'),\n",
+       " (-10.686292605026608, 'bites'),\n",
+       " (-10.686292605026608, 'biting'),\n",
+       " (-10.686292605026608, 'bitter'),\n",
+       " (-10.686292605026608, 'bittersweet'),\n",
+       " (-10.686292605026608, 'bizarre'),\n",
+       " (-10.686292605026608, 'blackout'),\n",
+       " (-10.686292605026608, 'blade'),\n",
+       " (-10.686292605026608, 'bladerunner'),\n",
+       " (-10.686292605026608, 'blame'),\n",
+       " (-10.686292605026608, 'bland'),\n",
+       " (-10.686292605026608, 'blank'),\n",
+       " (-10.686292605026608, 'blanket'),\n",
+       " (-10.686292605026608, 'bleak'),\n",
+       " (-10.686292605026608, 'blemishes'),\n",
+       " (-10.686292605026608, 'blip'),\n",
+       " (-10.686292605026608, 'blob'),\n",
+       " (-10.686292605026608, 'block'),\n",
+       " (-10.686292605026608, 'blockbuster'),\n",
+       " (-10.686292605026608, 'blonde'),\n",
+       " (-10.686292605026608, 'blood'),\n",
+       " (-10.686292605026608, 'blooded'),\n",
+       " (-10.686292605026608, 'bloodstream'),\n",
+       " (-10.686292605026608, 'bloodsucker'),\n",
+       " (-10.686292605026608, 'blowing'),\n",
+       " (-10.686292605026608, 'blown'),\n",
+       " (-10.686292605026608, 'blue'),\n",
+       " (-10.686292605026608, 'blues'),\n",
+       " (-10.686292605026608, 'bluescreen'),\n",
+       " (-10.686292605026608, 'boasting'),\n",
+       " (-10.686292605026608, 'boasts'),\n",
+       " (-10.686292605026608, 'bob'),\n",
+       " (-10.686292605026608, 'bodied'),\n",
+       " (-10.686292605026608, 'bodily'),\n",
+       " (-10.686292605026608, 'body'),\n",
+       " (-10.686292605026608, 'bogs'),\n",
+       " (-10.686292605026608, 'bogus'),\n",
+       " (-10.686292605026608, 'bold'),\n",
+       " (-10.686292605026608, 'bollywood'),\n",
+       " (-10.686292605026608, 'bombastic'),\n",
+       " (-10.686292605026608, 'bond'),\n",
+       " (-10.686292605026608, 'books'),\n",
+       " (-10.686292605026608, 'boom'),\n",
+       " (-10.686292605026608, 'boomer'),\n",
+       " (-10.686292605026608, 'boost'),\n",
+       " (-10.686292605026608, 'boot'),\n",
+       " (-10.686292605026608, 'boredom'),\n",
+       " (-10.686292605026608, 'boring'),\n",
+       " (-10.686292605026608, 'born'),\n",
+       " (-10.686292605026608, 'borrows'),\n",
+       " (-10.686292605026608, 'bother'),\n",
+       " (-10.686292605026608, 'bouncing'),\n",
+       " (-10.686292605026608, 'bowling'),\n",
+       " (-10.686292605026608, 'boy'),\n",
+       " (-10.686292605026608, 'bracing'),\n",
+       " (-10.686292605026608, 'brain'),\n",
+       " (-10.686292605026608, 'brainless'),\n",
+       " (-10.686292605026608, 'brains'),\n",
+       " (-10.686292605026608, 'brand'),\n",
+       " (-10.686292605026608, 'bravado'),\n",
+       " (-10.686292605026608, 'brave'),\n",
+       " (-10.686292605026608, 'bravery'),\n",
+       " (-10.686292605026608, 'bravura'),\n",
+       " (-10.686292605026608, 'brawny'),\n",
+       " (-10.686292605026608, 'breadth'),\n",
+       " (-10.686292605026608, 'break'),\n",
+       " (-10.686292605026608, 'breakdown'),\n",
+       " (-10.686292605026608, 'breaks'),\n",
+       " (-10.686292605026608, 'breath'),\n",
+       " (-10.686292605026608, 'breathe'),\n",
+       " (-10.686292605026608, 'breathing'),\n",
+       " (-10.686292605026608, 'breathtaking'),\n",
+       " (-10.686292605026608, 'breezy'),\n",
+       " (-10.686292605026608, 'brew'),\n",
+       " (-10.686292605026608, 'bride'),\n",
+       " (-10.686292605026608, 'bridge'),\n",
+       " (-10.686292605026608, 'bridget'),\n",
+       " (-10.686292605026608, 'brief'),\n",
+       " (-10.686292605026608, 'bright'),\n",
+       " (-10.686292605026608, 'brightly'),\n",
+       " (-10.686292605026608, 'brilliant'),\n",
+       " (-10.686292605026608, 'bring'),\n",
+       " (-10.686292605026608, 'bringing'),\n",
+       " (-10.686292605026608, 'brings'),\n",
+       " (-10.686292605026608, 'brio'),\n",
+       " (-10.686292605026608, 'brisk'),\n",
+       " (-10.686292605026608, 'brit'),\n",
+       " (-10.686292605026608, 'british'),\n",
+       " (-10.686292605026608, 'britney'),\n",
+       " (-10.686292605026608, 'brits'),\n",
+       " (-10.686292605026608, 'brittle'),\n",
+       " (-10.686292605026608, 'broad'),\n",
+       " (-10.686292605026608, 'bronx'),\n",
+       " (-10.686292605026608, 'brooding'),\n",
+       " (-10.686292605026608, 'bros'),\n",
+       " (-10.686292605026608, 'brother'),\n",
+       " (-10.686292605026608, 'brought'),\n",
+       " (-10.686292605026608, 'bruce'),\n",
+       " (-10.686292605026608, 'brusqueness'),\n",
+       " (-10.686292605026608, 'brutal'),\n",
+       " (-10.686292605026608, 'brutality'),\n",
+       " (-10.686292605026608, 'brutally'),\n",
+       " (-10.686292605026608, 'bubbly'),\n",
+       " (-10.686292605026608, 'bucks'),\n",
+       " (-10.686292605026608, 'budding'),\n",
+       " (-10.686292605026608, 'buffs'),\n",
+       " (-10.686292605026608, 'bull'),\n",
+       " (-10.686292605026608, 'bumbling'),\n",
+       " (-10.686292605026608, 'bump'),\n",
+       " (-10.686292605026608, 'buoyant'),\n",
+       " (-10.686292605026608, 'burger'),\n",
+       " (-10.686292605026608, 'buried'),\n",
+       " (-10.686292605026608, 'burkina'),\n",
+       " (-10.686292605026608, 'burn'),\n",
+       " (-10.686292605026608, 'burr'),\n",
+       " (-10.686292605026608, 'burst'),\n",
+       " (-10.686292605026608, 'business'),\n",
+       " (-10.686292605026608, 'butler'),\n",
+       " (-10.686292605026608, 'buy'),\n",
+       " (-10.686292605026608, 'buzz'),\n",
+       " (-10.686292605026608, 'byatt'),\n",
+       " (-10.686292605026608, 'bygone'),\n",
+       " (-10.686292605026608, 'cackles'),\n",
+       " (-10.686292605026608, 'cage'),\n",
+       " (-10.686292605026608, 'caine'),\n",
+       " (-10.686292605026608, 'california'),\n",
+       " (-10.686292605026608, 'callar'),\n",
+       " (-10.686292605026608, 'called'),\n",
+       " (-10.686292605026608, 'calls'),\n",
+       " (-10.686292605026608, 'calm'),\n",
+       " (-10.686292605026608, 'calories'),\n",
+       " (-10.686292605026608, 'calvin'),\n",
+       " (-10.686292605026608, 'camaraderie'),\n",
+       " (-10.686292605026608, 'came'),\n",
+       " (-10.686292605026608, 'camera'),\n",
+       " (-10.686292605026608, 'camouflage'),\n",
+       " (-10.686292605026608, 'camp'),\n",
+       " (-10.686292605026608, 'campaign'),\n",
+       " (-10.686292605026608, 'campus'),\n",
+       " (-10.686292605026608, 'canned'),\n",
+       " (-10.686292605026608, 'cannes'),\n",
+       " (-10.686292605026608, 'cannon'),\n",
+       " (-10.686292605026608, 'canny'),\n",
+       " (-10.686292605026608, 'capable'),\n",
+       " (-10.686292605026608, 'capacity'),\n",
+       " (-10.686292605026608, 'caper'),\n",
+       " (-10.686292605026608, 'capitalize'),\n",
+       " (-10.686292605026608, 'captain'),\n",
+       " (-10.686292605026608, 'captivating'),\n",
+       " (-10.686292605026608, 'capture'),\n",
+       " (-10.686292605026608, 'capturing'),\n",
+       " (-10.686292605026608, 'car'),\n",
+       " (-10.686292605026608, 'card'),\n",
+       " (-10.686292605026608, 'care'),\n",
+       " (-10.686292605026608, 'career'),\n",
+       " (-10.686292605026608, 'careers'),\n",
+       " (-10.686292605026608, 'carefully'),\n",
+       " (-10.686292605026608, 'caricature'),\n",
+       " (-10.686292605026608, 'caricatures'),\n",
+       " (-10.686292605026608, 'caring'),\n",
+       " (-10.686292605026608, 'carnage'),\n",
+       " (-10.686292605026608, 'carol'),\n",
+       " (-10.686292605026608, 'carpenter'),\n",
+       " (-10.686292605026608, 'carried'),\n",
+       " (-10.686292605026608, 'carries'),\n",
+       " (-10.686292605026608, 'cartoonish'),\n",
+       " (-10.686292605026608, 'carved'),\n",
+       " (-10.686292605026608, 'carvey'),\n",
+       " (-10.686292605026608, 'case'),\n",
+       " (-10.686292605026608, 'cast'),\n",
+       " (-10.686292605026608, 'castro'),\n",
+       " (-10.686292605026608, 'cat'),\n",
+       " (-10.686292605026608, 'catches'),\n",
+       " (-10.686292605026608, 'catching'),\n",
+       " (-10.686292605026608, 'catholic'),\n",
+       " (-10.686292605026608, 'cedar'),\n",
+       " (-10.686292605026608, 'celebrate'),\n",
+       " (-10.686292605026608, 'celebrated'),\n",
+       " (-10.686292605026608, 'celebrates'),\n",
+       " (-10.686292605026608, 'celebration'),\n",
+       " (-10.686292605026608, 'celebrity'),\n",
+       " (-10.686292605026608, 'cell'),\n",
+       " (-10.686292605026608, 'celluloid'),\n",
+       " (-10.686292605026608, 'center'),\n",
+       " (-10.686292605026608, 'centered'),\n",
+       " (-10.686292605026608, 'centering'),\n",
+       " (-10.686292605026608, 'central'),\n",
+       " (-10.686292605026608, 'centuries'),\n",
+       " (-10.686292605026608, 'century'),\n",
+       " (-10.686292605026608, 'certain'),\n",
+       " (-10.686292605026608, 'cgi'),\n",
+       " (-10.686292605026608, 'chabrol'),\n",
+       " (-10.686292605026608, 'chafing'),\n",
+       " (-10.686292605026608, 'chair'),\n",
+       " (-10.686292605026608, 'challenge'),\n",
+       " (-10.686292605026608, 'challenges'),\n",
+       " (-10.686292605026608, 'champion'),\n",
+       " (-10.686292605026608, 'chan'),\n",
+       " (-10.686292605026608, 'chance'),\n",
+       " (-10.686292605026608, 'chances'),\n",
+       " (-10.686292605026608, 'changing'),\n",
+       " (-10.686292605026608, 'channel'),\n",
+       " (-10.686292605026608, 'channeling'),\n",
+       " (-10.686292605026608, 'chanukah'),\n",
+       " (-10.686292605026608, 'chaplin'),\n",
+       " (-10.686292605026608, 'characteristic'),\n",
+       " (-10.686292605026608, 'characterization'),\n",
+       " (-10.686292605026608, 'characterizations'),\n",
+       " (-10.686292605026608, 'characters'),\n",
+       " (-10.686292605026608, 'charged'),\n",
+       " (-10.686292605026608, 'charismatic'),\n",
+       " (-10.686292605026608, 'charitable'),\n",
+       " (-10.686292605026608, 'charm'),\n",
+       " (-10.686292605026608, 'charmer'),\n",
+       " (-10.686292605026608, 'chateau'),\n",
+       " (-10.686292605026608, 'cheatfully'),\n",
+       " (-10.686292605026608, 'check'),\n",
+       " (-10.686292605026608, 'checklist'),\n",
+       " (-10.686292605026608, 'cheeky'),\n",
+       " (-10.686292605026608, 'cheer'),\n",
+       " (-10.686292605026608, 'cheering'),\n",
+       " (-10.686292605026608, 'cheese'),\n",
+       " (-10.686292605026608, 'cheesy'),\n",
+       " (-10.686292605026608, 'chelsea'),\n",
+       " (-10.686292605026608, 'chen'),\n",
+       " (-10.686292605026608, 'cherish'),\n",
+       " (-10.686292605026608, 'chest'),\n",
+       " (-10.686292605026608, 'chicago'),\n",
+       " (-10.686292605026608, 'chick'),\n",
+       " (-10.686292605026608, 'chicken'),\n",
+       " (-10.686292605026608, 'chief'),\n",
+       " (-10.686292605026608, 'childlike'),\n",
+       " (-10.686292605026608, 'chilling'),\n",
+       " (-10.686292605026608, 'chilly'),\n",
+       " (-10.686292605026608, 'chimes'),\n",
+       " (-10.686292605026608, 'china'),\n",
+       " (-10.686292605026608, 'chips'),\n",
+       " (-10.686292605026608, 'choice'),\n",
+       " (-10.686292605026608, 'choices'),\n",
+       " (-10.686292605026608, 'chomp'),\n",
+       " (-10.686292605026608, 'choose'),\n",
+       " (-10.686292605026608, 'chooses'),\n",
+       " (-10.686292605026608, 'choppy'),\n",
+       " (-10.686292605026608, 'chops'),\n",
+       " (-10.686292605026608, 'chopsocky'),\n",
+       " (-10.686292605026608, 'chosen'),\n",
+       " (-10.686292605026608, 'chou'),\n",
+       " (-10.686292605026608, 'chris'),\n",
+       " (-10.686292605026608, 'christian'),\n",
+       " (-10.686292605026608, 'christmas'),\n",
+       " (-10.686292605026608, 'chronicles'),\n",
+       " (-10.686292605026608, 'chuck'),\n",
+       " (-10.686292605026608, 'cinderella'),\n",
+       " (-10.686292605026608, 'cinematic'),\n",
+       " (-10.686292605026608, 'cinematically'),\n",
+       " (-10.686292605026608, 'cipher'),\n",
+       " (-10.686292605026608, 'circuit'),\n",
+       " (-10.686292605026608, 'circumstances'),\n",
+       " (-10.686292605026608, 'cities'),\n",
+       " (-10.686292605026608, 'city'),\n",
+       " (-10.686292605026608, 'civic'),\n",
+       " (-10.686292605026608, 'civil'),\n",
+       " (-10.686292605026608, 'clad'),\n",
+       " (-10.686292605026608, 'claims'),\n",
+       " (-10.686292605026608, 'clashing'),\n",
+       " (-10.686292605026608, 'class'),\n",
+       " (-10.686292605026608, 'classic'),\n",
+       " (-10.686292605026608, 'claude'),\n",
+       " (-10.686292605026608, 'clause'),\n",
+       " (-10.686292605026608, 'clean'),\n",
+       " (-10.686292605026608, 'cleaner'),\n",
+       " (-10.686292605026608, 'cleavage'),\n",
+       " (-10.686292605026608, 'cleverly'),\n",
+       " (-10.686292605026608, 'cleverness'),\n",
+       " (-10.686292605026608, 'cliche'),\n",
+       " (-10.686292605026608, 'cliched'),\n",
+       " (-10.686292605026608, 'clients'),\n",
+       " (-10.686292605026608, 'climate'),\n",
+       " (-10.686292605026608, 'clinic'),\n",
+       " (-10.686292605026608, 'clinical'),\n",
+       " (-10.686292605026608, 'clockstoppers'),\n",
+       " (-10.686292605026608, 'clone'),\n",
+       " (-10.686292605026608, 'clooney'),\n",
+       " (-10.686292605026608, 'closed'),\n",
+       " (-10.686292605026608, 'closely'),\n",
+       " (-10.686292605026608, 'closer'),\n",
+       " (-10.686292605026608, 'clothes'),\n",
+       " (-10.686292605026608, 'clubs'),\n",
+       " (-10.686292605026608, 'clue'),\n",
+       " (-10.686292605026608, 'clumsily'),\n",
+       " (-10.686292605026608, 'clumsy'),\n",
+       " (-10.686292605026608, 'clunky'),\n",
+       " (-10.686292605026608, 'clutching'),\n",
+       " (-10.686292605026608, 'cobbled'),\n",
+       " (-10.686292605026608, 'cocky'),\n",
+       " (-10.686292605026608, 'code'),\n",
+       " (-10.686292605026608, 'codswallop'),\n",
+       " (-10.686292605026608, 'coen'),\n",
+       " (-10.686292605026608, 'coffee'),\n",
+       " (-10.686292605026608, 'cogent'),\n",
+       " (-10.686292605026608, 'cold'),\n",
+       " (-10.686292605026608, 'collapses'),\n",
+       " (-10.686292605026608, 'college'),\n",
+       " (-10.686292605026608, 'collide'),\n",
+       " (-10.686292605026608, 'collision'),\n",
+       " (-10.686292605026608, 'color'),\n",
+       " (-10.686292605026608, 'colorful'),\n",
+       " (-10.686292605026608, 'colors'),\n",
+       " (-10.686292605026608, 'colour'),\n",
+       " (-10.686292605026608, 'columbia'),\n",
+       " (-10.686292605026608, 'column'),\n",
+       " (-10.686292605026608, 'com'),\n",
+       " (-10.686292605026608, 'coma'),\n",
+       " (-10.686292605026608, 'combination'),\n",
+       " (-10.686292605026608, 'combined'),\n",
+       " (-10.686292605026608, 'combines'),\n",
+       " (-10.686292605026608, 'combustible'),\n",
+       " (-10.686292605026608, 'come'),\n",
+       " (-10.686292605026608, 'comedian'),\n",
+       " (-10.686292605026608, 'comedic'),\n",
+       " (-10.686292605026608, 'comedy'),\n",
+       " (-10.686292605026608, 'comes'),\n",
+       " (-10.686292605026608, 'comfort'),\n",
+       " (-10.686292605026608, 'comfortable'),\n",
+       " (-10.686292605026608, 'comic'),\n",
+       " (-10.686292605026608, 'comics'),\n",
+       " (-10.686292605026608, 'commend'),\n",
+       " (-10.686292605026608, 'comments'),\n",
+       " (-10.686292605026608, 'common'),\n",
+       " (-10.686292605026608, 'community'),\n",
+       " (-10.686292605026608, 'companion'),\n",
+       " (-10.686292605026608, 'company'),\n",
+       " (-10.686292605026608, 'compare'),\n",
+       " (-10.686292605026608, 'compared'),\n",
+       " (-10.686292605026608, 'compelling'),\n",
+       " (-10.686292605026608, 'compellingly'),\n",
+       " (-10.686292605026608, 'compendium'),\n",
+       " (-10.686292605026608, 'compensate'),\n",
+       " (-10.686292605026608, 'competence'),\n",
+       " (-10.686292605026608, 'competent'),\n",
+       " (-10.686292605026608, 'competition'),\n",
+       " (-10.686292605026608, 'complaint'),\n",
+       " (-10.686292605026608, 'complexities'),\n",
+       " (-10.686292605026608, 'complexity'),\n",
+       " (-10.686292605026608, 'complicated'),\n",
+       " (-10.686292605026608, 'comprehend'),\n",
+       " (-10.686292605026608, 'comprehension'),\n",
+       " (-10.686292605026608, 'compromise'),\n",
+       " (-10.686292605026608, 'computer'),\n",
+       " (-10.686292605026608, 'conceits'),\n",
+       " (-10.686292605026608, 'concept'),\n",
+       " (-10.686292605026608, 'conception'),\n",
+       " (-10.686292605026608, 'concern'),\n",
+       " (-10.686292605026608, 'concerned'),\n",
+       " (-10.686292605026608, 'concession'),\n",
+       " (-10.686292605026608, 'conclusion'),\n",
+       " (-10.686292605026608, 'concocted'),\n",
+       " (-10.686292605026608, 'condensed'),\n",
+       " (-10.686292605026608, 'condition'),\n",
+       " (-10.686292605026608, 'conditioning'),\n",
+       " (-10.686292605026608, 'conditions'),\n",
+       " (-10.686292605026608, 'conduct'),\n",
+       " (-10.686292605026608, 'confessions'),\n",
+       " (-10.686292605026608, 'confidence'),\n",
+       " (-10.686292605026608, 'confident'),\n",
+       " (-10.686292605026608, 'confirms'),\n",
+       " (-10.686292605026608, 'conflicted'),\n",
+       " (-10.686292605026608, 'confront'),\n",
+       " (-10.686292605026608, 'confused'),\n",
+       " (-10.686292605026608, 'confusing'),\n",
+       " (-10.686292605026608, 'congratulation'),\n",
+       " (-10.686292605026608, 'conjured'),\n",
+       " (-10.686292605026608, 'connect'),\n",
+       " (-10.686292605026608, 'connected'),\n",
+       " (-10.686292605026608, 'connections'),\n",
+       " (-10.686292605026608, 'conquer'),\n",
+       " (-10.686292605026608, 'conscious'),\n",
+       " (-10.686292605026608, 'consciousness'),\n",
+       " (-10.686292605026608, 'consequences'),\n",
+       " (-10.686292605026608, 'consider'),\n",
+       " (-10.686292605026608, 'considerable'),\n",
+       " (-10.686292605026608, 'consideration'),\n",
+       " (-10.686292605026608, 'considered'),\n",
+       " (-10.686292605026608, 'considering'),\n",
+       " (-10.686292605026608, 'consistent'),\n",
+       " (-10.686292605026608, 'consolation'),\n",
+       " (-10.686292605026608, 'conspiracy'),\n",
+       " (-10.686292605026608, 'constant'),\n",
+       " (-10.686292605026608, 'constantly'),\n",
+       " (-10.686292605026608, 'construct'),\n",
+       " (-10.686292605026608, 'constructed'),\n",
+       " (-10.686292605026608, 'construction'),\n",
+       " (-10.686292605026608, 'constructs'),\n",
+       " (-10.686292605026608, 'consuming'),\n",
+       " (-10.686292605026608, 'contact'),\n",
+       " (-10.686292605026608, 'contained'),\n",
+       " (-10.686292605026608, 'contemplation'),\n",
+       " (-10.686292605026608, 'contemporaries'),\n",
+       " (-10.686292605026608, 'contemporary'),\n",
+       " (-10.686292605026608, 'contemptible'),\n",
+       " (-10.686292605026608, 'contenders'),\n",
+       " (-10.686292605026608, 'content'),\n",
+       " (-10.686292605026608, 'contest'),\n",
+       " (-10.686292605026608, 'contradiction'),\n",
+       " (-10.686292605026608, 'contradictory'),\n",
+       " (-10.686292605026608, 'convenient'),\n",
+       " (-10.686292605026608, 'convention'),\n",
+       " (-10.686292605026608, 'conversation'),\n",
+       " (-10.686292605026608, 'conversations'),\n",
+       " (-10.686292605026608, 'conveying'),\n",
+       " (-10.686292605026608, 'conviction'),\n",
+       " (-10.686292605026608, 'convictions'),\n",
+       " (-10.686292605026608, 'convince'),\n",
+       " (-10.686292605026608, 'convincing'),\n",
+       " (-10.686292605026608, 'cooler'),\n",
+       " (-10.686292605026608, 'cop'),\n",
+       " (-10.686292605026608, 'copy'),\n",
+       " (-10.686292605026608, 'copycat'),\n",
+       " (-10.686292605026608, 'corpse'),\n",
+       " (-10.686292605026608, 'costly'),\n",
+       " (-10.686292605026608, 'costumes'),\n",
+       " (-10.686292605026608, 'costuming'),\n",
+       " (-10.686292605026608, 'count'),\n",
+       " (-10.686292605026608, 'counterparts'),\n",
+       " (-10.686292605026608, 'countless'),\n",
+       " (-10.686292605026608, 'country'),\n",
+       " (-10.686292605026608, 'couple'),\n",
+       " (-10.686292605026608, 'courage'),\n",
+       " (-10.686292605026608, 'course'),\n",
+       " (-10.686292605026608, 'cover'),\n",
+       " (-10.686292605026608, 'cox'),\n",
+       " (-10.686292605026608, 'crack'),\n",
+       " (-10.686292605026608, 'cracked'),\n",
+       " (-10.686292605026608, 'cracker'),\n",
+       " (-10.686292605026608, 'cradles'),\n",
+       " (-10.686292605026608, 'craft'),\n",
+       " (-10.686292605026608, 'crafted'),\n",
+       " (-10.686292605026608, 'crane'),\n",
+       " (-10.686292605026608, 'crashing'),\n",
+       " (-10.686292605026608, 'crass'),\n",
+       " (-10.686292605026608, 'crassly'),\n",
+       " (-10.686292605026608, 'craven'),\n",
+       " (-10.686292605026608, 'crazy'),\n",
+       " (-10.686292605026608, 'creating'),\n",
+       " (-10.686292605026608, 'creation'),\n",
+       " (-10.686292605026608, 'creativity'),\n",
+       " (-10.686292605026608, 'creature'),\n",
+       " (-10.686292605026608, 'creatures'),\n",
+       " (-10.686292605026608, 'credibility'),\n",
+       " (-10.686292605026608, 'credible'),\n",
+       " (-10.686292605026608, 'credits'),\n",
+       " (-10.686292605026608, 'creepy'),\n",
+       " (-10.686292605026608, 'cricket'),\n",
+       " (-10.686292605026608, 'crime'),\n",
+       " (-10.686292605026608, 'crimes'),\n",
+       " (-10.686292605026608, 'criminal'),\n",
+       " (-10.686292605026608, 'crippled'),\n",
+       " (-10.686292605026608, 'crises'),\n",
+       " (-10.686292605026608, 'crisis'),\n",
+       " (-10.686292605026608, 'critic'),\n",
+       " (-10.686292605026608, 'critical'),\n",
+       " (-10.686292605026608, 'critics'),\n",
+       " (-10.686292605026608, 'critique'),\n",
+       " (-10.686292605026608, 'crosses'),\n",
+       " (-10.686292605026608, 'crossroads'),\n",
+       " (-10.686292605026608, 'crowded'),\n",
+       " (-10.686292605026608, 'crucial'),\n",
+       " (-10.686292605026608, 'cruelty'),\n",
+       " (-10.686292605026608, 'crush'),\n",
+       " (-10.686292605026608, 'crushingly'),\n",
+       " (-10.686292605026608, 'cuban'),\n",
+       " (-10.686292605026608, 'cuisine'),\n",
+       " (-10.686292605026608, 'culkin'),\n",
+       " (-10.686292605026608, 'cult'),\n",
+       " (-10.686292605026608, 'cultural'),\n",
+       " (-10.686292605026608, 'curdling'),\n",
+       " (-10.686292605026608, 'cure'),\n",
+       " (-10.686292605026608, 'curiously'),\n",
+       " (-10.686292605026608, 'current'),\n",
+       " (-10.686292605026608, 'curse'),\n",
+       " (-10.686292605026608, 'curves'),\n",
+       " (-10.686292605026608, 'cut'),\n",
+       " (-10.686292605026608, 'cuts'),\n",
+       " (-10.686292605026608, 'cyber'),\n",
+       " (-10.686292605026608, 'cynical'),\n",
+       " (-10.686292605026608, 'cynicism'),\n",
+       " (-10.686292605026608, 'dahmer'),\n",
+       " (-10.686292605026608, 'damaged'),\n",
+       " (-10.686292605026608, 'damme'),\n",
+       " (-10.686292605026608, 'damning'),\n",
+       " (-10.686292605026608, 'damon'),\n",
+       " (-10.686292605026608, 'dampened'),\n",
+       " (-10.686292605026608, 'dana'),\n",
+       " (-10.686292605026608, 'danger'),\n",
+       " (-10.686292605026608, 'dangerous'),\n",
+       " (-10.686292605026608, 'dangerously'),\n",
+       " (-10.686292605026608, 'dante'),\n",
+       " (-10.686292605026608, 'darkness'),\n",
+       " (-10.686292605026608, 'darling'),\n",
+       " (-10.686292605026608, 'das'),\n",
+       " (-10.686292605026608, 'dash'),\n",
+       " (-10.686292605026608, 'dass'),\n",
+       " (-10.686292605026608, 'daughters'),\n",
+       " (-10.686292605026608, 'dawdle'),\n",
+       " (-10.686292605026608, 'dawn'),\n",
+       " (-10.686292605026608, 'dawns'),\n",
+       " (-10.686292605026608, 'dawson'),\n",
+       " (-10.686292605026608, 'daytime'),\n",
+       " (-10.686292605026608, 'dazzling'),\n",
+       " (-10.686292605026608, 'dead'),\n",
+       " (-10.686292605026608, 'deadly'),\n",
+       " (-10.686292605026608, 'deadpan'),\n",
+       " (-10.686292605026608, 'deafening'),\n",
+       " (-10.686292605026608, 'dean'),\n",
+       " (-10.686292605026608, 'debate'),\n",
+       " (-10.686292605026608, 'debated'),\n",
+       " (-10.686292605026608, 'decade'),\n",
+       " (-10.686292605026608, 'decency'),\n",
+       " (-10.686292605026608, 'decent'),\n",
+       " (-10.686292605026608, 'deception'),\n",
+       " (-10.686292605026608, 'deceptions'),\n",
+       " (-10.686292605026608, 'decibel'),\n",
+       " (-10.686292605026608, 'decide'),\n",
+       " (-10.686292605026608, 'decided'),\n",
+       " (-10.686292605026608, 'decidedly'),\n",
+       " (-10.686292605026608, 'decides'),\n",
+       " (-10.686292605026608, 'decision'),\n",
+       " (-10.686292605026608, 'decomposition'),\n",
+       " (-10.686292605026608, 'deeds'),\n",
+       " (-10.686292605026608, 'deep'),\n",
+       " (-10.686292605026608, 'deeply'),\n",
+       " (-10.686292605026608, 'defecates'),\n",
+       " (-10.686292605026608, 'defense'),\n",
+       " (-10.686292605026608, 'defiance'),\n",
+       " (-10.686292605026608, 'defies'),\n",
+       " (-10.686292605026608, 'defines'),\n",
+       " (-10.686292605026608, 'degree'),\n",
+       " (-10.686292605026608, 'del'),\n",
+       " (-10.686292605026608, 'deliberately'),\n",
+       " (-10.686292605026608, 'delicate'),\n",
+       " (-10.686292605026608, 'delicately'),\n",
+       " (-10.686292605026608, 'delight'),\n",
+       " (-10.686292605026608, 'delightfully'),\n",
+       " (-10.686292605026608, 'delights'),\n",
+       " (-10.686292605026608, 'delinquent'),\n",
+       " (-10.686292605026608, 'deliver'),\n",
+       " (-10.686292605026608, 'delivered'),\n",
+       " (-10.686292605026608, 'delivering'),\n",
+       " (-10.686292605026608, 'delivers'),\n",
+       " (-10.686292605026608, 'delivery'),\n",
+       " (-10.686292605026608, 'demanding'),\n",
+       " (-10.686292605026608, 'demands'),\n",
+       " (-10.686292605026608, 'demented'),\n",
+       " (-10.686292605026608, 'demme'),\n",
+       " (-10.686292605026608, 'demographic'),\n",
+       " (-10.686292605026608, 'demons'),\n",
+       " (-10.686292605026608, 'denial'),\n",
+       " (-10.686292605026608, 'denied'),\n",
+       " (-10.686292605026608, 'denizens'),\n",
+       " (-10.686292605026608, 'department'),\n",
+       " (-10.686292605026608, 'departure'),\n",
+       " (-10.686292605026608, 'dependence'),\n",
+       " (-10.686292605026608, 'depraved'),\n",
+       " (-10.686292605026608, 'deprecating'),\n",
+       " (-10.686292605026608, 'depressed'),\n",
+       " (-10.686292605026608, 'derivative'),\n",
+       " (-10.686292605026608, 'derrida'),\n",
+       " (-10.686292605026608, 'described'),\n",
+       " (-10.686292605026608, 'deserve'),\n",
+       " (-10.686292605026608, 'deserved'),\n",
+       " (-10.686292605026608, 'deserves'),\n",
+       " (-10.686292605026608, 'deserving'),\n",
+       " (-10.686292605026608, 'desiccated'),\n",
+       " (-10.686292605026608, 'designed'),\n",
+       " (-10.686292605026608, 'desperate'),\n",
+       " (-10.686292605026608, 'destined'),\n",
+       " (-10.686292605026608, 'destiny'),\n",
+       " (-10.686292605026608, 'destroy'),\n",
+       " (-10.686292605026608, 'destructive'),\n",
+       " (-10.686292605026608, 'determined'),\n",
+       " (-10.686292605026608, 'deuces'),\n",
+       " (-10.686292605026608, 'develop'),\n",
+       " (-10.686292605026608, 'developed'),\n",
+       " (-10.686292605026608, 'developing'),\n",
+       " (-10.686292605026608, 'development'),\n",
+       " (-10.686292605026608, 'developments'),\n",
+       " (-10.686292605026608, 'devoid'),\n",
+       " (-10.686292605026608, 'devotees'),\n",
+       " (-10.686292605026608, 'diabolical'),\n",
+       " (-10.686292605026608, 'dialogue'),\n",
+       " (-10.686292605026608, 'diaries'),\n",
+       " (-10.686292605026608, 'diary'),\n",
+       " (-10.686292605026608, 'dick'),\n",
+       " (-10.686292605026608, 'dickens'),\n",
+       " (-10.686292605026608, 'die'),\n",
+       " (-10.686292605026608, 'diesel'),\n",
+       " (-10.686292605026608, 'differences'),\n",
+       " (-10.686292605026608, 'dignity'),\n",
+       " (-10.686292605026608, 'dim'),\n",
+       " (-10.686292605026608, 'dimension'),\n",
+       " (-10.686292605026608, 'dimensional'),\n",
+       " (-10.686292605026608, 'dimensions'),\n",
+       " (-10.686292605026608, 'dip'),\n",
+       " (-10.686292605026608, 'dips'),\n",
+       " (-10.686292605026608, 'direct'),\n",
+       " (-10.686292605026608, 'directing'),\n",
+       " (-10.686292605026608, 'directions'),\n",
+       " (-10.686292605026608, 'director'),\n",
+       " (-10.686292605026608, 'directorial'),\n",
+       " (-10.686292605026608, 'directors'),\n",
+       " (-10.686292605026608, 'directs'),\n",
+       " (-10.686292605026608, 'dirty'),\n",
+       " (-10.686292605026608, 'disaffected'),\n",
+       " (-10.686292605026608, 'disappoint'),\n",
+       " (-10.686292605026608, 'disappointed'),\n",
+       " (-10.686292605026608, 'discomfort'),\n",
+       " (-10.686292605026608, 'discordant'),\n",
+       " (-10.686292605026608, 'discouraging'),\n",
+       " (-10.686292605026608, 'discourse'),\n",
+       " (-10.686292605026608, 'discover'),\n",
+       " (-10.686292605026608, 'discoveries'),\n",
+       " (-10.686292605026608, 'discussed'),\n",
+       " (-10.686292605026608, 'discussion'),\n",
+       " (-10.686292605026608, 'disease'),\n",
+       " (-10.686292605026608, 'disguise'),\n",
+       " (-10.686292605026608, 'disguised'),\n",
+       " (-10.686292605026608, 'disgusting'),\n",
+       " (-10.686292605026608, 'disingenuous'),\n",
+       " (-10.686292605026608, 'disintegrating'),\n",
+       " (-10.686292605026608, 'dismay'),\n",
+       " (-10.686292605026608, 'dismiss'),\n",
+       " (-10.686292605026608, 'disney'),\n",
+       " (-10.686292605026608, 'displays'),\n",
+       " (-10.686292605026608, 'disposable'),\n",
+       " (-10.686292605026608, 'disregard'),\n",
+       " (-10.686292605026608, 'distance'),\n",
+       " (-10.686292605026608, 'distasteful'),\n",
+       " (-10.686292605026608, 'distinct'),\n",
+       " (-10.686292605026608, 'distinctive'),\n",
+       " (-10.686292605026608, 'distinctly'),\n",
+       " (-10.686292605026608, 'distinguish'),\n",
+       " (-10.686292605026608, 'distinguished'),\n",
+       " (-10.686292605026608, 'distort'),\n",
+       " (-10.686292605026608, 'distraction'),\n",
+       " (-10.686292605026608, 'disturbed'),\n",
+       " (-10.686292605026608, 'disturbing'),\n",
+       " (-10.686292605026608, 'ditsy'),\n",
+       " (-10.686292605026608, 'diverting'),\n",
+       " (-10.686292605026608, 'documentary'),\n",
+       " (-10.686292605026608, 'dog'),\n",
+       " (-10.686292605026608, 'dogma'),\n",
+       " (-10.686292605026608, 'dogmatism'),\n",
+       " (-10.686292605026608, 'dogs'),\n",
+       " (-10.686292605026608, 'domestic'),\n",
+       " (-10.686292605026608, 'dominated'),\n",
+       " (-10.686292605026608, 'domination'),\n",
+       " (-10.686292605026608, 'donald'),\n",
+       " (-10.686292605026608, 'dong'),\n",
+       " (-10.686292605026608, 'doo'),\n",
+       " (-10.686292605026608, 'door'),\n",
+       " (-10.686292605026608, 'dopey'),\n",
+       " (-10.686292605026608, 'dose'),\n",
+       " (-10.686292605026608, 'dots'),\n",
+       " (-10.686292605026608, 'double'),\n",
+       " (-10.686292605026608, 'douglas'),\n",
+       " (-10.686292605026608, 'dour'),\n",
+       " (-10.686292605026608, 'dover'),\n",
+       " (-10.686292605026608, 'downbeat'),\n",
+       " (-10.686292605026608, 'downright'),\n",
+       " (-10.686292605026608, 'dozen'),\n",
+       " (-10.686292605026608, 'dozens'),\n",
+       " (-10.686292605026608, 'drab'),\n",
+       " (-10.686292605026608, 'dragon'),\n",
+       " (-10.686292605026608, 'dragonfly'),\n",
+       " (-10.686292605026608, 'dragons'),\n",
+       " (-10.686292605026608, 'dramatic'),\n",
+       " (-10.686292605026608, 'dramatically'),\n",
+       " (-10.686292605026608, 'dramedy'),\n",
+       " (-10.686292605026608, 'draw'),\n",
+       " ...]"
+      ]
+     },
+     "execution_count": 24,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sorted(zip(nb_clf.feature_log_prob_[0], unigram_count_vectorizer.get_feature_names()))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "\"\\n[(-4.6685160302515563, 'worst'), (-4.1676048635427438, 'bad'), (-3.9753688496916109, 'stupid'), (-3.8602995199068237, 'worse'), (-3.7576453658467397, 'contrived'), (-3.7576453658467397, 'unfunny'), (-3.7302463916586257, 'awful'), (-3.7020755146919289, 'poorly'), (-3.6432350146689956, 'waste'), (-3.5479248348646717, 'pathetic')]\\n[(3.5668446135017922, 'rich'), (3.6374621807157457, 'wonderful'), (3.8045162653789113, 'excellent'), (3.8422565933617587, 'gorgeous'), (3.8786242375326339, 'touching'), (3.9308099907032039, 'solid'), (3.9641464109707956, 'powerful'), (4.027659816693121, 'beautifully'), (4.1437319879458752, 'beautiful'), (4.2352991814713654, 'moving')]\\n\""
+      ]
+     },
+     "execution_count": 25,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# calculate log ratio of conditional probs\n",
+    "\n",
+    "# In this exercise you will calculate the log ratio \n",
+    "# between conditional probs in the \"very negative\" category\n",
+    "# and conditional probs in the \"very positive\" category,\n",
+    "# and then sort and print out the top and bottom 10 words\n",
+    "\n",
+    "# the conditional probs for the \"very negative\" category is stored in nb_clf.feature_log_prob_[0]\n",
+    "# the conditional probs for the \"very positive\" category is stored in nb_clf.feature_log_prob_[4]\n",
+    "\n",
+    "# You can consult with similar code in week 4's sample script on feature weighting\n",
+    "# Note that in sklearn's MultinomialNB the conditional probs have been converted to log values.\n",
+    "\n",
+    "# Your code starts here\n",
+    "\n",
+    "very_negative = sorted(zip(nb_clf.feature_log_prob_[0], unigram_count_vectorizer.get_feature_names()))\n",
+    "very_positive = sorted(zip(nb_clf.feature_log_prob_[4], unigram_count_vectorizer.get_feature_names()))\n",
+    "\n",
+    "very_negative[:10]\n",
+    "very_positive[:10]\n",
+    "# Your code ends here\n",
+    "\n",
+    "'''\n",
+    "[(-4.6685160302515563, 'worst'), (-4.1676048635427438, 'bad'), (-3.9753688496916109, 'stupid'), (-3.8602995199068237, 'worse'), (-3.7576453658467397, 'contrived'), (-3.7576453658467397, 'unfunny'), (-3.7302463916586257, 'awful'), (-3.7020755146919289, 'poorly'), (-3.6432350146689956, 'waste'), (-3.5479248348646717, 'pathetic')]\n",
+    "[(3.5668446135017922, 'rich'), (3.6374621807157457, 'wonderful'), (3.8045162653789113, 'excellent'), (3.8422565933617587, 'gorgeous'), (3.8786242375326339, 'touching'), (3.9308099907032039, 'solid'), (3.9641464109707956, 'powerful'), (4.027659816693121, 'beautifully'), (4.1437319879458752, 'beautiful'), (4.2352991814713654, 'moving')]\n",
+    "'''"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Sample output for print(log_ratios[0])\n",
+    "\n",
+    "-0.838009538739"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 5: Test the MNB classifier"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "ValueError",
+     "evalue": "dimension mismatch",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mValueError\u001b[0m                                Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-26-fe17fba8ea5c>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0;31m# test the classifier on the test data set, print accuracy score\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      2\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 3\u001b[0;31m \u001b[0mnb_clf\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mscore\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mX_test_vec\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0my_test\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;32m/usr/local/lib/python3.7/site-packages/sklearn/base.py\u001b[0m in \u001b[0;36mscore\u001b[0;34m(self, X, y, sample_weight)\u001b[0m\n\u001b[1;32m    355\u001b[0m         \"\"\"\n\u001b[1;32m    356\u001b[0m         \u001b[0;32mfrom\u001b[0m \u001b[0;34m.\u001b[0m\u001b[0mmetrics\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0maccuracy_score\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 357\u001b[0;31m         \u001b[0;32mreturn\u001b[0m \u001b[0maccuracy_score\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0my\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpredict\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mX\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0msample_weight\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0msample_weight\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    358\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    359\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/usr/local/lib/python3.7/site-packages/sklearn/naive_bayes.py\u001b[0m in \u001b[0;36mpredict\u001b[0;34m(self, X)\u001b[0m\n\u001b[1;32m     63\u001b[0m             \u001b[0mPredicted\u001b[0m \u001b[0mtarget\u001b[0m \u001b[0mvalues\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mX\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     64\u001b[0m         \"\"\"\n\u001b[0;32m---> 65\u001b[0;31m         \u001b[0mjll\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_joint_log_likelihood\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mX\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     66\u001b[0m         \u001b[0;32mreturn\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mclasses_\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mnp\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0margmax\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mjll\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0maxis\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     67\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/usr/local/lib/python3.7/site-packages/sklearn/naive_bayes.py\u001b[0m in \u001b[0;36m_joint_log_likelihood\u001b[0;34m(self, X)\u001b[0m\n\u001b[1;32m    735\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    736\u001b[0m         \u001b[0mX\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mcheck_array\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mX\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0maccept_sparse\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m'csr'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 737\u001b[0;31m         return (safe_sparse_dot(X, self.feature_log_prob_.T) +\n\u001b[0m\u001b[1;32m    738\u001b[0m                 self.class_log_prior_)\n\u001b[1;32m    739\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/usr/local/lib/python3.7/site-packages/sklearn/utils/extmath.py\u001b[0m in \u001b[0;36msafe_sparse_dot\u001b[0;34m(a, b, dense_output)\u001b[0m\n\u001b[1;32m    135\u001b[0m     \"\"\"\n\u001b[1;32m    136\u001b[0m     \u001b[0;32mif\u001b[0m \u001b[0msparse\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0missparse\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0ma\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;32mor\u001b[0m \u001b[0msparse\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0missparse\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mb\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 137\u001b[0;31m         \u001b[0mret\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0ma\u001b[0m \u001b[0;34m*\u001b[0m \u001b[0mb\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    138\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mdense_output\u001b[0m \u001b[0;32mand\u001b[0m \u001b[0mhasattr\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mret\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m\"toarray\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    139\u001b[0m             \u001b[0mret\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mret\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtoarray\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/usr/local/lib/python3.7/site-packages/scipy/sparse/base.py\u001b[0m in \u001b[0;36m__mul__\u001b[0;34m(self, other)\u001b[0m\n\u001b[1;32m    515\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    516\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0mother\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mshape\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;36m0\u001b[0m\u001b[0;34m]\u001b[0m \u001b[0;34m!=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mshape\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 517\u001b[0;31m                 \u001b[0;32mraise\u001b[0m \u001b[0mValueError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m'dimension mismatch'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    518\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    519\u001b[0m             \u001b[0mresult\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_mul_multivector\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mnp\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0masarray\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mother\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mValueError\u001b[0m: dimension mismatch"
+     ]
+    }
+   ],
+   "source": [
+    "# test the classifier on the test data set, print accuracy score\n",
+    "\n",
+    "nb_clf.score(X_test_vec,y_test)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "ValueError",
+     "evalue": "dimension mismatch",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mValueError\u001b[0m                                Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-27-4f3817497aee>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      2\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0msklearn\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mmetrics\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mconfusion_matrix\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 4\u001b[0;31m \u001b[0my_pred\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mnb_clf\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mfit\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mX_train_vec\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0my_train\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpredict\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mX_test_vec\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      5\u001b[0m \u001b[0mcm\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mconfusion_matrix\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0my_test\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0my_pred\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mlabels\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;36m0\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;36m2\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;36m3\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;36m4\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      6\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mcm\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/usr/local/lib/python3.7/site-packages/sklearn/naive_bayes.py\u001b[0m in \u001b[0;36mpredict\u001b[0;34m(self, X)\u001b[0m\n\u001b[1;32m     63\u001b[0m             \u001b[0mPredicted\u001b[0m \u001b[0mtarget\u001b[0m \u001b[0mvalues\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mX\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     64\u001b[0m         \"\"\"\n\u001b[0;32m---> 65\u001b[0;31m         \u001b[0mjll\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_joint_log_likelihood\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mX\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     66\u001b[0m         \u001b[0;32mreturn\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mclasses_\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mnp\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0margmax\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mjll\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0maxis\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     67\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/usr/local/lib/python3.7/site-packages/sklearn/naive_bayes.py\u001b[0m in \u001b[0;36m_joint_log_likelihood\u001b[0;34m(self, X)\u001b[0m\n\u001b[1;32m    735\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    736\u001b[0m         \u001b[0mX\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mcheck_array\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mX\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0maccept_sparse\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m'csr'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 737\u001b[0;31m         return (safe_sparse_dot(X, self.feature_log_prob_.T) +\n\u001b[0m\u001b[1;32m    738\u001b[0m                 self.class_log_prior_)\n\u001b[1;32m    739\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/usr/local/lib/python3.7/site-packages/sklearn/utils/extmath.py\u001b[0m in \u001b[0;36msafe_sparse_dot\u001b[0;34m(a, b, dense_output)\u001b[0m\n\u001b[1;32m    135\u001b[0m     \"\"\"\n\u001b[1;32m    136\u001b[0m     \u001b[0;32mif\u001b[0m \u001b[0msparse\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0missparse\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0ma\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;32mor\u001b[0m \u001b[0msparse\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0missparse\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mb\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 137\u001b[0;31m         \u001b[0mret\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0ma\u001b[0m \u001b[0;34m*\u001b[0m \u001b[0mb\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    138\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mdense_output\u001b[0m \u001b[0;32mand\u001b[0m \u001b[0mhasattr\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mret\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m\"toarray\"\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    139\u001b[0m             \u001b[0mret\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mret\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtoarray\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/usr/local/lib/python3.7/site-packages/scipy/sparse/base.py\u001b[0m in \u001b[0;36m__mul__\u001b[0;34m(self, other)\u001b[0m\n\u001b[1;32m    515\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    516\u001b[0m             \u001b[0;32mif\u001b[0m \u001b[0mother\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mshape\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;36m0\u001b[0m\u001b[0;34m]\u001b[0m \u001b[0;34m!=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mshape\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 517\u001b[0;31m                 \u001b[0;32mraise\u001b[0m \u001b[0mValueError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m'dimension mismatch'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    518\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    519\u001b[0m             \u001b[0mresult\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_mul_multivector\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mnp\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0masarray\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mother\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mValueError\u001b[0m: dimension mismatch"
+     ]
+    }
+   ],
+   "source": [
+    "# print confusion matrix (row: ground truth; col: prediction)\n",
+    "\n",
+    "from sklearn.metrics import confusion_matrix\n",
+    "y_pred = nb_clf.fit(X_train_vec, y_train).predict(X_test_vec)\n",
+    "cm=confusion_matrix(y_test, y_pred, labels=[0,1,2,3,4])\n",
+    "print(cm)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'y_pred' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-28-306b6b579f6c>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      3\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0msklearn\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mmetrics\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mprecision_score\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0msklearn\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mmetrics\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mrecall_score\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 5\u001b[0;31m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mprecision_score\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0my_test\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0my_pred\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0maverage\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mNone\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      6\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mrecall_score\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0my_test\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0my_pred\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0maverage\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;32mNone\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      7\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mNameError\u001b[0m: name 'y_pred' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "# print classification report\n",
+    "\n",
+    "from sklearn.metrics import precision_score\n",
+    "from sklearn.metrics import recall_score\n",
+    "print(precision_score(y_test, y_pred, average=None))\n",
+    "print(recall_score(y_test, y_pred, average=None))\n",
+    "\n",
+    "from sklearn.metrics import classification_report\n",
+    "target_names = ['0','1','2','3','4']\n",
+    "print(classification_report(y_test, y_pred, target_names=target_names))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 5.1 Interpret the prediction result"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'X_test_vec' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-38-62d98beccd68>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0;31m## find the calculated posterior probability\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 2\u001b[0;31m \u001b[0mposterior_probs\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mnb_clf\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpredict_proba\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mX_test_vec\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      3\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m \u001b[0;31m## find the posterior probabilities for the first test example\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mposterior_probs\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;36m0\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mNameError\u001b[0m: name 'X_test_vec' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "## find the calculated posterior probability\n",
+    "posterior_probs = nb_clf.predict_proba(X_test_vec)\n",
+    "\n",
+    "## find the posterior probabilities for the first test example\n",
+    "print(posterior_probs[0])\n",
+    "\n",
+    "# find the category prediction for the first test example\n",
+    "y_pred = nb_clf.predict(X_test_vec)\n",
+    "print(y_pred[0])\n",
+    "\n",
+    "# check the actual label for the first test example\n",
+    "print(y_test[0])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "sample output array([ 0.06434628  0.34275846  0.50433091  0.07276319  0.01580115]\n",
+    "\n",
+    "Because the posterior probability for category 2 (neutral) is the greatest, 0.50, the prediction should be \"2\". Because the actual label is also \"2\", this is a correct prediction\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 5.2 Error Analysis"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'y_pred' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-39-cb6eee7e8ea3>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      7\u001b[0m \u001b[0merr_cnt\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;36m0\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      8\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mi\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mrange\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m0\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mlen\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0my_test\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 9\u001b[0;31m     \u001b[0;32mif\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0my_test\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mi\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m==\u001b[0m\u001b[0;36m4\u001b[0m \u001b[0;32mand\u001b[0m \u001b[0my_pred\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mi\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m==\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     10\u001b[0m         \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mX_test\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mi\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     11\u001b[0m         \u001b[0merr_cnt\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0merr_cnt\u001b[0m\u001b[0;34m+\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mNameError\u001b[0m: name 'y_pred' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "# print out specific type of error for further analysis\n",
+    "\n",
+    "# print out the very positive examples that are mistakenly predicted as negative\n",
+    "# according to the confusion matrix, there should be 53 such examples\n",
+    "# note if you use a different vectorizer option, your result might be different\n",
+    "\n",
+    "err_cnt = 0\n",
+    "for i in range(0, len(y_test)):\n",
+    "    if(y_test[i]==4 and y_pred[i]==1):\n",
+    "        print(X_test[i])\n",
+    "        err_cnt = err_cnt+1\n",
+    "print(\"errors:\", err_cnt)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Exercise D"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'y_pred' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-40-f76b378b2b1f>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      9\u001b[0m \u001b[0merr_cnt\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;36m0\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     10\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mi\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mrange\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;36m0\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mlen\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0my_test\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 11\u001b[0;31m     \u001b[0;32mif\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0my_test\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mi\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m==\u001b[0m\u001b[0;36m1\u001b[0m \u001b[0;32mand\u001b[0m \u001b[0my_pred\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mi\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m==\u001b[0m\u001b[0;36m4\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     12\u001b[0m         \u001b[0mprint\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mX_test\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mi\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     13\u001b[0m         \u001b[0merr_cnt\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0merr_cnt\u001b[0m\u001b[0;34m+\u001b[0m\u001b[0;36m1\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mNameError\u001b[0m: name 'y_pred' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "# Can you find linguistic patterns in the above errors? \n",
+    "# What kind of very positive examples were mistakenly predicted as negative?\n",
+    "\n",
+    "# Can you write code to print out the errors that very negative examples were mistakenly predicted as very positive?\n",
+    "# Can you find lingustic patterns for this kind of errors?\n",
+    "# Based on the above error analysis, what suggestions would you give to improve the current model?\n",
+    "\n",
+    "# Your code starts here\n",
+    "err_cnt = 0\n",
+    "for i in range(0, len(y_test)):\n",
+    "    if(y_test[i]==1 and y_pred[i]==4):\n",
+    "        print(X_test[i])\n",
+    "        err_cnt = err_cnt+1\n",
+    "print(\"errors:\", err_cnt)\n",
+    "# Your code ends here\n",
+    "\n",
+    "'''\n",
+    "this is the opposite of a truly magical movie .\n",
+    "achieves the remarkable feat of squandering a topnotch foursome of actors\n",
+    "a deeply unpleasant experience\n",
+    "hugely overwritten\n",
+    "is not Edward Burns ' best film\n",
+    "Once the expectation of laughter has been quashed by whatever obscenity is at hand , even the funniest idea is n't funny .\n",
+    "is a deeply unpleasant experience .\n",
+    "is hugely overwritten ,\n",
+    "is the opposite of a truly magical movie .\n",
+    "to this shocking testament to anti-Semitism and neo-fascism\n",
+    "is about as humorous as watching your favorite pet get buried alive\n",
+    "errors: 11\n",
+    "'''"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 6: write the prediction output to file"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 34,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'X_test_vec' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-34-74c28b38f3cd>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0my_pred\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mnb_clf\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mpredict\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mX_test_vec\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      2\u001b[0m \u001b[0moutput\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mopen\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m'prediction_output_2.csv'\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m'w'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mx\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mvalue\u001b[0m \u001b[0;32min\u001b[0m \u001b[0menumerate\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0my_pred\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m     \u001b[0moutput\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mwrite\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mstr\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mvalue\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m+\u001b[0m \u001b[0;34m'\\n'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m \u001b[0moutput\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mclose\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mNameError\u001b[0m: name 'X_test_vec' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "y_pred=nb_clf.predict(X_test_vec)\n",
+    "output = open('prediction_output_2.csv', 'w')\n",
+    "for x, value in enumerate(y_pred):\n",
+    "    output.write(str(value) + '\\n') \n",
+    "output.close()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Step 6.1 Prepare submission to Kaggle sentiment classification competition"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 41,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "NotFittedError",
+     "evalue": "CountVectorizer - Vocabulary wasn't fitted.",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNotFittedError\u001b[0m                            Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-41-ff984db0c3d0>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m     18\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     19\u001b[0m \u001b[0;31m# vectorize the test examples using the vocabulary fitted from the 60% training data\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m---> 20\u001b[0;31m \u001b[0mkaggle_X_test_vec\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0munigram_count_vectorizer\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtransform\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mkaggle_X_test\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m     21\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m     22\u001b[0m \u001b[0;31m# predict using the NB classifier that we built\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/usr/local/lib/python3.7/site-packages/sklearn/feature_extraction/text.py\u001b[0m in \u001b[0;36mtransform\u001b[0;34m(self, raw_documents)\u001b[0m\n\u001b[1;32m   1107\u001b[0m             \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_validate_vocabulary\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1108\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m-> 1109\u001b[0;31m         \u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m_check_vocabulary\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m   1110\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m   1111\u001b[0m         \u001b[0;31m# use the same matrix-building strategy as fit_transform\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/usr/local/lib/python3.7/site-packages/sklearn/feature_extraction/text.py\u001b[0m in \u001b[0;36m_check_vocabulary\u001b[0;34m(self)\u001b[0m\n\u001b[1;32m    387\u001b[0m         \u001b[0;34m\"\"\"Check if vocabulary is empty or missing (not fit-ed)\"\"\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    388\u001b[0m         \u001b[0mmsg\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0;34m\"%(name)s - Vocabulary wasn't fitted.\"\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 389\u001b[0;31m         \u001b[0mcheck_is_fitted\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;34m'vocabulary_'\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mmsg\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mmsg\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m,\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    390\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    391\u001b[0m         \u001b[0;32mif\u001b[0m \u001b[0mlen\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mself\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvocabulary_\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;34m==\u001b[0m \u001b[0;36m0\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;32m/usr/local/lib/python3.7/site-packages/sklearn/utils/validation.py\u001b[0m in \u001b[0;36mcheck_is_fitted\u001b[0;34m(estimator, attributes, msg, all_or_any)\u001b[0m\n\u001b[1;32m    912\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    913\u001b[0m     \u001b[0;32mif\u001b[0m \u001b[0;32mnot\u001b[0m \u001b[0mall_or_any\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0mhasattr\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mestimator\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mattr\u001b[0m\u001b[0;34m)\u001b[0m \u001b[0;32mfor\u001b[0m \u001b[0mattr\u001b[0m \u001b[0;32min\u001b[0m \u001b[0mattributes\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m:\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m--> 914\u001b[0;31m         \u001b[0;32mraise\u001b[0m \u001b[0mNotFittedError\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mmsg\u001b[0m \u001b[0;34m%\u001b[0m \u001b[0;34m{\u001b[0m\u001b[0;34m'name'\u001b[0m\u001b[0;34m:\u001b[0m \u001b[0mtype\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mestimator\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0m__name__\u001b[0m\u001b[0;34m}\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m    915\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m    916\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mNotFittedError\u001b[0m: CountVectorizer - Vocabulary wasn't fitted."
+     ]
+    }
+   ],
+   "source": [
+    "########## submit to Kaggle submission\n",
+    "\n",
+    "# we are still using the model trained on 60% of the training data\n",
+    "# you can re-train the model on the entire data set \n",
+    "#   and use the new model to predict the Kaggle test data\n",
+    "# below is sample code for using a trained model to predict Kaggle test data \n",
+    "#    and format the prediction output for Kaggle submission\n",
+    "\n",
+    "# read in the test data\n",
+    "# kaggle-sentiment/train.tsv\n",
+    "kaggle_test=p.read_csv(\"kaggle-sentiment/test.tsv\", delimiter='\\t') \n",
+    "\n",
+    "# preserve the id column of the test examples\n",
+    "kaggle_ids=kaggle_test['PhraseId'].values\n",
+    "\n",
+    "# read in the text content of the examples\n",
+    "kaggle_X_test=kaggle_test['Phrase'].values\n",
+    "\n",
+    "# vectorize the test examples using the vocabulary fitted from the 60% training data\n",
+    "kaggle_X_test_vec=unigram_count_vectorizer.transform(kaggle_X_test)\n",
+    "\n",
+    "# predict using the NB classifier that we built\n",
+    "kaggle_pred=nb_clf.fit(X_train_vec, y_train).predict(kaggle_X_test_vec)\n",
+    "\n",
+    "# combine the test example ids with their predictions\n",
+    "kaggle_submission=zip(kaggle_ids, kaggle_pred)\n",
+    "\n",
+    "# prepare output file\n",
+    "outf=open('kaggle_submission_2.csv', 'w')\n",
+    "\n",
+    "# write header\n",
+    "outf.write('PhraseId,Sentiment\\n')\n",
+    "\n",
+    "# write predictions with ids to the output file\n",
+    "for x, value in enumerate(kaggle_submission): outf.write(str(value[0]) + ',' + str(value[1]) + '\\n')\n",
+    "\n",
+    "# close the output file\n",
+    "outf.close()\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 42,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "66292"
+      ]
+     },
+     "execution_count": 42,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "test=p.read_csv(\"kaggle_submission_2.csv\")\n",
+    "len(test)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Exercise E"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 43,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# generate your Kaggle submissions with boolean representation and TF representation\n",
+    "# submit to Kaggle\n",
+    "# report your scores here\n",
+    "# which model gave better performance in the hold-out test\n",
+    "# which model gave better performance in the Kaggle test"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Sample output:\n",
+    "\n",
+    "(93636, 9968)\n",
+    "[[0 0 0 ..., 0 0 0]]\n",
+    "9968\n",
+    "[('disloc', 2484), ('surgeon', 8554), ('camaraderi', 1341), ('sketchiest', 7943), ('dedic', 2244), ('impud', 4376), ('adopt', 245), ('worker', 9850), ('buy', 1298), ('systemat', 8623)]\n",
+    "245"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# BernoulliNB"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 44,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.naive_bayes import BernoulliNB\n",
+    "X_train_vec_bool = unigram_bool_vectorizer.fit_transform(X_train)\n",
+    "bernoulliNB_clf = BernoulliNB(X_train_vec_bool, y_train)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Cross Validation"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 45,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.5595474569680894\n"
+     ]
+    }
+   ],
+   "source": [
+    "# cross validation\n",
+    "\n",
+    "from sklearn.pipeline import Pipeline\n",
+    "from sklearn.model_selection import cross_val_score\n",
+    "nb_clf_pipe = Pipeline([('vect', CountVectorizer(encoding='latin-1', binary=False)),('nb', MultinomialNB())])\n",
+    "scores = cross_val_score(nb_clf_pipe, X, y, cv=3)\n",
+    "avg=sum(scores)/len(scores)\n",
+    "print(avg)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {
+    "collapsed": true
+   },
+   "source": [
+    "# Exercise F"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 46,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.5595474569680894\n",
+      "0.5531524365695574\n",
+      "0.5601369637205256\n",
+      "BernoulliNB(alpha=1.0, binarize=0.0, class_prior=None, fit_prior=True) False 0.5531524365695574\n",
+      "MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True) False 0.5595474569680894\n",
+      "MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True) True 0.5601369637205256\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "'\\n0.55315243657\\n0.553844611375\\n0.552306763002\\n0.560136963721\\n'"
+      ]
+     },
+     "execution_count": 46,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# run 3-fold cross validation to compare the performance of \n",
+    "# (1) BernoulliNB (2) MultinomialNB with TF vectors (3) MultinomialNB with boolean vectors\n",
+    "\n",
+    "# Your code starts here\n",
+    "nb_clf_pipe = Pipeline([('vect', CountVectorizer(encoding='latin-1', binary=False)),('nb', MultinomialNB())])\n",
+    "scores = cross_val_score(nb_clf_pipe, X, y, cv=3)\n",
+    "avg=sum(scores)/len(scores)\n",
+    "print(avg)\n",
+    "nb_clf_pipe = Pipeline([('vect', CountVectorizer(encoding='latin-1', binary=False)),('nb', BernoulliNB())])\n",
+    "scores = cross_val_score(nb_clf_pipe, X, y, cv=3)\n",
+    "avg=sum(scores)/len(scores)\n",
+    "print(avg)\n",
+    "nb_clf_pipe = Pipeline([('vect', CountVectorizer(encoding='latin-1', binary=True)),('nb', MultinomialNB())])\n",
+    "scores = cross_val_score(nb_clf_pipe, X, y, cv=3)\n",
+    "avg=sum(scores)/len(scores)\n",
+    "print(avg)\n",
+    "\n",
+    "\n",
+    "def runPipeline(classifier, boolean):\n",
+    "    nb_clf_pipe = Pipeline([('vect', CountVectorizer(encoding='latin-1', binary=boolean)),('nb', classifier)])\n",
+    "    scores = cross_val_score(nb_clf_pipe, X, y, cv=3)\n",
+    "    avg=sum(scores)/len(scores)\n",
+    "    print(classifier, boolean, avg)\n",
+    "    \n",
+    "runPipeline(BernoulliNB(), False)\n",
+    "runPipeline(MultinomialNB(), False)\n",
+    "runPipeline(MultinomialNB(), True)\n",
+    "    \n",
+    "    \n",
+    "    \n",
+    "    \n",
+    "# Your code ends here\n",
+    "\n",
+    "'''\n",
+    "0.55315243657\n",
+    "0.553844611375\n",
+    "0.552306763002\n",
+    "0.560136963721\n",
+    "'''"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 47,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "GeeksforGeeks, is a computer science portal for geeks\n"
+     ]
+    }
+   ],
+   "source": [
+    "my_string = \"{}, is a {} science portal for {}\"\n",
+    "  \n",
+    "print (my_string.format(\"GeeksforGeeks\", \"computer\", \"geeks\")) "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 48,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.5531524365695574 | Accuracy using BernoulliNB(alpha=1.0, binarize=0.0, class_prior=None, fit_prior=True) -- and booleans? False\n",
+      "0.5595474569680894 | Accuracy using MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True) -- and booleans? False\n",
+      "0.5601369637205256 | Accuracy using MultinomialNB(alpha=1.0, class_prior=None, fit_prior=True) -- and booleans? True\n"
+     ]
+    }
+   ],
+   "source": [
+    "\n",
+    "def runPipeline(classifier, boolean):\n",
+    "    nb_clf_pipe = Pipeline([('vect', CountVectorizer(encoding='latin-1', binary=boolean)),('nb', classifier)])\n",
+    "    scores = cross_val_score(nb_clf_pipe, X, y, cv=3)\n",
+    "    avg=sum(scores)/len(scores)\n",
+    "    pretty_line = \"{} | Accuracy using {} -- and booleans? {}\"\n",
+    "    print(pretty_line.format(avg, classifier, boolean))\n",
+    "    \n",
+    "runPipeline(BernoulliNB(), False)\n",
+    "runPipeline(MultinomialNB(), False)\n",
+    "runPipeline(MultinomialNB(), True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 53,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'A series of escapades demonstrating the adage that what is good for the goose is also good for the gander , some of which occasionally amuses but none of which amounts to much of a story .'"
+      ]
+     },
+     "execution_count": 53,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "type(X)\n",
+    "X[0]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 63,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3,\n",
+       "       3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,\n",
+       "       2, 2, 3, 1, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 3, 2,\n",
+       "       4, 3, 2, 3, 3, 3, 2, 2, 4, 2, 3, 4, 2, 2, 2, 1, 2, 2, 2, 3, 2, 2,\n",
+       "       2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 1, 0, 2, 0, 2, 1, 1, 1, 2, 2,\n",
+       "       1, 2, 2, 2, 2, 2, 3, 4, 4, 3, 3, 3, 3, 4, 2, 2, 2, 2, 2, 2, 2, 1,\n",
+       "       2, 3, 2, 1, 2, 1, 1, 2, 1, 1, 2, 2, 2, 1, 2, 2, 1, 2, 3, 3, 3, 1,\n",
+       "       2, 2, 1, 0, 2, 0, 1, 2, 1, 1, 2, 2, 4, 3, 2, 2, 3, 2, 4, 2, 3, 2,\n",
+       "       4, 3, 3, 3, 4, 2, 4, 4, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2,\n",
+       "       1, 2])"
+      ]
+     },
+     "execution_count": 63,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "type(y)\n",
+    "y[:200]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Optional: use external linguistic resources such as stemmer"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 204,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.feature_extraction.text import CountVectorizer\n",
+    "import nltk.stem\n",
+    "\n",
+    "english_stemmer = nltk.stem.SnowballStemmer('english')\n",
+    "class StemmedCountVectorizer(CountVectorizer):\n",
+    "    def build_analyzer(self):\n",
+    "        analyzer = super(StemmedCountVectorizer, self).build_analyzer()\n",
+    "        return lambda doc: ([english_stemmer.stem(w) for w in analyzer(doc)])\n",
+    "\n",
+    "stem_vectorizer = StemmedCountVectorizer(min_df=3, analyzer=\"word\")\n",
+    "X_train_stem_vec = stem_vectorizer.fit_transform(X_train)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 194,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(93636, 9968)\n",
+      "[[0 0 0 ..., 0 0 0]]\n",
+      "9968\n",
+      "[('disloc', 2484), ('surgeon', 8554), ('camaraderi', 1341), ('sketchiest', 7943), ('dedic', 2244), ('impud', 4376), ('adopt', 245), ('worker', 9850), ('buy', 1298), ('systemat', 8623)]\n",
+      "245\n"
+     ]
+    }
+   ],
+   "source": [
+    "# check the content of a document vector\n",
+    "print(X_train_stem_vec.shape)\n",
+    "print(X_train_stem_vec[0].toarray())\n",
+    "\n",
+    "# check the size of the constructed vocabulary\n",
+    "print(len(stem_vectorizer.vocabulary_))\n",
+    "\n",
+    "# print out the first 10 items in the vocabulary\n",
+    "print(list(stem_vectorizer.vocabulary_.items())[:10])\n",
+    "\n",
+    "# check word index in vocabulary\n",
+    "print(stem_vectorizer.vocabulary_.get('adopt'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

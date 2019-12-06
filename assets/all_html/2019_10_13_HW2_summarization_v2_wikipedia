@@ -1,0 +1,524 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# HOW TO SUMMARIZE IN PYTHON\n",
+    "Following [this tutorial!](https://stackabuse.com/text-summarization-with-nltk-in-python/) | 10-13-19\n",
+    "## STEP 1: GET THE DATA!!"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 1a: Import libraries"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import bs4 as bs\n",
+    "import urllib.request\n",
+    "import re"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 1b: Use the libraries to scrape the WHOLE INTERNET!! (jk just this page)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# url = 'https://en.wikipedia.org/wiki/Lizard'\n",
+    "# url = 'https://en.wikipedia.org/wiki/cat'\n",
+    "url = 'https://en.wikipedia.org/wiki/Naive_Bayes_classifier'\n",
+    "# url = 'https://en.wikipedia.org/wiki/Machine_learning' # good at 20 words\n",
+    "# url = 'https://en.wikipedia.org/wiki/Artificial_intelligence' # good at 30 words\n",
+    "# scraped_data = urllib.request.urlopen('https://en.wikipedia.org/wiki/Artificial_intelligence')\n",
+    "# scraped_data = urllib.request.urlopen('https://en.wikipedia.org/wiki/Harry_Potter_and_the_Philosopher%27s_Stone')\n",
+    "scraped_data = urllib.request.urlopen(url)\n",
+    "article = scraped_data.read()\n",
+    "parsed_article = bs.BeautifulSoup(article,'lxml')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 1c: Use `find_all` from `BeautifulSoup` to get all of the p tags"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "paragraphs = parsed_article.find_all('p')\n",
+    "article_text = \"\"\n",
+    "for p in paragraphs:\n",
+    "    article_text += p.text"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'In machine learning, naïve Bayes classifiers are a family of simple \"probabilistic classifiers\" based on applying Bayes\\' theorem with strong (naïve) independence assumptions between the features. They are among the simplest Bayesian network models.[1]\\nNaïve Bayes has been studied extensively since the 1960s. It was introduced (though not under that name) into the text retrieval community in the early 1960s,[2] and remains a popular (baseline) method for text categorization, the problem of judging documents as belonging to one category or the other (such as spam or legitimate, sports or politics, etc.) with word frequencies as the features. With appropriate pre-processing, it is competitive in this domain with more advanced methods including support vector machines.[3] It also finds application in automatic medical diagnosis.[4]\\nNaïve Bayes classifiers are highly scalable, requiring a number of parameters linear in the number of variables (features/predictors) in a learning problem. Max'"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "article_text[:1000]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 2: CLEAN (& preprocess) THE DATA!! "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 2a: Use regex and `re.sub` to remove square brackets and extra spaces from ORIGINAL article_text"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'In machine learning, naïve Bayes classifiers are a family of simple \"probabilistic classifiers\" based on applying Bayes\\' theorem with strong (naïve) independence assumptions between the features. They are among the simplest Bayesian network models. Naïve Bayes has been studied extensively since the 1960s. It was introduced (though not under that name) into the text retrieval community in the early 1960s, and remains a popular (baseline) method for text categorization, the problem of judging documents as belonging to one category or the other (such as spam or legitimate, sports or politics, etc.) with word frequencies as the features. With appropriate pre-processing, it is competitive in this domain with more advanced methods including support vector machines. It also finds application in automatic medical diagnosis. Naïve Bayes classifiers are highly scalable, requiring a number of parameters linear in the number of variables (features/predictors) in a learning problem. Maximum-likelih'"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "article_text = re.sub(r'\\[[0-9]*\\]', '', article_text)\n",
+    "article_text = re.sub(r'\\s+', ' ', article_text)\n",
+    "article_text[:1000]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 2b: Use regex and `re.sub` to remove extra characters and digits for a new FORMATTED_TEXT variable"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "formatted_article_text = re.sub('[^a-zA-Z]', ' ', article_text)\n",
+    "formatted_article_text = re.sub(r'\\s+', ' ', formatted_article_text)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'In machine learning na ve Bayes classifiers are a family of simple probabilistic classifiers based on applying Bayes theorem with strong na ve independence assumptions between the features They are among the simplest Bayesian network models Na ve Bayes has been studied extensively since the s It was introduced though not under that name into the text retrieval community in the early s and remains a popular baseline method for text categorization the problem of judging documents as belonging to one category or the other such as spam or legitimate sports or politics etc with word frequencies as the features With appropriate pre processing it is competitive in this domain with more advanced methods including support vector machines It also finds application in automatic medical diagnosis Na ve Bayes classifiers are highly scalable requiring a number of parameters linear in the number of variables features predictors in a learning problem Maximum likelihood training can be done by evaluati'"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "formatted_article_text[:1000]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 3: TOKENIZE SENTENCES!!"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['In machine learning, naïve Bayes classifiers are a family of simple \"probabilistic classifiers\" based on applying Bayes\\' theorem with strong (naïve) independence assumptions between the features.',\n",
+       " 'They are among the simplest Bayesian network models.',\n",
+       " 'Naïve Bayes has been studied extensively since the 1960s.',\n",
+       " 'It was introduced (though not under that name) into the text retrieval community in the early 1960s, and remains a popular (baseline) method for text categorization, the problem of judging documents as belonging to one category or the other (such as spam or legitimate, sports or politics, etc.)',\n",
+       " 'with word frequencies as the features.']"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "import nltk\n",
+    "sentence_list = nltk.sent_tokenize(article_text)\n",
+    "sentence_list[:5]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 4: FIND WORD FREQUENCY, WEIGHTED!!"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 4a: Remove Stopwords"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "stopwords = nltk.corpus.stopwords.words('english')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 4b: Tokenize Words & DIY Frequency Distribution "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "word_frequencies = {}\n",
+    "for word in nltk.word_tokenize(formatted_article_text):\n",
+    "    if word not in stopwords:\n",
+    "        if word not in word_frequencies.keys():\n",
+    "            word_frequencies[word] = 1\n",
+    "        else:\n",
+    "            word_frequencies[word] += 1"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 4c: Calculate Weighted Frequency "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "max_frequency = max(word_frequencies.values())\n",
+    "for word in word_frequencies.keys():\n",
+    "    word_frequencies[word] = (word_frequencies[word]/max_frequency)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 5: CALCULATE SENTENCE SCORES"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "in\n",
+      "machine\n",
+      "learning\n",
+      ",\n",
+      "naïve\n",
+      "bayes\n",
+      "classifiers\n",
+      "are\n",
+      "a\n",
+      "family\n",
+      "of\n",
+      "simple\n",
+      "``\n",
+      "probabilistic\n",
+      "classifiers\n",
+      "''\n",
+      "based\n",
+      "on\n",
+      "applying\n",
+      "bayes\n",
+      "'\n",
+      "theorem\n",
+      "with\n",
+      "strong\n",
+      "(\n",
+      "naïve\n",
+      ")\n",
+      "independence\n",
+      "assumptions\n",
+      "between\n",
+      "the\n",
+      "features\n",
+      ".\n"
+     ]
+    }
+   ],
+   "source": [
+    "## ILLUSTRATIVE EXAMPLE\n",
+    "## Nothing removed\n",
+    "for sent in sentence_list[:1]:\n",
+    "    for word in nltk.word_tokenize(sent.lower()):\n",
+    "        print(word)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "machine\n",
+      "learning\n",
+      "classifiers\n",
+      "family\n",
+      "simple\n",
+      "probabilistic\n",
+      "classifiers\n",
+      "based\n",
+      "applying\n",
+      "theorem\n",
+      "strong\n",
+      "independence\n",
+      "assumptions\n",
+      "features\n"
+     ]
+    }
+   ],
+   "source": [
+    "## ILLUSTRATIVE EXAMPLE\n",
+    "## Stopwords etc. removed\n",
+    "## We are ONLY assigning values/weights to the words in the sentences that are inside our freq dist!\n",
+    "\n",
+    "for sent in sentence_list[:1]:\n",
+    "    for word in nltk.word_tokenize(sent.lower()):\n",
+    "        if word in word_frequencies.keys():\n",
+    "            print(word)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sentence_scores = {}\n",
+    "for sent in sentence_list:\n",
+    "    for word in nltk.word_tokenize(sent.lower())[:50]:\n",
+    "        if word in word_frequencies.keys():\n",
+    "            if len(sent.split(' ')) < 30:\n",
+    "                if sent not in sentence_scores.keys():\n",
+    "                    sentence_scores[sent] = word_frequencies[word]\n",
+    "                else:\n",
+    "                    sentence_scores[sent] += word_frequencies[word]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[('We first segment the data by the class, and then compute the mean and variance of x {\\\\displaystyle x} in each class.',\n",
+       "  3.283018867924528),\n",
+       " ('For example, the naive Bayes classifier will make the correct MAP decision rule classification so long as the correct class is more probable than any other class.',\n",
+       "  2.773584905660377),\n",
+       " ('Like the multinomial model, this model is popular for document classification tasks, where binary term occurrence features are used rather than term frequencies.',\n",
+       "  2.7169811320754724),\n",
+       " ('For example, suppose the training data contains a continuous attribute, x {\\\\displaystyle x} .',\n",
+       "  2.7169811320754715),\n",
+       " ('The discussion so far has derived the independent feature model, that is, the naive Bayes probability model.',\n",
+       "  2.622641509433962),\n",
+       " ('If a given class and feature value never occur together in the training data, then the frequency-based probability estimate will be zero.',\n",
+       "  2.4150943396226414),\n",
+       " ('Note that a naive Bayes classifier with a Bernoulli event model is not the same as a multinomial NB classifier with frequency counts truncated to one.',\n",
+       "  2.377358490566038),\n",
+       " ('The assumptions on distributions of features are called the event model of the Naive Bayes classifier.',\n",
+       "  2.2264150943396226),\n",
+       " ('This is the event model typically used for document classification, with events representing the occurrence of a word in a single document (see bag of words assumption).',\n",
+       "  2.2264150943396226),\n",
+       " ('In this manner, the overall classifier can be robust enough to ignore serious deficiencies in its underlying naive probability model.',\n",
+       "  2.2075471698113205)]"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sorted_sentences = sorted(sentence_scores.items(), key=lambda kv: kv[1], reverse=True)\n",
+    "sorted_sentences[:10]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'We first segment the data by the class, and then compute the mean and variance of x {\\\\displaystyle x} in each class.For example, the naive Bayes classifier will make the correct MAP decision rule classification so long as the correct class is more probable than any other class.Like the multinomial model, this model is popular for document classification tasks, where binary term occurrence features are used rather than term frequencies.For example, suppose the training data contains a continuous attribute, x {\\\\displaystyle x} .The discussion so far has derived the independent feature model, that is, the naive Bayes probability model.'"
+      ]
+     },
+     "execution_count": 16,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "summary = [sent[0] for sent in sorted_sentences[:5]]\n",
+    "''.join(summary)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'We first segment the data by the class, and then compute the mean and variance of x {\\\\displaystyle x} in each class.For example, the naive Bayes classifier will make the correct MAP decision rule classification so long as the correct class is more probable than any other class.Like the multinomial model, this model is popular for document classification tasks, where binary term occurrence features are used rather than term frequencies.For example, suppose the training data contains a continuous attribute, x {\\\\displaystyle x} .The discussion so far has derived the independent feature model, that is, the naive Bayes probability model.'"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "''.join(summary).strip()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "'We first segment the data by the class, and then compute the mean and variance of x {\\\\displaystyle x} in each class.'"
+      ]
+     },
+     "execution_count": 18,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "summary_2 = [sent[0] for sent in sentence_scores.items() if sent[1] > 3]\n",
+    "''.join(summary_2).strip()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

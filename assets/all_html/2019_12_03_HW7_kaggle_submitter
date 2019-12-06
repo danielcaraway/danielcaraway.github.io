@@ -1,0 +1,117 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'pd' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-1-ec0ffcc8cd61>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mtrain\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mpd\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mread_csv\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0;34m\"kaggle-sentiment/train.tsv\"\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mdelimiter\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0;34m'\\t'\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      2\u001b[0m \u001b[0my\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mtrain\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'Sentiment'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvalues\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m \u001b[0mX\u001b[0m\u001b[0;34m=\u001b[0m\u001b[0mtrain\u001b[0m\u001b[0;34m[\u001b[0m\u001b[0;34m'Phrase'\u001b[0m\u001b[0;34m]\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mvalues\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m \u001b[0mpred_vec\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mbigram_tv_v3\u001b[0m \u001b[0;31m# 60.4\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mNameError\u001b[0m: name 'pd' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "\n",
+    "train=pd.read_csv(\"kaggle-sentiment/train.tsv\", delimiter='\\t')\n",
+    "y=train['Sentiment'].values\n",
+    "X=train['Phrase'].values\n",
+    "\n",
+    "pred_vec = bigram_tv_v3 # 60.4\n",
+    "\n",
+    "\n",
+    "test = pd.read_csv(\"kaggle-sentiment/test.tsv\", delimiter='\\t')\n",
+    "k_id = test['PhraseId']\n",
+    "k_text = test['Phrase']\n",
+    "\n",
+    "# k_vec = bigram_tv_v3.transform(k_text)\n",
+    "# k_vec\n",
+    "\n",
+    "def get_kaggle_test_train_vec(X,y,vectorizer):\n",
+    "    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=None, random_state=0)\n",
+    "    X_train_vec = vectorizer.fit_transform(X_train)\n",
+    "#     X_test_vec = vectorizer.transform(X_test)\n",
+    "    return X_train_vec, y_train,\n",
+    "\n",
+    "def do_the_kaggle(X,y,vec):\n",
+    "    X_train_vec, y_train = get_kaggle_test_train_vec(X,y,vec)\n",
+    "    svm_clf = LinearSVC(C=1)\n",
+    "    k_vec = pred_vec.transform(k_text)\n",
+    "    print(len(X), X_train_vec.shape, k_vec.shape)\n",
+    "\n",
+    "    prediction = svm_clf.fit(X_train_vec,y_train).predict(k_vec)\n",
+    "    kaggle_submission = zip(k_id, prediction)\n",
+    "    outf=open('kaggle_submission_linearSVC_v8.csv', 'w')\n",
+    "    outf.write('PhraseId,Sentiment\\n')\n",
+    "    for x, value in enumerate(kaggle_submission): outf.write(str(value[0]) + ',' + str(value[1]) + '\\n')\n",
+    "    outf.close()\n",
+    "    print('prediction complete')\n",
+    "\n",
+    "do_the_kaggle(X,y,pred_vec)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

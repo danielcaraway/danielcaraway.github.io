@@ -1,0 +1,164 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Weka SMO Feature Weighting"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(1165, 2)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# the feature file is an edited copy of Weka's MultinomialNB output\n",
+    "import pandas as pd\n",
+    "weka_output = pd.read_csv('Weka-SMO-movie-review-weight.tsv', delimiter='\\t')\n",
+    "print(weka_output.shape)\n",
+    "weights = weka_output['weight'].values\n",
+    "features = weka_output['token'].values\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(1.0299, 'everything')\n",
+      "(1.0387, 'entertaining')\n",
+      "(1.0463, 'solid')\n",
+      "(1.0498, 'easily')\n",
+      "(1.0644, 'follows')\n",
+      "(1.0691, 'm')\n",
+      "(1.091, 'view')\n",
+      "(1.1209, 'good')\n",
+      "(1.1213, 'light')\n",
+      "(1.1237, 'excellent')\n",
+      "(1.1345, 'truman')\n",
+      "(1.1521, 'perfectly')\n",
+      "(1.1981, 'using')\n",
+      "(1.2062, 'overall')\n",
+      "(1.2675, 'seen')\n",
+      "(1.2773, 'fun')\n",
+      "(1.2783, 'back')\n",
+      "(1.3142, 'terrific')\n",
+      "(1.4153, 'flaws')\n",
+      "(1.8324, 'memorable')\n"
+     ]
+    }
+   ],
+   "source": [
+    "feature_ranks = sorted(zip(weights, features))\n",
+    "\n",
+    "# print the words with highest positive weight \n",
+    "for i in range(len(feature_ranks)-20, len(feature_ranks)):\n",
+    "    print(feature_ranks[i])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "(-1.9298, 'worst')\n",
+      "(-1.7567, 'unfortunately')\n",
+      "(-1.589, 'boring')\n",
+      "(-1.5658, 'bad')\n",
+      "(-1.5652, 'ridiculous')\n",
+      "(-1.5648, 'awful')\n",
+      "(-1.4931, 'filmmakers')\n",
+      "(-1.3724, 'looks')\n",
+      "(-1.3459999999999999, 'mess')\n",
+      "(-1.3187, 'lame')\n",
+      "(-1.3014, 'script')\n",
+      "(-1.2939, 'somewhere')\n",
+      "(-1.2823, 'any')\n",
+      "(-1.2474, 'material')\n",
+      "(-1.2257, 'bland')\n",
+      "(-1.2154, 'terrible')\n",
+      "(-1.1767, 'only')\n",
+      "(-1.145, 'falls')\n",
+      "(-1.136, '*')\n",
+      "(-1.1291, 'plot')\n"
+     ]
+    }
+   ],
+   "source": [
+    "# print the words with highest negative weight\n",
+    "for i in range(0, 20):\n",
+    "    print(feature_ranks[i])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# if the model is to classify more than two categories, e.g. 20 categories in the 20newsgroup data\n",
+    "# because SMO uses one-vs-one approach, it actually creates 190 binary classifiers\n",
+    "# you will find feature weights for each binary classifier, started with lines like\n",
+    "\n",
+    "# \"Classifier for classes: alt.atheism, comp.graphics\"\n",
+    "# \"Classifier for classes: alt.atheism, comp.os.ms-windows.misc\"\n",
+    "# ...\n",
+    "# \"Classifier for classes: talk.politics.misc, talk.religion.misc\"\n",
+    "\n",
+    "# You can sort individual list and check the most indicative features for each binary classifier"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

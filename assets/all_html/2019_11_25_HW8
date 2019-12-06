@@ -1,0 +1,737 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# HW 8: Topic Modeling with LDA"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "## =======================================================\n",
+    "## IMPORTING\n",
+    "## =======================================================\n",
+    "import os\n",
+    "def get_data_from_files(path):\n",
+    "    directory = os.listdir(path)\n",
+    "    results = []\n",
+    "    for file in directory:\n",
+    "        f=open(path+file,  encoding = \"ISO-8859-1\")\n",
+    "        results.append(f.read())\n",
+    "        f.close()\n",
+    "    return results\n",
+    "\n",
+    "\n",
+    "## =======================================================\n",
+    "## MODELING\n",
+    "## =======================================================\n",
+    "import pandas as pd\n",
+    "from sklearn.decomposition import LatentDirichletAllocation\n",
+    "from sklearn.feature_extraction.text import CountVectorizer\n",
+    "import gensim\n",
+    "from gensim.utils import simple_preprocess\n",
+    "from gensim.parsing.preprocessing import STOPWORDS\n",
+    "\n",
+    "def run_lda(data,n_components, cv):\n",
+    "    lda_vec = cv.fit_transform(data)\n",
+    "    lda_columns = cv.get_feature_names()\n",
+    "    corpus = pd.DataFrame(lda_vec.toarray(), columns = lda_columns)\n",
+    "    lda = LatentDirichletAllocation(n_components=n_components, max_iter=10, \n",
+    "                                    learning_method='online')\n",
+    "    lda_model = lda.fit_transform(lda_vec)\n",
+    "    print_topics(lda, cv)\n",
+    "    return lda_model, lda, lda_vec, cv\n",
+    "\n",
+    "\n",
+    "## =======================================================\n",
+    "## HELPERS\n",
+    "## =======================================================\n",
+    "import numpy as np\n",
+    "np.random.seed(210)\n",
+    "\n",
+    "def print_topics(model, vectorizer, top_n=10):\n",
+    "    for idx, topic in enumerate(model.components_):\n",
+    "        print(\"Topic %d:\" % (idx))\n",
+    "        print([(vectorizer.get_feature_names()[i], topic[i])\n",
+    "                        for i in topic.argsort()[:-top_n - 1:-1]])\n",
+    "        \n",
+    "\n",
+    "## =======================================================\n",
+    "## VISUALIZING\n",
+    "## =======================================================        \n",
+    "import pyLDAvis.sklearn as LDAvis\n",
+    "import pyLDAvis\n",
+    "\n",
+    "def start_vis(lda, lda_vec, cv):\n",
+    "    panel = LDAvis.prepare(lda, lda_vec, cv, mds='tsne')\n",
+    "#     pyLDAvis.show(panel)\n",
+    "    pyLDAvis.save_html(panel, 'HW8_lda_all_2.html')\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# DATA SET 1\n",
+    "# data = get_data_from_files('Dog_Hike/')\n",
+    "# lda_model, lda, lda_vec, cv = run_lda(data)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# DATA SET 2\n",
+    "data_fd = get_data_from_files('110/110-f-d/')\n",
+    "data_fr = get_data_from_files('110/110-f-r/')\n",
+    "data_md = get_data_from_files('110/110-m-d/')\n",
+    "data_mr = get_data_from_files('110/110-m-r/')\n",
+    "\n",
+    "female_data = data_fd + data_fr \n",
+    "male_data = data_md + data_mr\n",
+    "dem_data = data_md + data_fd\n",
+    "rep_data = data_mr + data_fr\n",
+    "\n",
+    "all_data = female_data + male_data\n",
+    "\n",
+    "# DATA SET 2 -- SMALL\n",
+    "female_data_sm = data_fd[:10] + data_fr[:10] \n",
+    "male_data_sm = data_md[:10] + data_mr[:10]\n",
+    "dem_data = data_md[:10] + data_fd[:10]\n",
+    "rep_data = data_mr[:10] + data_fr[:10]\n",
+    "\n",
+    "all_data_sm = female_data_sm + male_data_sm"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## TEST 1: Starting Point"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Topic 0:\n",
+      "[('the', 785.0256064179524), ('to', 645.6508076986827), ('of', 563.3439173262947), ('and', 542.7164636391508), ('that', 445.9161141427595), ('we', 267.91064217185743), ('in', 259.49073846656427), ('is', 246.60000754980436), ('this', 224.9582831133843), ('it', 190.17402853199783)]\n",
+      "Topic 1:\n",
+      "[('and', 209.6750086441383), ('the', 192.9853786586076), ('of', 170.17785974470274), ('to', 169.70137718746872), ('that', 144.5421140279574), ('in', 113.54346252014587), ('we', 83.96767998571751), ('for', 75.05958453892264), ('have', 73.0637394952233), ('this', 64.931179971705)]\n",
+      "Topic 2:\n",
+      "[('the', 350.10927536238313), ('to', 197.89358554078555), ('of', 146.67751590105448), ('in', 145.35814968113394), ('that', 125.02685414884509), ('and', 124.73104608809528), ('for', 87.16774469308824), ('this', 70.90221338618404), ('have', 68.46045981739343), ('are', 62.314452707063005)]\n",
+      "Topic 3:\n",
+      "[('the', 71961.31057183248), ('to', 44705.23814674544), ('of', 41455.018971298385), ('and', 39039.12153767716), ('that', 26890.762686276157), ('in', 24309.698791032286), ('we', 17147.456346668612), ('is', 16298.293847996309), ('this', 15457.141160161287), ('for', 13903.32208440825)]\n"
+     ]
+    }
+   ],
+   "source": [
+    "cv = CountVectorizer()\n",
+    "lda_model, lda, lda_vec, cv = run_lda(all_data_sm, 4, cv)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## TEST 2: Removing Stopwords"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Topic 0:\n",
+      "[('mr', 3293.975742344425), ('doc', 2903.989863420596), ('text', 2801.4284727251625), ('docno', 2787.096517516463), ('house', 2491.3656167861145), ('speaker', 1936.7215609139132), ('people', 1880.9648493388456), ('american', 1558.8122415826244), ('representatives', 1508.5406616758924), ('time', 1445.4153209492938)]\n",
+      "Topic 1:\n",
+      "[('mr', 1443.8069009953228), ('going', 949.510530729654), ('house', 773.5675529576582), ('congress', 737.9341648465683), ('think', 722.0791364905554), ('speaker', 700.5863599632792), ('president', 691.3103457691248), ('know', 670.4932338000776), ('want', 665.1242629553672), ('people', 663.164365181927)]\n",
+      "Topic 2:\n",
+      "[('mr', 59.28095347111776), ('doc', 51.89402995488438), ('docno', 48.53447125156012), ('text', 35.85343160861242), ('speaker', 34.049654220877876), ('house', 31.122051220366703), ('people', 24.68145897680303), ('2007', 23.92969861080877), ('representatives', 23.379062772686584), ('act', 21.14284614431352)]\n",
+      "Topic 3:\n",
+      "[('mr', 3613.724855112024), ('text', 2935.1442433738835), ('docno', 2891.163300808986), ('doc', 2803.7861374550125), ('house', 2183.9229859117095), ('speaker', 1845.0051493694714), ('representatives', 1578.2613694988454), ('act', 1550.9527400895213), ('time', 1496.273217639627), ('support', 1481.6126149688046)]\n"
+     ]
+    }
+   ],
+   "source": [
+    "cv = CountVectorizer(stop_words='english')\n",
+    "lda_model, lda, lda_vec, cv = run_lda(all_data_sm, 4, cv)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## TEST 3: Removing Additional Stopwords"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Topic 0:\n",
+      "[('going', 1223.0794213891406), ('think', 860.919891930581), ('want', 806.2802834714961), ('president', 777.5285681797303), ('know', 767.5018698741118), ('members', 764.1493510813899), ('people', 750.5861569902328), ('just', 720.1551397910393), ('important', 652.8674369137636), ('american', 645.5669007150559)]\n",
+      "Topic 1:\n",
+      "[('doc', 492.42201870737074), ('time', 397.20357085486114), ('ms', 342.7829248457909), ('support', 302.8679927319846), ('united', 296.5425651983603), ('people', 295.27235945708003), ('lehtinen', 292.6371834944193), ('ros', 288.2906377961998), ('states', 250.1969200834086), ('2007', 241.80896081436128)]\n",
+      "Topic 2:\n",
+      "[('doc', 2823.632847825793), ('people', 1710.2262130192466), ('act', 1433.5146752331345), ('time', 1372.7149807390128), ('2007', 1330.628201919425), ('american', 1220.7498374937923), ('energy', 1209.643578081836), ('support', 1143.699753548295), ('ms', 1096.2574658725252), ('today', 1069.482941383811)]\n",
+      "Topic 3:\n",
+      "[('doc', 2383.5729072806735), ('mrs', 1429.9399136208651), ('2007', 1212.198115838467), ('time', 1159.618487288165), ('act', 1118.6419813221924), ('people', 1014.5251239199333), ('support', 1010.3796061815099), ('today', 955.9342316008651), ('american', 844.8905076582939), ('year', 748.9760666328012)]\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn.feature_extraction import text \n",
+    "additional_stopwords = ['mr', 'docno', 'house', \n",
+    "                        'speaker', 'text', 'congress', 'representatives']\n",
+    "stop_words = text.ENGLISH_STOP_WORDS.union(additional_stopwords)\n",
+    "\n",
+    "cv = CountVectorizer(stop_words=stop_words)\n",
+    "lda_model, lda, lda_vec, cv = run_lda(all_data_sm, 4, cv)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## TEST 4: Removing even more stopwords"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Topic 0:\n",
+      "[('support', 32.905659600631736), ('american', 32.16964698879218), ('going', 32.036298544827645), ('just', 31.2133735957517), ('mrs', 30.820314702519457), ('people', 30.44554640882069), ('think', 29.608185251004205), ('act', 27.86855501192981), ('ms', 27.006672641782377), ('chairman', 25.690327259345892)]\n",
+      "Topic 1:\n",
+      "[('going', 1577.4316943010276), ('people', 1198.9148188132745), ('know', 1193.079392138637), ('american', 1100.6620372217196), ('think', 1082.7233852247489), ('just', 992.918926931911), ('mrs', 893.8156720522584), ('president', 856.8484276454437), ('members', 818.3811372587752), ('say', 790.8846707722173)]\n",
+      "Topic 2:\n",
+      "[('people', 2528.4169798402877), ('act', 2302.775033485123), ('support', 2144.682715000717), ('ms', 1837.8462279920489), ('american', 1714.9084127335182), ('2008', 1493.3555849781776), ('energy', 1487.7742875873405), ('country', 1483.7193272898774), ('chairman', 1474.037178080695), ('new', 1401.9773848314558)]\n",
+      "Topic 3:\n",
+      "[('act', 22.94664241586246), ('support', 21.497828804618532), ('going', 15.94381022299248), ('american', 15.675557677179963), ('ms', 15.606433165206985), ('think', 15.2461639824401), ('important', 14.736610471171419), ('like', 14.412796009685895), ('energy', 14.08269856172683), ('chairman', 14.05336746096302)]\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn.feature_extraction import text \n",
+    "additional_stopwords = ['mr', 'docno', 'house', \n",
+    "                        'speaker', 'text', 'congress', 'representatives', \n",
+    "                        'doc', 'time', 'want', 'today', '2007']\n",
+    "stop_words = text.ENGLISH_STOP_WORDS.union(additional_stopwords)\n",
+    "\n",
+    "cv = CountVectorizer(stop_words=stop_words)\n",
+    "lda_model, lda, lda_vec, cv = run_lda(all_data_sm, 4, cv)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## TEST 5: Adding ngrams, removing even more stopwords"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Topic 0:\n",
+      "[('act', 36.66768279270877), ('legislation', 31.070329962489307), ('thank', 28.800527749526104), ('energy', 27.717882874025612), ('states', 26.56695077929489), ('new', 26.51192900533049), ('chairman', 25.907652378757465), ('state', 25.554054301940976), ('work', 25.434945910787366), ('iraq', 25.115253945396947)]\n",
+      "Topic 1:\n",
+      "[('act', 31.612490694934145), ('important', 26.736546127449667), ('2008', 26.37948623500332), ('iraq', 25.109750087949482), ('energy', 23.492239563506164), ('legislation', 23.35996683600637), ('work', 23.310251300327558), ('need', 22.474196453084136), ('children', 22.47097667332001), ('years', 21.385513131529684)]\n",
+      "Topic 2:\n",
+      "[('members', 824.0505496389474), ('important', 765.6314484137072), ('say', 707.2542727357181), ('floor', 633.2985843928423), ('florida', 546.9139022950272), ('health', 535.7953945001675), ('iraq', 534.0588353672365), ('care', 530.8908230252921), ('need', 528.3923653890445), ('like', 523.8641693579322)]\n",
+      "Topic 3:\n",
+      "[('act', 2432.6609537332497), ('energy', 1621.4265716042808), ('2008', 1610.0131321230358), ('chairman', 1535.6103817602768), ('year', 1521.416880654621), ('country', 1475.5741701996863), ('new', 1435.1806639999768), ('years', 1405.7550672255463), ('legislation', 1378.4426264568121), ('states', 1362.3151674216404)]\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn.feature_extraction import text \n",
+    "additional_stopwords = ['mr', 'docno', 'house', \n",
+    "                        'speaker', 'text', 'congress', 'representatives', \n",
+    "                        'doc', 'time', 'want', 'today', '2007', 'support', 'american', \n",
+    "                        'president', 'ms', 'mrs', 'going', 'think', 'just', 'know', \n",
+    "                        'make', 'people']\n",
+    "stop_words = text.ENGLISH_STOP_WORDS.union(additional_stopwords)\n",
+    "\n",
+    "cv = CountVectorizer(ngram_range = (1,2), stop_words = stop_words)\n",
+    "lda_model, lda, lda_vec, cv = run_lda(all_data_sm, 4, cv)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## TEST 6: Forcing bigrams with original stopword list\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Topic 0:\n",
+      "[('mr speaker', 632.5349408276707), ('american people', 485.5510629318502), ('think important', 447.9457027153469), ('mr meek', 440.3107796529081), ('meek florida', 438.72173832899045), ('house representatives', 382.97412635757473), ('make sure', 309.164785979551), ('docno text', 305.147959904683), ('working group', 305.0524233920746), ('doc doc', 301.3262271699989)]\n",
+      "Topic 1:\n",
+      "[('house representatives', 50.97188635507018), ('doc docno', 42.769248255056624), ('mr speaker', 41.148567987312866), ('doc doc', 40.84180810775652), ('text doc', 39.578877530676586), ('docno text', 37.53809193126818), ('mrs emerson', 24.586193677070494), ('2007 docno', 24.310674299417535), ('text mr', 20.746781420609015), ('docno mrs', 19.32900027780685)]\n",
+      "Topic 2:\n",
+      "[('mr speaker', 126.35847067979593), ('text doc', 103.61902259209496), ('house representatives', 97.77531484638467), ('mr smith', 96.12778028812302), ('smith nebraska', 95.954222917317), ('doc docno', 95.92069830251347), ('doc doc', 91.52929164473929), ('docno text', 86.44795970464406), ('docno mr', 62.658149787268485), ('text mr', 56.71216325678556)]\n",
+      "Topic 3:\n",
+      "[('house representatives', 2827.3794762422403), ('docno text', 2674.460128152421), ('doc docno', 2669.916043680545), ('text doc', 2667.874768197915), ('doc doc', 2637.738900648014), ('mr speaker', 2408.779675859461), ('2007 docno', 1702.8704058200706), ('text mr', 1119.148719797673), ('docno mr', 1115.978127370457), ('united states', 1026.6784978488581)]\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn.feature_extraction import text \n",
+    "additional_stopwords = ['mr', 'docno', 'house', \n",
+    "                        'speaker', 'text', 'congress', 'representatives', \n",
+    "                        'doc', 'time', 'want', 'today', '2007', 'support', 'american', \n",
+    "                        'president', 'ms', 'mrs', 'going', 'think', 'just', 'know', \n",
+    "                        'make', 'people']\n",
+    "stop_words = text.ENGLISH_STOP_WORDS.union(additional_stopwords)\n",
+    "\n",
+    "cv = CountVectorizer(ngram_range = (2,2), stop_words = \"english\")\n",
+    "lda_model, lda, lda_vec, cv = run_lda(all_data_sm, 4, cv)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## TEST 7: Forcing bigrams with updated stopword list\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Topic 0:\n",
+      "[('ros lehtinen', 287.99674571136654), ('united states', 212.88517979724236), ('yield consume', 95.36334280112975), ('human rights', 94.8310842547404), ('balance ros', 74.09296317153331), ('reserve balance', 61.47549028214522), ('2008 ros', 50.340916667528404), ('lehtinen yield', 46.81060362199631), ('urge colleagues', 46.14316967247467), ('united nations', 42.50270522503713)]\n",
+      "Topic 1:\n",
+      "[('intelligence community', 51.416320979991916), ('united states', 48.861232790683346), ('intelligence authorization', 37.814042876735876), ('fiscal year', 37.7356186429753), ('authorization act', 35.2608918736775), ('act fiscal', 32.68785520063953), ('urge colleagues', 27.182605615462784), ('year 2008', 23.748039708127337), ('2008 reyes', 23.374774560433746), ('men women', 23.329937798969173)]\n",
+      "Topic 2:\n",
+      "[('meek florida', 431.7679323644925), ('working group', 301.1721713543166), ('30 working', 290.61206564754843), ('health care', 246.172378667399), ('florida 30', 183.52869918600052), ('men women', 166.6698494458708), ('united states', 157.05077457149477), ('come floor', 146.09454860653585), ('making sure', 123.27207441064166), ('new direction', 122.30973995889485)]\n",
+      "Topic 3:\n",
+      "[('united states', 830.120488056721), ('health care', 575.4112460113006), ('act 2008', 434.94576322654217), ('urge colleagues', 415.5168665094916), ('men women', 343.6982271182687), ('thank gentleman', 335.853897025432), ('federal government', 275.2428626934973), ('yield consume', 268.9542613469333), ('jones ohio', 256.6152986748394), ('reserve balance', 245.09773932316727)]\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn.feature_extraction import text \n",
+    "additional_stopwords = ['mr', 'docno', 'house', \n",
+    "                        'speaker', 'text', 'congress', 'representatives', \n",
+    "                        'doc', 'time', 'want', 'today', '2007', 'support', 'american', \n",
+    "                        'president', 'ms', 'mrs', 'going', 'think', 'just', 'know', \n",
+    "                        'make', 'people']\n",
+    "stop_words = text.ENGLISH_STOP_WORDS.union(additional_stopwords)\n",
+    "\n",
+    "cv = CountVectorizer(ngram_range = (2,2), stop_words = stop_words)\n",
+    "lda_model, lda, lda_vec, cv = run_lda(all_data_sm, 4, cv)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## TEST 8: Expanding the number of \"topics\""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Topic 0:\n",
+      "[('work', 13.793059995499286), ('important', 13.76604273636567), ('act', 13.419789130317374), ('new', 12.914807584599824), ('members', 11.19910818147834), ('2008', 10.84333360880385), ('year', 10.707137102124278), ('like', 10.088574848446312), ('country', 10.051885123102622), ('need', 10.01031227172015)]\n",
+      "Topic 1:\n",
+      "[('act', 16.041556963677937), ('country', 10.729368181179112), ('states', 10.650578851005351), ('need', 10.603701731897639), ('like', 10.413134054267427), ('new', 10.230674737502392), ('years', 10.13819558251737), ('way', 9.93888802854641), ('iraq', 9.90717281191424), ('members', 9.860314264384956)]\n",
+      "Topic 2:\n",
+      "[('act', 2713.6999413047133), ('important', 1930.6948605105235), ('country', 1883.1870111929861), ('new', 1842.8807471118369), ('2008', 1802.33938646033), ('energy', 1778.5565138571055), ('need', 1762.5379904311105), ('iraq', 1761.984811866405), ('year', 1744.3987767420238), ('legislation', 1707.4305976465012)]\n",
+      "Topic 3:\n",
+      "[('act', 15.155234253650228), ('new', 12.666073929623048), ('year', 11.845172150300439), ('energy', 11.069639979148002), ('important', 10.93396789442089), ('thank', 10.908820911778799), ('years', 9.833527316055916), ('iraq', 9.813196437384686), ('united', 9.6594906706931), ('2008', 9.487692017985761)]\n",
+      "Topic 4:\n",
+      "[('act', 28.118089363778864), ('states', 22.569538051972504), ('united', 22.15151953963809), ('iraq', 21.296216268080116), ('country', 20.155592223462577), ('thank', 19.46879187220822), ('chairman', 19.06162940261678), ('ros lehtinen', 18.650312047792724), ('2008', 18.2624978726425), ('resolution', 18.23370406072209)]\n",
+      "Topic 5:\n",
+      "[('act', 15.951013587525683), ('chairman', 15.056507144625868), ('2008', 14.403812726796247), ('thank', 13.731474454023038), ('like', 13.230855602952436), ('work', 13.037335184930326), ('new', 12.117244698001675), ('iraq', 11.938644857982549), ('legislation', 11.141192962423096), ('year', 11.028360838629808)]\n",
+      "Topic 6:\n",
+      "[('act', 16.879590397688872), ('like', 11.688163721301796), ('legislation', 10.76032008150553), ('health', 10.676334209813014), ('chairman', 10.138702316765912), ('years', 9.415429751114017), ('important', 9.273169040389982), ('states', 9.259411093194316), ('year', 9.206538429428054), ('country', 9.127307496217531)]\n",
+      "Topic 7:\n",
+      "[('act', 14.030049233832814), ('need', 9.7061281330386), ('thank', 8.80905607835847), ('year', 8.73517099627621), ('legislation', 8.62736002401648), ('years', 8.584510569902532), ('important', 8.570163616623374), ('health', 8.37066177068542), ('states', 8.176558707270507), ('2008', 8.07729570855648)]\n",
+      "Topic 8:\n",
+      "[('act', 39.350773376753864), ('country', 25.55947887175521), ('year', 22.269379717957843), ('chairman', 21.500977582131103), ('states', 20.620174638874648), ('energy', 20.593833412392144), ('iraq', 19.607361764193275), ('work', 19.552350624061376), ('years', 18.222282773181643), ('need', 18.139569210736752)]\n",
+      "Topic 9:\n",
+      "[('energy', 12.455685084580635), ('act', 10.387544496758242), ('new', 9.919236694563685), ('tax', 9.677072779076331), ('years', 9.633499540889447), ('country', 9.11970123706493), ('important', 8.843057919354466), ('legislation', 8.724643393993052), ('year', 8.560082355635299), ('2008', 8.369028698110773)]\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn.feature_extraction import text \n",
+    "additional_stopwords = ['mr', 'docno', 'house', \n",
+    "                        'speaker', 'text', 'congress', 'representatives', \n",
+    "                        'doc', 'time', 'want', 'today', '2007', 'support', 'american', \n",
+    "                        'president', 'ms', 'mrs', 'going', 'think', 'just', 'know', \n",
+    "                        'make', 'people']\n",
+    "stop_words = text.ENGLISH_STOP_WORDS.union(additional_stopwords)\n",
+    "\n",
+    "cv = CountVectorizer(ngram_range = (1,2), stop_words = stop_words)\n",
+    "lda_model, lda, lda_vec, cv = run_lda(all_data_sm, 10, cv)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## TEST 9: Removing Even More Stopwords"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Topic 0:\n",
+      "[('energy', 1765.3356449980315), ('iraq', 1714.6507840290355), ('years', 1652.4069549930955), ('health', 1562.106165609075), ('children', 1456.0006219143443), ('colleagues', 1340.1383761100606), ('tax', 1339.5691631891314), ('national', 1277.514421509431), ('care', 1265.2391788785442), ('said', 1258.442467174732)]\n",
+      "Topic 1:\n",
+      "[('ros lehtinen', 237.0685528344471), ('lehtinen', 225.37293294649396), ('ros', 225.1347499414351), ('united', 94.9788698004813), ('lehtinen yield', 75.01904327327165), ('iran', 67.5381317258774), ('florida', 64.83287346361791), ('resolution', 63.01080217738324), ('iraq', 61.46882630806606), ('balance ros', 57.77931673629426)]\n",
+      "Topic 2:\n",
+      "[('energy', 12.1541576615457), ('iraq', 9.734191420342404), ('colleagues', 8.507005660912085), ('national', 8.054744392564626), ('years', 7.726739295506307), ('children', 7.193657333118239), ('americans', 7.145725926178417), ('money', 7.110969926426708), ('america', 6.842671870865755), ('families', 6.829856703051992)]\n",
+      "Topic 3:\n",
+      "[('years', 10.673163126097423), ('iraq', 10.405974512660416), ('united', 9.318625511209426), ('children', 8.862647572286914), ('amendment', 8.233533648721869), ('health', 8.209657890888913), ('national', 8.067410131586898), ('vote', 7.920969412066217), ('million', 7.7291485389213195), ('energy', 7.319163910747757)]\n",
+      "Topic 4:\n",
+      "[('years', 9.936405894601808), ('health', 9.073878089195453), ('energy', 8.445844328553985), ('tax', 8.360775357282732), ('colleagues', 7.879296684221084), ('children', 7.207532062529005), ('national', 7.02256751982236), ('iraq', 7.01406240136335), ('day', 6.808135647304428), ('security', 6.72353992512044)]\n",
+      "Topic 5:\n",
+      "[('tax', 8.672601132973154), ('health', 8.653134234255871), ('iraq', 7.524900453185688), ('united', 7.504503459585607), ('percent', 7.201434579133791), ('right', 7.077860907892128), ('said', 6.984059745162231), ('children', 6.647839782700351), ('years', 6.525051158114006), ('america', 6.5054167523521755)]\n",
+      "Topic 6:\n",
+      "[('energy', 27.332773323261744), ('iraq', 20.57088808669758), ('years', 19.971577282645924), ('tax', 19.553546267678758), ('health', 19.349854645831453), ('children', 18.957246431091022), ('united', 18.548542573513963), ('percent', 18.420402998236717), ('great', 17.976136599478775), ('national', 17.775622760697754)]\n",
+      "Topic 7:\n",
+      "[('iraq', 11.067802282117137), ('years', 10.636273201206663), ('health', 9.989511693374645), ('national', 9.20869973072133), ('energy', 8.691067589066026), ('war', 8.429096976314407), ('said', 8.19836082254055), ('united', 8.074614622228061), ('federal', 8.055613130078656), ('colleagues', 7.886078947937085)]\n",
+      "Topic 8:\n",
+      "[('iraq', 11.964298654015725), ('years', 11.493111286120953), ('energy', 10.655594027889745), ('children', 10.483042085543381), ('way', 9.894276255337934), ('care', 9.11659341209796), ('tax', 8.852003378804378), ('national', 8.525223352811317), ('working', 8.330635873189685), ('colleagues', 8.223063958991043)]\n",
+      "Topic 9:\n",
+      "[('energy', 10.413222137610388), ('health', 9.60589693824922), ('iraq', 9.539767380112075), ('care', 9.1962974138576), ('tax', 8.650530214547592), ('children', 8.521392791864116), ('said', 7.900106401353153), ('america', 7.6471760164072125), ('united', 7.2039278405473475), ('colleagues', 7.081099056080777)]\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn.feature_extraction import text \n",
+    "additional_stopwords = [\n",
+    " '2007',\n",
+    " '2008',\n",
+    " 'act',\n",
+    " 'american',\n",
+    " 'chairman',\n",
+    " 'committee',\n",
+    " 'congress',\n",
+    " 'country',\n",
+    " 'doc',\n",
+    " 'docno',\n",
+    " 'don',\n",
+    " 'floor',\n",
+    " 'going',\n",
+    " 'government',\n",
+    " 'house',\n",
+    " 'important',\n",
+    " 'just',\n",
+    " 'know',\n",
+    " 'legislation',\n",
+    " 'like',\n",
+    " 'madam',\n",
+    " 'make',\n",
+    " 'members',\n",
+    " 'mr',\n",
+    " 'mrs',\n",
+    " 'ms',\n",
+    " 'need',\n",
+    " 'new',\n",
+    " 'people',\n",
+    " 'president',\n",
+    " 'representatives',\n",
+    " 'say',\n",
+    " 'speaker',\n",
+    " 'state',\n",
+    " 'states',\n",
+    " 'support',\n",
+    " 'text',\n",
+    " 'thank',\n",
+    " 'think',\n",
+    " 'time',\n",
+    " 'today',\n",
+    " 'want',\n",
+    " 'work',\n",
+    " 'year'\n",
+    "]\n",
+    "stop_words = text.ENGLISH_STOP_WORDS.union(additional_stopwords)\n",
+    "\n",
+    "cv = CountVectorizer(ngram_range = (1,2), stop_words = stop_words)\n",
+    "lda_model, lda, lda_vec, cv = run_lda(all_data_sm, 10, cv)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "additional_stopwords = ['mr', 'docno', 'house', \n",
+    "                        'speaker', 'text', 'congress', 'representatives', \n",
+    "                        'doc', 'time', 'want', 'today', '2007', 'support', 'american', \n",
+    "                        'president', 'ms', 'mrs', 'going', 'think', 'just', 'know', \n",
+    "                        'make', 'people', 'act', 'thank', 'need', 'work', 'country',\n",
+    "                       'say', 'year', 'chairman', 'new', 'important','2008',\n",
+    "                       'legislation', 'members', 'state', 'states', 'madam', 'floor', \n",
+    "                        'like', 'don', 'government', 'committee']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['2007',\n",
+       " '2008',\n",
+       " 'act',\n",
+       " 'american',\n",
+       " 'chairman',\n",
+       " 'committee',\n",
+       " 'congress',\n",
+       " 'country',\n",
+       " 'doc',\n",
+       " 'docno',\n",
+       " 'don',\n",
+       " 'floor',\n",
+       " 'going',\n",
+       " 'government',\n",
+       " 'house',\n",
+       " 'important',\n",
+       " 'just',\n",
+       " 'know',\n",
+       " 'legislation',\n",
+       " 'like',\n",
+       " 'madam',\n",
+       " 'make',\n",
+       " 'members',\n",
+       " 'mr',\n",
+       " 'mrs',\n",
+       " 'ms',\n",
+       " 'need',\n",
+       " 'new',\n",
+       " 'people',\n",
+       " 'president',\n",
+       " 'representatives',\n",
+       " 'say',\n",
+       " 'speaker',\n",
+       " 'state',\n",
+       " 'states',\n",
+       " 'support',\n",
+       " 'text',\n",
+       " 'thank',\n",
+       " 'think',\n",
+       " 'time',\n",
+       " 'today',\n",
+       " 'want',\n",
+       " 'work',\n",
+       " 'year']"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sorted(additional_stopwords)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## TEST 10: ALL documents across 40 topics"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "scrolled": false
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Topic 0:\n",
+      "[('children', 1.7587778397076301), ('years', 1.5666750618727092), ('iraq', 1.556915690722305), ('health', 1.3496488015112555), ('national', 1.3428709308529294), ('war', 1.3164673291993687), ('energy', 1.2767949403229732), ('oil', 1.261727098817472), ('america', 1.2571810537715866), ('colleagues', 1.2255317040143905)]\n",
+      "Topic 1:\n",
+      "[('iraq', 2.569925360636842), ('years', 2.2865516090727587), ('national', 1.6473154283379028), ('health', 1.547527073303042), ('war', 1.4914948204485374), ('security', 1.473762810653364), ('nation', 1.4716302711848401), ('united', 1.4570678518581972), ('children', 1.4214651233460969), ('percent', 1.389139376099727)]\n",
+      "Topic 2:\n",
+      "[('south mississippi', 5.168997486243519), ('children', 2.6842082558596587), ('taylor mississippi', 2.543477173067218), ('iraq', 2.3722853348636126), ('national', 2.154144508312056), ('million', 2.020630031644396), ('energy', 1.9381247541127267), ('war', 1.8354254445147145), ('years', 1.8317975840417466), ('colleagues', 1.7775782888656277)]\n",
+      "Topic 3:\n",
+      "[('years', 1.9239437502808472), ('national', 1.7486861130854656), ('energy', 1.6223811044758671), ('iraq', 1.4978903806661452), ('amendment', 1.435378288868421), ('children', 1.3764643666292256), ('health', 1.3447813716248922), ('war', 1.2873271928923584), ('united', 1.2837985307634543), ('billion', 1.250692133300797)]\n",
+      "Topic 4:\n",
+      "[('rahall', 38.90973094688447), ('balance rahall', 31.395654582337233), ('rahall yield', 17.578465642250283), ('29 rahall', 12.991697553329114), ('title rahall', 12.729981210717925), ('04 rahall', 11.868671044725543), ('16 rahall', 11.441685144252968), ('pending measure', 10.015804733927633), ('rahall suspend', 9.955667212023354), ('rahall comprehensive', 9.448341736011537)]\n",
+      "Topic 5:\n"
+     ]
+    }
+   ],
+   "source": [
+    "from sklearn.feature_extraction import text \n",
+    "additional_stopwords = [\n",
+    " '2007',\n",
+    " '2008',\n",
+    " 'act',\n",
+    " 'american',\n",
+    " 'chairman',\n",
+    " 'committee',\n",
+    " 'congress',\n",
+    " 'country',\n",
+    " 'doc',\n",
+    " 'docno',\n",
+    " 'don',\n",
+    " 'floor',\n",
+    " 'going',\n",
+    " 'government',\n",
+    " 'house',\n",
+    " 'important',\n",
+    " 'just',\n",
+    " 'know',\n",
+    " 'legislation',\n",
+    " 'like',\n",
+    " 'madam',\n",
+    " 'make',\n",
+    " 'members',\n",
+    " 'mr',\n",
+    " 'mrs',\n",
+    " 'ms',\n",
+    " 'need',\n",
+    " 'new',\n",
+    " 'people',\n",
+    " 'president',\n",
+    " 'representatives',\n",
+    " 'say',\n",
+    " 'speaker',\n",
+    " 'state',\n",
+    " 'states',\n",
+    " 'support',\n",
+    " 'text',\n",
+    " 'thank',\n",
+    " 'think',\n",
+    " 'time',\n",
+    " 'today',\n",
+    " 'want',\n",
+    " 'work',\n",
+    " 'year'\n",
+    "]\n",
+    "stop_words = text.ENGLISH_STOP_WORDS.union(additional_stopwords)\n",
+    "\n",
+    "cv = CountVectorizer(ngram_range = (1,2), stop_words = stop_words)\n",
+    "lda_model, lda, lda_vec, cv = run_lda(all_data, 40, cv)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "start_vis(lda, lda_vec, cv)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

@@ -1,0 +1,457 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# HW8: Topic Modeling"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "## =======================================================\n",
+    "## IMPORTING\n",
+    "## =======================================================\n",
+    "import os\n",
+    "def get_data_from_files(path):\n",
+    "    directory = os.listdir(path)\n",
+    "    results = []\n",
+    "    for file in directory:\n",
+    "        f=open(path+file,  encoding = \"ISO-8859-1\")\n",
+    "        results.append(f.read())\n",
+    "        f.close()\n",
+    "    return results\n",
+    "\n",
+    "\n",
+    "## =======================================================\n",
+    "## MODELING\n",
+    "## =======================================================\n",
+    "import pandas as pd\n",
+    "from sklearn.decomposition import LatentDirichletAllocation\n",
+    "from sklearn.feature_extraction.text import CountVectorizer\n",
+    "import gensim\n",
+    "from gensim.utils import simple_preprocess\n",
+    "from gensim.parsing.preprocessing import STOPWORDS\n",
+    "\n",
+    "def run_lda(data, num_topics, stop_words):\n",
+    "    cv = CountVectorizer(stop_words = stop_words)\n",
+    "    lda_vec = cv.fit_transform(data)\n",
+    "    lda_columns = cv.get_feature_names()\n",
+    "    corpus = pd.DataFrame(lda_vec.toarray(), columns = lda_columns)\n",
+    "    lda = LatentDirichletAllocation(n_components=num_topics, max_iter=10, \n",
+    "                                    learning_method='online')\n",
+    "    lda_model = lda.fit_transform(lda_vec)\n",
+    "    print_topics(lda, cv)\n",
+    "    return lda_model, lda, lda_vec, cv, corpus\n",
+    "\n",
+    "\n",
+    "## =======================================================\n",
+    "## HELPERS\n",
+    "## =======================================================\n",
+    "import numpy as np\n",
+    "np.random.seed(210)\n",
+    "\n",
+    "def print_topics(model, vectorizer, top_n=10):\n",
+    "    for idx, topic in enumerate(model.components_):\n",
+    "        print(\"Topic %d:\" % (idx))\n",
+    "        print([(vectorizer.get_feature_names()[i], topic[i])\n",
+    "                        for i in topic.argsort()[:-top_n - 1:-1]])\n",
+    "        \n",
+    "\n",
+    "## =======================================================\n",
+    "## VISUALIZING\n",
+    "## =======================================================        \n",
+    "import pyLDAvis.sklearn as LDAvis\n",
+    "import pyLDAvis\n",
+    "\n",
+    "def start_vis(lda, lda_vec, cv):\n",
+    "    panel = LDAvis.prepare(lda, lda_vec, cv, mds='tsne')\n",
+    "#     pyLDAvis.show(panel)\n",
+    "    pyLDAvis.save_html(panel, 'FinalProject_lda_2.html')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>0</th>\n",
+       "      <th>labels</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>yeah first_person_pronoun want to address the ...</td>\n",
+       "      <td>yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>umm pamela can pronoun hear first_person_prono...</td>\n",
+       "      <td>yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>its on september th kayla and david first_pers...</td>\n",
+       "      <td>yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>hi ladies first_person_pronoun wanted to tell ...</td>\n",
+       "      <td>yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>lord forgive pronoun pronoun dont know what pr...</td>\n",
+       "      <td>yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>561</td>\n",
+       "      <td>i pray that first_person_pronoun family will r...</td>\n",
+       "      <td>unknown</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>562</td>\n",
+       "      <td>when asked if pronoun had a last statement pro...</td>\n",
+       "      <td>yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>563</td>\n",
+       "      <td>what is about to transpire in a few moments is...</td>\n",
+       "      <td>no</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>564</td>\n",
+       "      <td>none</td>\n",
+       "      <td>yes</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>565</td>\n",
+       "      <td>statement to the media first_person_pronoun at...</td>\n",
+       "      <td>yes</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>566 rows × 2 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                                     0   labels\n",
+       "0    yeah first_person_pronoun want to address the ...      yes\n",
+       "1    umm pamela can pronoun hear first_person_prono...      yes\n",
+       "2    its on september th kayla and david first_pers...      yes\n",
+       "3    hi ladies first_person_pronoun wanted to tell ...      yes\n",
+       "4    lord forgive pronoun pronoun dont know what pr...      yes\n",
+       "..                                                 ...      ...\n",
+       "561  i pray that first_person_pronoun family will r...  unknown\n",
+       "562  when asked if pronoun had a last statement pro...      yes\n",
+       "563  what is about to transpire in a few moments is...       no\n",
+       "564                                               none      yes\n",
+       "565  statement to the media first_person_pronoun at...      yes\n",
+       "\n",
+       "[566 rows x 2 columns]"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "df = pd.read_csv('../death_row_discritized.csv')\n",
+    "\n",
+    "def to_string(tokens):\n",
+    "    try:\n",
+    "        return \" \".join(eval(tokens))\n",
+    "    except:\n",
+    "        return \"error\"\n",
+    "    \n",
+    "df['statement_string'] = df.apply(lambda x: to_string(x['last_statement']), axis=1)\n",
+    "# y=df['vic_kid'].values\n",
+    "y=df['prior_record'].values\n",
+    "y_labels = list(set(y))\n",
+    "X=df['statement_string'].values\n",
+    "\n",
+    "all_df = pd.DataFrame(X)\n",
+    "all_df['labels'] = y\n",
+    "all_df"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Topic 0:\n",
+      "[('police', 15.498393763666396), ('officer', 13.293726335860406), ('justice', 8.575686139667397), ('ye', 8.118290540812445), ('coldblooded', 7.2103022374946715), ('hollered', 7.208622163389597), ('equal', 7.191651994116875), ('human', 6.861131532143653), ('shall', 6.746579925770169), ('extend', 6.1953650299434075)]\n",
+      "Topic 1:\n",
+      "[('holy', 10.411963107103821), ('pinkerton', 8.891806924562207), ('live', 5.73994464843442), ('muslim', 4.872920285114169), ('islam', 4.382778789675088), ('express', 4.231767059514237), ('moment', 4.15625504724466), ('allah', 3.95341584327608), ('dungeon', 3.4900957139663564), ('fear', 3.484549451930885)]\n",
+      "Topic 2:\n",
+      "[('black', 10.576045681366006), ('forward', 10.079796718480985), ('lynching', 8.866536281296659), ('america', 8.624390050450529), ('continue', 7.877887015179041), ('happening', 7.764868809289017), ('state', 7.313737231383107), ('marching', 6.300665405590482), ('carry', 6.292434820202825), ('people', 6.108769496284327)]\n",
+      "Topic 3:\n",
+      "[('first_person_pronoun', 4163.850036911061), ('pronoun', 2575.8194241030806), ('love', 605.8537134654808), ('family', 286.6706374354036), ('know', 280.53421731789035), ('thank', 236.92298282232363), ('sorry', 224.59967868722484), ('want', 206.70383682285978), ('god', 189.26574251976234), ('yall', 188.68634502013964)]\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/Users/danielcaraway/anaconda3/lib/python3.7/site-packages/pyLDAvis/_prepare.py:257: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version\n",
+      "of pandas will change to not sort by default.\n",
+      "\n",
+      "To accept the future behavior, pass 'sort=False'.\n",
+      "\n",
+      "To retain the current behavior and silence the warning, pass 'sort=True'.\n",
+      "\n",
+      "  return pd.concat([default_term_info] + list(topic_dfs))\n"
+     ]
+    }
+   ],
+   "source": [
+    "# data = get_data_from_files('Dog_Hike/')\n",
+    "# lda_model, lda, lda_vec, cv = run_lda(data,)\n",
+    "from sklearn.feature_extraction import text \n",
+    "stop_words = text.ENGLISH_STOP_WORDS\n",
+    "\n",
+    "# data_fd = get_data_from_files('110/110-f-d/')\n",
+    "# data_fr = get_data_from_files('110/110-f-r/')\n",
+    "\n",
+    "# data = data_fd + data_fr\n",
+    "# data\n",
+    "\n",
+    "\n",
+    "lda_model, lda, lda_vec, cv, corpus = run_lda(all_df[0].values, 4, stop_words)\n",
+    "start_vis(lda, lda_vec, cv)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# corpus\n",
+    "\n",
+    "# c2 = corpus.append(df.sum().rename('Total'))\n",
+    "ct = corpus.T\n",
+    "ct['total'] = ct.sum(axis=1)\n",
+    "big_total = ct[ct['total'] > 68]\n",
+    "len(big_total)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "len(ct)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "btt = big_total.T"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 63,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "additional_stopwords = btt.columns"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'additional_stopwords' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-7-06dc32cfefee>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[1;32m      1\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0msklearn\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mfeature_extraction\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      2\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0;32m----> 3\u001b[0;31m \u001b[0mstop_words\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mtext\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mENGLISH_STOP_WORDS\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0munion\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0madditional_stopwords\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m: name 'additional_stopwords' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "\n",
+    "\n",
+    "stop_words = text.ENGLISH_STOP_WORDS.union(additional_stopwords)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'stop_words' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-8-07be5ff4bce8>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mstop_words\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m: name 'stop_words' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "stop_words"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'stop_words' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-6-857357aa498f>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0mlda_model\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mlda\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mlda_vec\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mcv\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mcorpus\u001b[0m \u001b[0;34m=\u001b[0m \u001b[0mrun_lda\u001b[0m\u001b[0;34m(\u001b[0m\u001b[0mdata\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0;36m40\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mstop_words\u001b[0m\u001b[0;34m)\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m",
+      "\u001b[0;31mNameError\u001b[0m: name 'stop_words' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "\n",
+    "lda_model, lda, lda_vec, cv, corpus = run_lda(data, 40, stop_words)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 71,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/Users/danielcaraway/anaconda3/lib/python3.7/site-packages/pyLDAvis/_prepare.py:257: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version\n",
+      "of pandas will change to not sort by default.\n",
+      "\n",
+      "To accept the future behavior, pass 'sort=False'.\n",
+      "\n",
+      "To retain the current behavior and silence the warning, pass 'sort=True'.\n",
+      "\n",
+      "  return pd.concat([default_term_info] + list(topic_dfs))\n"
+     ]
+    }
+   ],
+   "source": [
+    "start_vis(lda, lda_vec, cv)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "ModuleNotFoundError",
+     "evalue": "No module named 'plotly'",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[0;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[0;31mModuleNotFoundError\u001b[0m                       Traceback (most recent call last)",
+      "\u001b[0;32m<ipython-input-11-895d92d73ddf>\u001b[0m in \u001b[0;36m<module>\u001b[0;34m\u001b[0m\n\u001b[0;32m----> 1\u001b[0;31m \u001b[0;32mimport\u001b[0m \u001b[0mplotly\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mplotly\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mpy\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[0m\u001b[1;32m      2\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mplotly\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mgrid_objs\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mGrid\u001b[0m\u001b[0;34m,\u001b[0m \u001b[0mColumn\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      3\u001b[0m \u001b[0;32mfrom\u001b[0m \u001b[0mplotly\u001b[0m\u001b[0;34m.\u001b[0m\u001b[0mtools\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mFigureFactory\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mFF\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      4\u001b[0m \u001b[0;34m\u001b[0m\u001b[0m\n\u001b[1;32m      5\u001b[0m \u001b[0;32mimport\u001b[0m \u001b[0mpandas\u001b[0m \u001b[0;32mas\u001b[0m \u001b[0mpd\u001b[0m\u001b[0;34m\u001b[0m\u001b[0;34m\u001b[0m\u001b[0m\n",
+      "\u001b[0;31mModuleNotFoundError\u001b[0m: No module named 'plotly'"
+     ]
+    }
+   ],
+   "source": [
+    "import plotly.plotly as py\n",
+    "from plotly.grid_objs import Grid, Column\n",
+    "from plotly.tools import FigureFactory as FF\n",
+    "\n",
+    "import pandas as pd\n",
+    "import time\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

@@ -1,0 +1,1761 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# HW2xHW4\n",
+    "\n",
+    "VECTORIZATION (Pandas style!)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 1: Import ALL the things\n",
+    "### Import libraries  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "##########################################\n",
+    "# NOTE: I'm toying with the idea of requiring the library just above \n",
+    "# when I use it so it makes more sense in context\n",
+    "##########################################\n",
+    "# import os\n",
+    "# import pandas as pd\n",
+    "# from nltk.tokenize import word_tokenize, sent_tokenize\n",
+    "# from nltk.sentiment import SentimentAnalyzer\n",
+    "# from nltk.sentiment.util import *\n",
+    "# from nltk.probability import FreqDist\n",
+    "# from nltk.sentiment.vader import SentimentIntensityAnalyzer\n",
+    "# sid = SentimentIntensityAnalyzer()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Import data from files"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 166,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import os\n",
+    "def get_data_from_files(path):\n",
+    "    directory = os.listdir(path)\n",
+    "    results = []\n",
+    "    for file in directory:\n",
+    "        f=open(path+file)\n",
+    "        results.append(f.read())\n",
+    "        f.close()\n",
+    "    return results\n",
+    "\n",
+    "# neg = get_data_from_files('../neg_cornell/')\n",
+    "# pos = get_data_from_files('../pos_cornell/')\n",
+    "\n",
+    "# neg = get_data_from_files('../neg_hw4/')\n",
+    "# pos = get_data_from_files('../pos_hw4/')\n",
+    "\n",
+    "pos = get_data_from_files('../hw4_lie_false/')\n",
+    "neg = get_data_from_files('../hw4_lie_true/')"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 2: Prep Data\n",
+    "### STEP 2a: Turn that fresh text into a pandas DF"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 167,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import pandas as pd\n",
+    "neg_df = pd.DataFrame(neg)\n",
+    "pos_df = pd.DataFrame(pos)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### STEP 2b: Label it"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 168,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pos_df['PoN'] = 'P'\n",
+    "neg_df['PoN'] = 'N'"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### STEP 2c: Combine the dfs"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 169,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "all_df = neg_df.append(pos_df)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 170,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>0</th>\n",
+       "      <th>PoN</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>?</td>\n",
+       "      <td>N</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>Twin Trees Cicero NY HUGE salad bar and high q...</td>\n",
+       "      <td>N</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>The worst restaurant that I have ever eaten in...</td>\n",
+       "      <td>N</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                                   0 PoN\n",
+       "0                                                  ?   N\n",
+       "1  Twin Trees Cicero NY HUGE salad bar and high q...   N\n",
+       "2  The worst restaurant that I have ever eaten in...   N"
+      ]
+     },
+     "execution_count": 170,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "all_df[:3]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 3: TOKENIZE (and clean)!!"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 171,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from nltk.tokenize import word_tokenize, sent_tokenize\n",
+    "from nltk.sentiment import SentimentAnalyzer\n",
+    "from nltk.sentiment.util import *"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 172,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "## Came back and added sentences for tokinization for \"Summary experiment\"\n",
+    "def get_sentence_tokens(review):\n",
+    "    return sent_tokenize(review)\n",
+    "    \n",
+    "all_df['sentences'] = all_df.apply(lambda x: get_sentence_tokens(x[0]), axis=1)\n",
+    "all_df['num_sentences'] = all_df.apply(lambda x: len(x['sentences']), axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 173,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def get_tokens(sentence):\n",
+    "    tokens = word_tokenize(sentence)\n",
+    "    clean_tokens = [word.lower() for word in tokens if word.isalpha()]\n",
+    "    return clean_tokens\n",
+    "\n",
+    "all_df['tokens'] = all_df.apply(lambda x: get_tokens(x[0]), axis=1)\n",
+    "all_df['num_tokens'] = all_df.apply(lambda x: len(x['tokens']), axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 174,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>0</th>\n",
+       "      <th>PoN</th>\n",
+       "      <th>sentences</th>\n",
+       "      <th>num_sentences</th>\n",
+       "      <th>tokens</th>\n",
+       "      <th>num_tokens</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>?</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[?]</td>\n",
+       "      <td>1</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>Twin Trees Cicero NY HUGE salad bar and high q...</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[Twin Trees Cicero NY HUGE salad bar and high ...</td>\n",
+       "      <td>4</td>\n",
+       "      <td>[twin, trees, cicero, ny, huge, salad, bar, an...</td>\n",
+       "      <td>53</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>The worst restaurant that I have ever eaten in...</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[The worst restaurant that I have ever eaten i...</td>\n",
+       "      <td>5</td>\n",
+       "      <td>[the, worst, restaurant, that, i, have, ever, ...</td>\n",
+       "      <td>105</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                                   0 PoN  \\\n",
+       "0                                                  ?   N   \n",
+       "1  Twin Trees Cicero NY HUGE salad bar and high q...   N   \n",
+       "2  The worst restaurant that I have ever eaten in...   N   \n",
+       "\n",
+       "                                           sentences  num_sentences  \\\n",
+       "0                                                [?]              1   \n",
+       "1  [Twin Trees Cicero NY HUGE salad bar and high ...              4   \n",
+       "2  [The worst restaurant that I have ever eaten i...              5   \n",
+       "\n",
+       "                                              tokens  num_tokens  \n",
+       "0                                                 []           0  \n",
+       "1  [twin, trees, cicero, ny, huge, salad, bar, an...          53  \n",
+       "2  [the, worst, restaurant, that, i, have, ever, ...         105  "
+      ]
+     },
+     "execution_count": 174,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "all_df[:3]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 4: Remove Stopwords"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 175,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from nltk.corpus import stopwords\n",
+    "stop_words = set(stopwords.words(\"english\"))\n",
+    "def remove_stopwords(sentence):\n",
+    "    filtered_text = []\n",
+    "    for word in sentence:\n",
+    "        if word not in stop_words:\n",
+    "            filtered_text.append(word)\n",
+    "    return filtered_text\n",
+    "all_df['no_sw'] = all_df.apply(lambda x: remove_stopwords(x['tokens']),axis=1)\n",
+    "all_df['num_no_sw'] = all_df.apply(lambda x: len(x['no_sw']),axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 176,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>0</th>\n",
+       "      <th>PoN</th>\n",
+       "      <th>sentences</th>\n",
+       "      <th>num_sentences</th>\n",
+       "      <th>tokens</th>\n",
+       "      <th>num_tokens</th>\n",
+       "      <th>no_sw</th>\n",
+       "      <th>num_no_sw</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>?</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[?]</td>\n",
+       "      <td>1</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>0</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>Twin Trees Cicero NY HUGE salad bar and high q...</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[Twin Trees Cicero NY HUGE salad bar and high ...</td>\n",
+       "      <td>4</td>\n",
+       "      <td>[twin, trees, cicero, ny, huge, salad, bar, an...</td>\n",
+       "      <td>53</td>\n",
+       "      <td>[twin, trees, cicero, ny, huge, salad, bar, hi...</td>\n",
+       "      <td>32</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>The worst restaurant that I have ever eaten in...</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[The worst restaurant that I have ever eaten i...</td>\n",
+       "      <td>5</td>\n",
+       "      <td>[the, worst, restaurant, that, i, have, ever, ...</td>\n",
+       "      <td>105</td>\n",
+       "      <td>[worst, restaurant, ever, eaten, undoubtedly, ...</td>\n",
+       "      <td>49</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>?</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[?]</td>\n",
+       "      <td>1</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>0</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>I have been to a Asian restaurant in New York ...</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[I have been to a Asian restaurant in New York...</td>\n",
+       "      <td>4</td>\n",
+       "      <td>[i, have, been, to, a, asian, restaurant, in, ...</td>\n",
+       "      <td>45</td>\n",
+       "      <td>[asian, restaurant, new, york, city, menu, wri...</td>\n",
+       "      <td>23</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                                   0 PoN  \\\n",
+       "0                                                  ?   N   \n",
+       "1  Twin Trees Cicero NY HUGE salad bar and high q...   N   \n",
+       "2  The worst restaurant that I have ever eaten in...   N   \n",
+       "3                                                  ?   N   \n",
+       "4  I have been to a Asian restaurant in New York ...   N   \n",
+       "\n",
+       "                                           sentences  num_sentences  \\\n",
+       "0                                                [?]              1   \n",
+       "1  [Twin Trees Cicero NY HUGE salad bar and high ...              4   \n",
+       "2  [The worst restaurant that I have ever eaten i...              5   \n",
+       "3                                                [?]              1   \n",
+       "4  [I have been to a Asian restaurant in New York...              4   \n",
+       "\n",
+       "                                              tokens  num_tokens  \\\n",
+       "0                                                 []           0   \n",
+       "1  [twin, trees, cicero, ny, huge, salad, bar, an...          53   \n",
+       "2  [the, worst, restaurant, that, i, have, ever, ...         105   \n",
+       "3                                                 []           0   \n",
+       "4  [i, have, been, to, a, asian, restaurant, in, ...          45   \n",
+       "\n",
+       "                                               no_sw  num_no_sw  \n",
+       "0                                                 []          0  \n",
+       "1  [twin, trees, cicero, ny, huge, salad, bar, hi...         32  \n",
+       "2  [worst, restaurant, ever, eaten, undoubtedly, ...         49  \n",
+       "3                                                 []          0  \n",
+       "4  [asian, restaurant, new, york, city, menu, wri...         23  "
+      ]
+     },
+     "execution_count": 176,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "all_df[:5]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 5: Create a Frequency Distribution"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 177,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from nltk.probability import FreqDist\n",
+    "def get_most_common(tokens):\n",
+    "    fdist = FreqDist(tokens)\n",
+    "    return fdist.most_common(12)\n",
+    "all_df['topwords_unfil'] = all_df.apply(lambda x: get_most_common(x['tokens']),axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 178,
+   "metadata": {
+    "scrolled": true
+   },
+   "outputs": [],
+   "source": [
+    "def get_most_common(tokens):\n",
+    "    fdist = FreqDist(tokens)\n",
+    "    return fdist.most_common(12)\n",
+    "all_df['topwords_fil'] = all_df.apply(lambda x: get_most_common(x['no_sw']),axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 179,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def get_fdist(tokens):\n",
+    "    return (FreqDist(tokens))\n",
+    "    \n",
+    "all_df['freq_dist'] = all_df.apply(lambda x: get_fdist(x['no_sw']),axis=1)\n",
+    "all_df['freq_dist_unfil'] = all_df.apply(lambda x: get_fdist(x['tokens']),axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 180,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>0</th>\n",
+       "      <th>PoN</th>\n",
+       "      <th>sentences</th>\n",
+       "      <th>num_sentences</th>\n",
+       "      <th>tokens</th>\n",
+       "      <th>num_tokens</th>\n",
+       "      <th>no_sw</th>\n",
+       "      <th>num_no_sw</th>\n",
+       "      <th>topwords_unfil</th>\n",
+       "      <th>topwords_fil</th>\n",
+       "      <th>freq_dist</th>\n",
+       "      <th>freq_dist_unfil</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>?</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[?]</td>\n",
+       "      <td>1</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>0</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>0</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>{}</td>\n",
+       "      <td>{}</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>Twin Trees Cicero NY HUGE salad bar and high q...</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[Twin Trees Cicero NY HUGE salad bar and high ...</td>\n",
+       "      <td>4</td>\n",
+       "      <td>[twin, trees, cicero, ny, huge, salad, bar, an...</td>\n",
+       "      <td>53</td>\n",
+       "      <td>[twin, trees, cicero, ny, huge, salad, bar, hi...</td>\n",
+       "      <td>32</td>\n",
+       "      <td>[(and, 3), (to, 3), (are, 2), (the, 2), (twin,...</td>\n",
+       "      <td>[(twin, 1), (trees, 1), (cicero, 1), (ny, 1), ...</td>\n",
+       "      <td>{'twin': 1, 'trees': 1, 'cicero': 1, 'ny': 1, ...</td>\n",
+       "      <td>{'twin': 1, 'trees': 1, 'cicero': 1, 'ny': 1, ...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>The worst restaurant that I have ever eaten in...</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[The worst restaurant that I have ever eaten i...</td>\n",
+       "      <td>5</td>\n",
+       "      <td>[the, worst, restaurant, that, i, have, ever, ...</td>\n",
+       "      <td>105</td>\n",
+       "      <td>[worst, restaurant, ever, eaten, undoubtedly, ...</td>\n",
+       "      <td>49</td>\n",
+       "      <td>[(the, 6), (i, 6), (a, 5), (was, 5), (and, 4),...</td>\n",
+       "      <td>[(pepper, 3), (veggie, 2), (sandwich, 2), (red...</td>\n",
+       "      <td>{'worst': 1, 'restaurant': 1, 'ever': 1, 'eate...</td>\n",
+       "      <td>{'the': 6, 'worst': 1, 'restaurant': 1, 'that'...</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                                   0 PoN  \\\n",
+       "0                                                  ?   N   \n",
+       "1  Twin Trees Cicero NY HUGE salad bar and high q...   N   \n",
+       "2  The worst restaurant that I have ever eaten in...   N   \n",
+       "\n",
+       "                                           sentences  num_sentences  \\\n",
+       "0                                                [?]              1   \n",
+       "1  [Twin Trees Cicero NY HUGE salad bar and high ...              4   \n",
+       "2  [The worst restaurant that I have ever eaten i...              5   \n",
+       "\n",
+       "                                              tokens  num_tokens  \\\n",
+       "0                                                 []           0   \n",
+       "1  [twin, trees, cicero, ny, huge, salad, bar, an...          53   \n",
+       "2  [the, worst, restaurant, that, i, have, ever, ...         105   \n",
+       "\n",
+       "                                               no_sw  num_no_sw  \\\n",
+       "0                                                 []          0   \n",
+       "1  [twin, trees, cicero, ny, huge, salad, bar, hi...         32   \n",
+       "2  [worst, restaurant, ever, eaten, undoubtedly, ...         49   \n",
+       "\n",
+       "                                      topwords_unfil  \\\n",
+       "0                                                 []   \n",
+       "1  [(and, 3), (to, 3), (are, 2), (the, 2), (twin,...   \n",
+       "2  [(the, 6), (i, 6), (a, 5), (was, 5), (and, 4),...   \n",
+       "\n",
+       "                                        topwords_fil  \\\n",
+       "0                                                 []   \n",
+       "1  [(twin, 1), (trees, 1), (cicero, 1), (ny, 1), ...   \n",
+       "2  [(pepper, 3), (veggie, 2), (sandwich, 2), (red...   \n",
+       "\n",
+       "                                           freq_dist  \\\n",
+       "0                                                 {}   \n",
+       "1  {'twin': 1, 'trees': 1, 'cicero': 1, 'ny': 1, ...   \n",
+       "2  {'worst': 1, 'restaurant': 1, 'ever': 1, 'eate...   \n",
+       "\n",
+       "                                     freq_dist_unfil  \n",
+       "0                                                 {}  \n",
+       "1  {'twin': 1, 'trees': 1, 'cicero': 1, 'ny': 1, ...  \n",
+       "2  {'the': 6, 'worst': 1, 'restaurant': 1, 'that'...  "
+      ]
+     },
+     "execution_count": 180,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "all_df[:3]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 6: Try Different Sentiment Analysis Tools"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### VADER"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 181,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from nltk.sentiment.vader import SentimentIntensityAnalyzer\n",
+    "sid = SentimentIntensityAnalyzer()\n",
+    "def get_vader_score(review):\n",
+    "    return sid.polarity_scores(review)\n",
+    "\n",
+    "all_df['vader_all'] = all_df.apply(lambda x: get_vader_score(x[0]),axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 182,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def separate_vader_score(vader_score, key):\n",
+    "    return vader_score[key]\n",
+    "\n",
+    "all_df['v_compound'] = all_df.apply(lambda x: separate_vader_score(x['vader_all'], 'compound'),axis=1)\n",
+    "all_df['v_neg'] = all_df.apply(lambda x: separate_vader_score(x['vader_all'], 'neg'),axis=1)\n",
+    "all_df['v_neu'] = all_df.apply(lambda x: separate_vader_score(x['vader_all'], 'neu'),axis=1)\n",
+    "all_df['v_pos'] = all_df.apply(lambda x: separate_vader_score(x['vader_all'], 'pos'),axis=1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### DIY SUMMARY"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 183,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "17    Halos is home. I have been here numerous times...\n",
+       "17    I went to Joeys and had the best lasagna on th...\n",
+       "Name: 0, dtype: object"
+      ]
+     },
+     "execution_count": 183,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "all_df[0][17]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 184,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def get_weighted_freq_dist(review, freq_dist):\n",
+    "    try:\n",
+    "        max_freq = max(freq_dist.values())\n",
+    "        for word in freq_dist.keys():\n",
+    "            freq_dist[word] = (freq_dist[word]/max_freq)\n",
+    "        return freq_dist\n",
+    "    except:\n",
+    "        return 'nope'\n",
+    "\n",
+    "all_df['weighted_freq_dist'] = all_df.apply(lambda x: get_weighted_freq_dist(x['sentences'], x['freq_dist']),axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 185,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def get_sentence_score(review, freq_dist):\n",
+    "    sentence_scores = {}\n",
+    "    for sent in review:\n",
+    "        for word in nltk.word_tokenize(sent.lower()):\n",
+    "            if word in freq_dist.keys():\n",
+    "                if len(sent.split(' ')) < 30:\n",
+    "                    if sent not in sentence_scores.keys():\n",
+    "                        sentence_scores[sent] = freq_dist[word]\n",
+    "                    else:\n",
+    "                        sentence_scores[sent] += freq_dist[word]\n",
+    "    return sentence_scores\n",
+    "\n",
+    "all_df['sentence_scores'] = all_df.apply(lambda x: get_sentence_score(x['sentences'], x['freq_dist']),axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 186,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def get_summary_sentences(sentence_scores):\n",
+    "    sorted_sentences = sorted(sentence_scores.items(), key=lambda kv: kv[1], reverse=True)\n",
+    "    return ''.join(sent[0] for sent in sorted_sentences[:5])\n",
+    "\n",
+    "all_df['summary_sentences'] = all_df.apply(lambda x: get_summary_sentences(x['sentence_scores']), axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 187,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "summaries = all_df['summary_sentences'].tolist()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 188,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "''"
+      ]
+     },
+     "execution_count": 188,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "summaries[3]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Doing VADER on the Summary Section"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 189,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "all_df['vader_sum_all'] = all_df.apply(lambda x: get_vader_score(x['summary_sentences']),axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 190,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "all_df['v_compound_sum'] = all_df.apply(lambda x: separate_vader_score(x['vader_sum_all'], 'compound'),axis=1)\n",
+    "all_df['v_neg_sum'] = all_df.apply(lambda x: separate_vader_score(x['vader_sum_all'], 'neg'),axis=1)\n",
+    "all_df['v_neu_sum'] = all_df.apply(lambda x: separate_vader_score(x['vader_sum_all'], 'neu'),axis=1)\n",
+    "all_df['v_pos_sum'] = all_df.apply(lambda x: separate_vader_score(x['vader_sum_all'], 'pos'),axis=1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Doing VADER on the Most Frequent Words"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 191,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def get_freq_words(freq_dist):\n",
+    "    sorted_words = sorted(freq_dist.items(), key=lambda kv: kv[1], reverse=True)\n",
+    "    return ' '.join(word[0] for word in sorted_words[:50])\n",
+    "\n",
+    "all_df['v_freq_words'] = all_df.apply(lambda x: get_freq_words(x['freq_dist']), axis=1)\n",
+    "\n",
+    "all_df['vader_fq_all'] = all_df.apply(lambda x: get_vader_score(x['v_freq_words']),axis=1)\n",
+    "all_df['v_compound_fd'] = all_df.apply(lambda x: separate_vader_score(x['vader_fq_all'], 'compound'),axis=1)\n",
+    "all_df['v_neg_fd'] = all_df.apply(lambda x: separate_vader_score(x['vader_fq_all'], 'neg'),axis=1)\n",
+    "all_df['v_neu_fd'] = all_df.apply(lambda x: separate_vader_score(x['vader_fq_all'], 'neu'),axis=1)\n",
+    "all_df['v_pos_fd'] = all_df.apply(lambda x: separate_vader_score(x['vader_fq_all'], 'pos'),axis=1)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## STEP 7: Test `Step 6` with Machine Learning!!\n",
+    "### Naive Bayes"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 192,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from sklearn.model_selection import train_test_split\n",
+    "from sklearn.naive_bayes import GaussianNB, MultinomialNB\n",
+    "from sklearn import metrics\n",
+    "\n",
+    "def get_NB(small_df, labels, no_negs):\n",
+    "    x_train, x_test, y_train, y_test = train_test_split(small_df.values, labels, test_size=0.3, random_state = 109)\n",
+    "\n",
+    "\n",
+    "    gnb = GaussianNB()\n",
+    "    gnb.fit(x_train, y_train)\n",
+    "    y_pred = gnb.predict(x_test)\n",
+    "    \n",
+    "    if no_negs:\n",
+    "        mnnb = MultinomialNB()\n",
+    "        mnnb.fit(x_train, y_train)\n",
+    "        y_pred_mn = mnnb.predict(x_test)\n",
+    "    \n",
+    "    print(\"Accuracy GNB:\", metrics.accuracy_score(y_test, y_pred))\n",
+    "    if no_negs: \n",
+    "        print(\"Accuracy MNNB:\", metrics.accuracy_score(y_test, y_pred_mn))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 193,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# from sklearn.naive_bayes import MultinomialNB\n",
+    "# clf = MultinomialNB()\n",
+    "# clf.fit(x_train, y_train)\n",
+    "\n",
+    "# print(clf.predict(x_train[2:3]))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### TEST 1: Vader Scores (Original)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 194,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy GNB: 0.5\n"
+     ]
+    }
+   ],
+   "source": [
+    "small_df = all_df.filter(['v_compound','v_pos', 'v_neg', 'v_neu']) # 0.645\n",
+    "get_NB(small_df, all_df['PoN'], False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 195,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy GNB: 0.35714285714285715\n",
+      "Accuracy MNNB: 0.6428571428571429\n"
+     ]
+    }
+   ],
+   "source": [
+    "small_df = all_df.filter(['v_pos', 'v_neu']) # 0.645\n",
+    "get_NB(small_df, all_df['PoN'], True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### TEST 2: Vader Scores (from Summary)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 196,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy GNB: 0.6071428571428571\n"
+     ]
+    }
+   ],
+   "source": [
+    "small_df = all_df.filter(['v_compound_sum','v_pos_sum', 'v_neg_sum', 'v_neu_sum']) # 0.59\n",
+    "get_NB(small_df, all_df['PoN'], False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 197,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy GNB: 0.5714285714285714\n",
+      "Accuracy MNNB: 0.5357142857142857\n"
+     ]
+    }
+   ],
+   "source": [
+    "small_df = all_df.filter(['v_pos_sum','v_neu_sum']) # 0.59\n",
+    "get_NB(small_df, all_df['PoN'], True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### TEST 3: Vader Scores (original) AND Vader Scores (summary)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 198,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy GNB: 0.5714285714285714\n"
+     ]
+    }
+   ],
+   "source": [
+    "small_df = all_df.filter(['v_compound_sum','v_pos_sum', 'v_neg_sum', 'v_neu_sum', \n",
+    "                          'v_compound','v_pos', 'v_neg', 'v_neu']) # 0.618\n",
+    "get_NB(small_df, all_df['PoN'], False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 199,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy GNB: 0.5\n",
+      "Accuracy MNNB: 0.6071428571428571\n"
+     ]
+    }
+   ],
+   "source": [
+    "small_df = all_df.filter(['v_pos_sum', 'v_neu_sum', 'v_pos', 'v_neu']) # 0.618\n",
+    "get_NB(small_df, all_df['PoN'], True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### TEST 4: Vader Scores (50 most frequent -- filtered -- words)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 200,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy GNB: 0.6428571428571429\n"
+     ]
+    }
+   ],
+   "source": [
+    "small_df = all_df.filter(['v_compound_fd','v_pos_fd', 'v_neu_fd', 'v_neg_fd']) # 0.598\n",
+    "get_NB(small_df, all_df['PoN'], False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 201,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy GNB: 0.5714285714285714\n",
+      "Accuracy MNNB: 0.6071428571428571\n"
+     ]
+    }
+   ],
+   "source": [
+    "small_df = all_df.filter(['v_pos_fd', 'v_neu_fd']) # 0.598\n",
+    "get_NB(small_df, all_df['PoN'], True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### TEST 5: All `compound` Vader Scores"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 202,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy GNB: 0.6071428571428571\n"
+     ]
+    }
+   ],
+   "source": [
+    "small_df = all_df.filter(['v_compound_fd','v_compound_sum', 'v_compound']) # 0.615\n",
+    "get_NB(small_df, all_df['PoN'], False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 203,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy GNB: 0.6428571428571429\n",
+      "Accuracy MNNB: 0.42857142857142855\n"
+     ]
+    }
+   ],
+   "source": [
+    "small_df = all_df.filter(['v_pos_fd','v_pos_sum', 'v_pos']) # 0.615\n",
+    "get_NB(small_df, all_df['PoN'], True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### TEST 6: ALL THE NUMBERS!!"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 204,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy GNB: 0.6071428571428571\n"
+     ]
+    }
+   ],
+   "source": [
+    "small_df = all_df.filter(['v_compound_sum','v_pos_sum', 'v_neg_sum', 'v_neu_sum', \n",
+    "                          'v_compound_fd','v_pos_fd', 'v_neg_fd', 'v_neu_fd', \n",
+    "                          'v_compound','v_pos', 'v_neg', 'v_neu']) # 0.613\n",
+    "get_NB(small_df, all_df['PoN'], False)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### TEST 7: Test UNFILTERED most frequent words"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 205,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def get_freq_words(freq_dist):\n",
+    "    sorted_words = sorted(freq_dist.items(), key=lambda kv: kv[1], reverse=True)\n",
+    "    return ' '.join(word[0] for word in sorted_words[:50])\n",
+    "\n",
+    "all_df['v_freq_words_unfil'] = all_df.apply(lambda x: get_freq_words(x['freq_dist_unfil']), axis=1)\n",
+    "\n",
+    "all_df['vader_fd_all_unfil'] = all_df.apply(lambda x: get_vader_score(x['v_freq_words_unfil']),axis=1)\n",
+    "\n",
+    "all_df['v_compound_fd_uf'] = all_df.apply(lambda x: separate_vader_score(x['vader_fd_all_unfil'], 'compound'),axis=1)\n",
+    "all_df['v_neg_fd_uf'] = all_df.apply(lambda x: separate_vader_score(x['vader_fd_all_unfil'], 'neg'),axis=1)\n",
+    "all_df['v_neu_fd_uf'] = all_df.apply(lambda x: separate_vader_score(x['vader_fd_all_unfil'], 'neu'),axis=1)\n",
+    "all_df['v_pos_fd_uf'] = all_df.apply(lambda x: separate_vader_score(x['vader_fd_all_unfil'], 'pos'),axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 206,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy GNB: 0.6071428571428571\n"
+     ]
+    }
+   ],
+   "source": [
+    "small_df = all_df.filter(['v_compound_sum','v_pos_sum', 'v_neg_sum', 'v_neu_sum', \n",
+    "                          'v_compound_fd','v_pos_fd', 'v_neg_fd', 'v_neu_fd', \n",
+    "                          'v_compound_fd_uf','v_pos_fd_uf', 'v_neg_fd_uf', 'v_neu_fd_uf',\n",
+    "                          'v_compound','v_pos', 'v_neg', 'v_neu']) # 0.618\n",
+    "get_NB(small_df, all_df['PoN'], False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 207,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy GNB: 0.5357142857142857\n"
+     ]
+    }
+   ],
+   "source": [
+    "small_df = all_df.filter(['v_compound_fd_uf','v_pos_fd_uf', 'v_neg_fd_uf', 'v_neu_fd_uf']) # 0.603\n",
+    "get_NB(small_df, all_df['PoN'], False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 208,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "summaries_pos = all_df[all_df['PoN'] == 'P']\n",
+    "summaries_neg = all_df[all_df['PoN'] == 'N']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 209,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "summaries_pos_list = summaries_pos['summary_sentences'].tolist()\n",
+    "summaries_neg_list = summaries_neg['summary_sentences'].tolist()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 210,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['Gannon’s Isle Ice Cream served the best ice cream and you better believe it!A weird combination but the smooth sweet chocolate combined with the sharp taste of raspberry was devine!The ice cream is delicious the best I had.The place is ideally situated and it is easy to get too.There were so many varieties that I had trouble choosing it.']"
+      ]
+     },
+     "execution_count": 210,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "summaries_pos_list[:1]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 211,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "['']"
+      ]
+     },
+     "execution_count": 211,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "summaries_neg_list[:1]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 212,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "### VERSION 1\n",
+    "#     all_words_neg = sentim_analyzer.all_words([mark_negation(doc) for doc in training_docs])\n",
+    "#     unigram_feats = sentim_analyzer.unigram_word_feats(all_words_neg)\n",
+    "#     sentim_analyzer.add_feat_extractor(extract_unigram_feats, unigrams=unigram_feats)\n",
+    "#     training_set = sentim_analyzer.apply_features(training_docs)\n",
+    "#     test_set = sentim_analyzer.apply_features(testing_docs)\n",
+    "sentim_analyzer = SentimentAnalyzer()\n",
+    "\n",
+    "def get_nltk_negs(tokens):\n",
+    "    all_words_neg = sentim_analyzer.all_words([mark_negation(tokens)])\n",
+    "    return all_words_neg\n",
+    "\n",
+    "def get_unigram_feats(neg_tokens):\n",
+    "    unigram_feats = sentim_analyzer.unigram_word_feats(neg_tokens)\n",
+    "    return unigram_feats\n",
+    "    \n",
+    "all_df['nltk_negs'] = all_df.apply(lambda x: get_nltk_negs(x['tokens']), axis=1)\n",
+    "all_df['unigram_feats'] = all_df.apply(lambda x: get_unigram_feats(x['nltk_negs']), axis=1)\n",
+    "# all_df['nltk_unfil'] = all_df.apply(lambda x: get_nltk_data(x['tokens']), axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 213,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "### VERSION 2\n",
+    "#     all_words_neg = sentim_analyzer.all_words([mark_negation(doc) for doc in training_docs])\n",
+    "#     unigram_feats = sentim_analyzer.unigram_word_feats(all_words_neg)\n",
+    "#     sentim_analyzer.add_feat_extractor(extract_unigram_feats, unigrams=unigram_feats)\n",
+    "#     training_set = sentim_analyzer.apply_features(training_docs)\n",
+    "#     test_set = sentim_analyzer.apply_features(testing_docs)\n",
+    "sentim_analyzer = SentimentAnalyzer()\n",
+    "\n",
+    "def get_nltk_data(tokens):\n",
+    "#     print(tokens)\n",
+    "    neg_tokens = sentim_analyzer.all_words([mark_negation(tokens)])\n",
+    "    unigram_feats = sentim_analyzer.unigram_word_feats(neg_tokens)\n",
+    "    sentim_analyzer.add_feat_extractor(extract_unigram_feats, unigrams=unigram_feats)\n",
+    "#     print(sentim_analyzer.apply_features(tokens))\n",
+    "    return sentim_analyzer.apply_features(tokens)\n",
+    "\n",
+    "\n",
+    "# def get_unigram_feats(neg_tokens):\n",
+    "    \n",
+    "#     return unigram_feats\n",
+    "nltk_df = pd.DataFrame()\n",
+    "nltk_df['nltk_data'] = all_df.apply(lambda x: get_nltk_data(x['tokens']), axis=1)\n",
+    "\n",
+    "# all_df['nltk']\n",
+    "# all_df['unigram_feats'] = all_df.apply(lambda x: get_unigram_feats(x['nltk_negs']), axis=1)\n",
+    "# all_df['nltk_unfil'] = all_df.apply(lambda x: get_nltk_data(x['tokens']), axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 214,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# all_df['nltk_all'] = 0"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 215,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>nltk_data</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>()</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>({'contains(was)': False, 'contains(i)': True,...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>({'contains(was)': False, 'contains(i)': False...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>()</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>({'contains(was)': False, 'contains(i)': True,...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>41</td>\n",
+       "      <td>({'contains(was)': False, 'contains(i)': True,...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>42</td>\n",
+       "      <td>({'contains(was)': False, 'contains(i)': False...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>43</td>\n",
+       "      <td>({'contains(was)': False, 'contains(i)': True,...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>44</td>\n",
+       "      <td>({'contains(was)': False, 'contains(i)': False...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>45</td>\n",
+       "      <td>({'contains(was)': False, 'contains(i)': True,...</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>92 rows × 1 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                            nltk_data\n",
+       "0                                                  ()\n",
+       "1   ({'contains(was)': False, 'contains(i)': True,...\n",
+       "2   ({'contains(was)': False, 'contains(i)': False...\n",
+       "3                                                  ()\n",
+       "4   ({'contains(was)': False, 'contains(i)': True,...\n",
+       "..                                                ...\n",
+       "41  ({'contains(was)': False, 'contains(i)': True,...\n",
+       "42  ({'contains(was)': False, 'contains(i)': False...\n",
+       "43  ({'contains(was)': False, 'contains(i)': True,...\n",
+       "44  ({'contains(was)': False, 'contains(i)': False...\n",
+       "45  ({'contains(was)': False, 'contains(i)': True,...\n",
+       "\n",
+       "[92 rows x 1 columns]"
+      ]
+     },
+     "execution_count": 215,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "nltk_df"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 216,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0                                                    []\n",
+       "1     [twin, trees, cicero, ny, huge, salad, bar, an...\n",
+       "2     [the, worst, restaurant, that, i, have, ever, ...\n",
+       "3                                                    []\n",
+       "4     [i, have, been, to, a, asian, restaurant, in, ...\n",
+       "                            ...                        \n",
+       "41    [mikes, pizza, high, point, ny, service, was, ...\n",
+       "42    [after, i, went, shopping, with, some, of, my,...\n",
+       "43    [i, entered, the, restaurant, and, a, waitress...\n",
+       "44    [carlos, plate, shack, was, the, worst, dining...\n",
+       "45    [olive, oil, garden, was, very, disappointing,...\n",
+       "Name: nltk_negs, Length: 92, dtype: object"
+      ]
+     },
+     "execution_count": 216,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "all_df['nltk_negs']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 217,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from nltk.tokenize import casual_tokenize\n",
+    "from collections import Counter\n",
+    "all_df['bow_nosw'] = all_df.apply(lambda x: Counter(casual_tokenize(x[0])), axis=1)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 218,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>0</th>\n",
+       "      <th>PoN</th>\n",
+       "      <th>sentences</th>\n",
+       "      <th>num_sentences</th>\n",
+       "      <th>tokens</th>\n",
+       "      <th>num_tokens</th>\n",
+       "      <th>no_sw</th>\n",
+       "      <th>num_no_sw</th>\n",
+       "      <th>topwords_unfil</th>\n",
+       "      <th>topwords_fil</th>\n",
+       "      <th>...</th>\n",
+       "      <th>v_pos_fd</th>\n",
+       "      <th>v_freq_words_unfil</th>\n",
+       "      <th>vader_fd_all_unfil</th>\n",
+       "      <th>v_compound_fd_uf</th>\n",
+       "      <th>v_neg_fd_uf</th>\n",
+       "      <th>v_neu_fd_uf</th>\n",
+       "      <th>v_pos_fd_uf</th>\n",
+       "      <th>nltk_negs</th>\n",
+       "      <th>unigram_feats</th>\n",
+       "      <th>bow_nosw</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>?</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[?]</td>\n",
+       "      <td>1</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>0</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>0</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.000</td>\n",
+       "      <td></td>\n",
+       "      <td>{'neg': 0.0, 'neu': 0.0, 'pos': 0.0, 'compound...</td>\n",
+       "      <td>0.0000</td>\n",
+       "      <td>0.000</td>\n",
+       "      <td>0.000</td>\n",
+       "      <td>0.000</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>[]</td>\n",
+       "      <td>{'?': 1}</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>Twin Trees Cicero NY HUGE salad bar and high q...</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[Twin Trees Cicero NY HUGE salad bar and high ...</td>\n",
+       "      <td>4</td>\n",
+       "      <td>[twin, trees, cicero, ny, huge, salad, bar, an...</td>\n",
+       "      <td>53</td>\n",
+       "      <td>[twin, trees, cicero, ny, huge, salad, bar, hi...</td>\n",
+       "      <td>32</td>\n",
+       "      <td>[(and, 3), (to, 3), (are, 2), (the, 2), (twin,...</td>\n",
+       "      <td>[(twin, 1), (trees, 1), (cicero, 1), (ny, 1), ...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.212</td>\n",
+       "      <td>and to are the twin trees cicero ny huge salad...</td>\n",
+       "      <td>{'neg': 0.0, 'neu': 0.842, 'pos': 0.158, 'comp...</td>\n",
+       "      <td>0.7951</td>\n",
+       "      <td>0.000</td>\n",
+       "      <td>0.842</td>\n",
+       "      <td>0.158</td>\n",
+       "      <td>[twin, trees, cicero, ny, huge, salad, bar, an...</td>\n",
+       "      <td>[and, to, are, the, twin, trees, cicero, ny, h...</td>\n",
+       "      <td>{'Twin': 1, 'Trees': 1, 'Cicero': 1, 'NY': 1, ...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>The worst restaurant that I have ever eaten in...</td>\n",
+       "      <td>N</td>\n",
+       "      <td>[The worst restaurant that I have ever eaten i...</td>\n",
+       "      <td>5</td>\n",
+       "      <td>[the, worst, restaurant, that, i, have, ever, ...</td>\n",
+       "      <td>105</td>\n",
+       "      <td>[worst, restaurant, ever, eaten, undoubtedly, ...</td>\n",
+       "      <td>49</td>\n",
+       "      <td>[(the, 6), (i, 6), (a, 5), (was, 5), (and, 4),...</td>\n",
+       "      <td>[(pepper, 3), (veggie, 2), (sandwich, 2), (red...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.059</td>\n",
+       "      <td>the i a was and to pepper my veggie sandwich r...</td>\n",
+       "      <td>{'neg': 0.081, 'neu': 0.882, 'pos': 0.036, 'co...</td>\n",
+       "      <td>-0.3182</td>\n",
+       "      <td>0.081</td>\n",
+       "      <td>0.882</td>\n",
+       "      <td>0.036</td>\n",
+       "      <td>[the, worst, restaurant, that, i, have, ever, ...</td>\n",
+       "      <td>[the, a, i, was_NEG, i_NEG, to_NEG, and, veggi...</td>\n",
+       "      <td>{'The': 1, 'worst': 1, 'restaurant': 1, 'that'...</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>3 rows × 40 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "                                                   0 PoN  \\\n",
+       "0                                                  ?   N   \n",
+       "1  Twin Trees Cicero NY HUGE salad bar and high q...   N   \n",
+       "2  The worst restaurant that I have ever eaten in...   N   \n",
+       "\n",
+       "                                           sentences  num_sentences  \\\n",
+       "0                                                [?]              1   \n",
+       "1  [Twin Trees Cicero NY HUGE salad bar and high ...              4   \n",
+       "2  [The worst restaurant that I have ever eaten i...              5   \n",
+       "\n",
+       "                                              tokens  num_tokens  \\\n",
+       "0                                                 []           0   \n",
+       "1  [twin, trees, cicero, ny, huge, salad, bar, an...          53   \n",
+       "2  [the, worst, restaurant, that, i, have, ever, ...         105   \n",
+       "\n",
+       "                                               no_sw  num_no_sw  \\\n",
+       "0                                                 []          0   \n",
+       "1  [twin, trees, cicero, ny, huge, salad, bar, hi...         32   \n",
+       "2  [worst, restaurant, ever, eaten, undoubtedly, ...         49   \n",
+       "\n",
+       "                                      topwords_unfil  \\\n",
+       "0                                                 []   \n",
+       "1  [(and, 3), (to, 3), (are, 2), (the, 2), (twin,...   \n",
+       "2  [(the, 6), (i, 6), (a, 5), (was, 5), (and, 4),...   \n",
+       "\n",
+       "                                        topwords_fil  ... v_pos_fd  \\\n",
+       "0                                                 []  ...    0.000   \n",
+       "1  [(twin, 1), (trees, 1), (cicero, 1), (ny, 1), ...  ...    0.212   \n",
+       "2  [(pepper, 3), (veggie, 2), (sandwich, 2), (red...  ...    0.059   \n",
+       "\n",
+       "                                  v_freq_words_unfil  \\\n",
+       "0                                                      \n",
+       "1  and to are the twin trees cicero ny huge salad...   \n",
+       "2  the i a was and to pepper my veggie sandwich r...   \n",
+       "\n",
+       "                                  vader_fd_all_unfil  v_compound_fd_uf  \\\n",
+       "0  {'neg': 0.0, 'neu': 0.0, 'pos': 0.0, 'compound...            0.0000   \n",
+       "1  {'neg': 0.0, 'neu': 0.842, 'pos': 0.158, 'comp...            0.7951   \n",
+       "2  {'neg': 0.081, 'neu': 0.882, 'pos': 0.036, 'co...           -0.3182   \n",
+       "\n",
+       "   v_neg_fd_uf  v_neu_fd_uf  v_pos_fd_uf  \\\n",
+       "0        0.000        0.000        0.000   \n",
+       "1        0.000        0.842        0.158   \n",
+       "2        0.081        0.882        0.036   \n",
+       "\n",
+       "                                           nltk_negs  \\\n",
+       "0                                                 []   \n",
+       "1  [twin, trees, cicero, ny, huge, salad, bar, an...   \n",
+       "2  [the, worst, restaurant, that, i, have, ever, ...   \n",
+       "\n",
+       "                                       unigram_feats  \\\n",
+       "0                                                 []   \n",
+       "1  [and, to, are, the, twin, trees, cicero, ny, h...   \n",
+       "2  [the, a, i, was_NEG, i_NEG, to_NEG, and, veggi...   \n",
+       "\n",
+       "                                            bow_nosw  \n",
+       "0                                           {'?': 1}  \n",
+       "1  {'Twin': 1, 'Trees': 1, 'Cicero': 1, 'NY': 1, ...  \n",
+       "2  {'The': 1, 'worst': 1, 'restaurant': 1, 'that'...  \n",
+       "\n",
+       "[3 rows x 40 columns]"
+      ]
+     },
+     "execution_count": 218,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "all_df[:3]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

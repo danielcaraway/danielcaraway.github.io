@@ -1,0 +1,172 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# MNB Feature Weighting"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# the feature file is an edited copy of Weka's MultinomialNB output\n",
+    "import pandas as pd\n",
+    "weka_output = pd.read_csv('/Users/byu/Desktop/Data/MNB-feature-weight.tsv', delimiter='\\t')\n",
+    "features = weka_output['token'].values\n",
+    "neg_cond_prob = weka_output['neg'].values\n",
+    "pos_cond_prob = weka_output['pos'].values"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "&\n",
+      "0.00075178818189\n",
+      "0.000632576393282\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(features[0])\n",
+    "print(neg_cond_prob[0])\n",
+    "print(pos_cond_prob[0])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "-0.17265361805312018\n"
+     ]
+    }
+   ],
+   "source": [
+    "import math\n",
+    "log_ratios = []\n",
+    "for i in range(0, len(features)):\n",
+    "    log_ratio = math.log(pos_cond_prob[i]) - math.log(neg_cond_prob[i])\n",
+    "    log_ratios.append(log_ratio)\n",
+    "print(log_ratios[0])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[(1.3471721356912916, 'fantastic'), (1.3527011771704371, 'cameron'), (1.4004166502101043, 'hanks'), (1.4367842943809803, 'tarantino'), (1.4946038652698048, 'toy'), (1.5919548621089836, 'titanic'), (1.6368054282743358, 'ripley'), (1.7681414303354224, 'era'), (1.829177320921791, 'wonderfully'), (1.8422494024891432, 'scorsese'), (1.842249402489144, 'jedi'), (1.960032438145527, 'derek'), (2.3530750262551345, 'outstanding'), (2.441870525038266, 'truman'), (2.5210078455969906, 'damon'), (2.875264408671441, 'bulworth'), (3.228543763609035, 'lebowski'), (3.5852187075477664, 'flynt'), (3.7675402643417213, 'mulan'), (4.055222336793502, 'shrek')]\n"
+     ]
+    }
+   ],
+   "source": [
+    "feature_ranks = sorted(zip(log_ratios, features))\n",
+    "\n",
+    "# print the words with highest pos/neg conditional prob ratio / most positive words\n",
+    "top_pos_features = feature_ranks[-20:]\n",
+    "print(top_pos_features)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[(-4.18119819047189, '&nbsp'), (-3.3091135511022296, 'seagal'), (-2.706350432010554, 'schumacher'), (-2.263144995919541, 'wrestling'), (-2.191401091060701, 'godzilla'), (-1.982431592783855, 'spawn'), (-1.8954202157942248, 'wasted'), (-1.8419315308432394, 'lame'), (-1.8013912661459477, 'poorly'), (-1.772522079471071, 'worst'), (-1.7721875753702774, 'waste'), (-1.7388511551026857, 'ridiculous'), (-1.7130986590002708, 'awful'), (-1.7130986590002708, 'eve'), (-1.6570091923492267, 'stupid'), (-1.6495852532779436, 'snake'), (-1.635137117530559, 'unfunny'), (-1.5975857718784265, 'uninteresting'), (-1.5852652874903859, 'dull'), (-1.5536709220721674, 'arnold')]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# print the words with lowest pos/neg conditional prob ratio / most negative words\n",
+    "top_neg_features = feature_ranks[:20]\n",
+    "print(top_neg_features)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[(0.0024851215450355678, '*'), (0.0024980312673474397, 'funny'), (0.0025173958508152489, 'comedy'), (0.0025561250177508692, 'star'), (0.002562579878906806, 'takes'), (0.0025690347400627411, 'year'), (0.0025948541846864881, 'played'), (0.0026013090458424232, 'cast'), (0.0026271284904661693, 'fact'), (0.0027110416854933448, 'find'), (0.0027691354358967747, 'family'), (0.0027885000193645822, 'big'), (0.0028272291863002041, 'young'), (0.0028465937697680125, 'audience'), (0.0028465937697680125, 'john'), (0.0028853229367036301, 'real'), (0.0028853229367036301, 'things'), (0.0030337847432901728, 'action'), (0.0031306076606292211, 'years'), (0.0031370625217851558, 'role'), (0.0031564271052529672, 'made'), (0.003317798634151378, 'work'), (0.0033371632176191889, 'director'), (0.0033629826622429354, 'end'), (0.0035501736357650936, 'performance'), (0.0036082673861685243, 'back'), (0.0036211771084803954, 'makes'), (0.0036792708588838244, '--'), (0.0036921805811956977, 'don'), (0.0037502743315991267, 'plot'), (0.003879371554717858, 'doesn'), (0.0040601076670840792, 'movies'), (0.0040859271117078258, 'scenes'), (0.0041569305844231311, 'world'), (0.0041827500290468741, 'love'), (0.0046345903099624325, 'scene'), (0.0047701423942370976, 'man'), (0.0048088715611727204, 'great'), (0.0049960625346948794, 'make'), (0.0050864305908779918, 'people'), (0.005260711842088278, '-'), (0.0056673680949122793, 'films'), (0.0063515833774415512, 'characters'), (0.0064032222666890425, 'life'), (0.0068937917145402228, 'character'), (0.0075650972747576184, 'time'), (0.0076941944978763544, 'good'), (0.0079459340829578697, 'story'), (0.016091968861749781, 'movie'), (0.033436180787751256, 'film')]\n",
+      "\n",
+      "[(0.0026061990305512391, 'guy'), (0.0026205188054443801, 'actors'), (0.0026491583552306552, 'acting'), (0.0026634781301237962, 'point'), (0.0026706380175703648, 'plays'), (0.0026777979050169338, 'long'), (0.00271359734224978, 'role'), (0.0027422368920360586, 'minutes'), (0.002778036329268904, 'played'), (0.0027923561041620425, 'fact'), (0.0028353154288414586, 'great'), (0.0028711148660743053, 'things'), (0.0028997544158605839, 'real'), (0.002949873627986569, 'comedy'), (0.0030930713769179558, 'makes'), (0.0031789900262767863, 'funny'), (0.0032076295760630627, 'thing'), (0.0032147894635096343, 'love'), (0.0033651470998875893, 'audience'), (0.0034081064245670071, 'back'), (0.0034224261994601451, 'script'), (0.0035155047362655451, 'isn'), (0.0035226646237121141, 'life'), (0.0035369843986052547, 'work'), (0.0037804205717886109, 'end'), (0.0038520194462543047, 'big'), (0.0038520194462543047, 'made'), (0.003988057307739123, 'movies'), (0.0040668160696513862, '--'), (0.0042601330307087595, 'director'), (0.0042887725804950346, '-'), (0.0043102522428347416, 'man'), (0.0043388917926210184, 'action'), (0.0045178889787852545, 'scenes'), (0.0046109675155906566, 'films'), (0.0047183658272891942, 'people'), (0.0047183658272891942, 'scene'), (0.0048042844766480282, '*'), (0.0048114443640945963, 'doesn'), (0.0051049997494039389, 'don'), (0.0058639478187402895, 'make'), (0.0062505817408550317, 'characters'), (0.0063007009529810155, 'plot'), (0.0065369772387178105, 'story'), (0.0066372156629697756, 'character'), (0.0072959253080541577, 'bad'), (0.0079617948405851045, 'time'), (0.008069193152283648, 'good'), (0.02270400309307137, 'movie'), (0.0304510013102594, 'film')]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# if the model is to classify more than two categories, \n",
+    "# you can calculate the log ratio between the conditional probabilies of any two categories \n",
+    "\n",
+    "# if you simply print out the words with highest conditional probs in each category\n",
+    "# you may or may not get informative features \n",
+    "# because some popular words in this category may also be popular in other categories.\n",
+    "\n",
+    "# The following code prints out the words with \n",
+    "# highest positive conditional probs and highest negative conditinal probs\n",
+    "# and both lists include common words like \"are\", \"this\", etc.\n",
+    "\n",
+    "pos_features = sorted(zip(pos_cond_prob, features))\n",
+    "print(pos_features[-50:])\n",
+    "print()\n",
+    "neg_features = sorted(zip(neg_cond_prob, features))\n",
+    "print(neg_features[-50:])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "collapsed": true
+   },
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
