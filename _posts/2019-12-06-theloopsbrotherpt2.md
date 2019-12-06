@@ -9,7 +9,7 @@ tags: testing
 {% for file in site.static_files %}
     {% if file.path contains 'all_html' %}
         {% if file.extname contains '.html' %}
-            <a href="https://danielcaraway.github.io/{{ file.path }}">{{ file.path }}</a></br>
+            <div><a href="https://danielcaraway.github.io/{{ file.path }}">{{ file.basename }}</a></div>
         {% endif %}
     {% endif %}
 {% endfor %}
