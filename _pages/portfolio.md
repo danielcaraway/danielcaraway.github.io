@@ -29,6 +29,7 @@ permalink: /portfolio/
 
 
 [HW8](https://danielcaraway.github.io/html/HW8.pdf)
+
 [HW8 -- Code](https://danielcaraway.github.io/ist736hw8)
 
 
