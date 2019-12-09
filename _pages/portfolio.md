@@ -5,21 +5,43 @@ permalink: /portfolio/
 
 # OUTLINE
 
-## Broad Overview
+## 1. Broad Overview
 
-## Collect data
+## 2. Collect & Organize Data
 
-## Identify Patterns & Visualize Data
+### COLLECTING DATA:
 
-## Analyze Data
+* Corpus (IST736_HW1)
+* Scraping the internet (IST736_HW3_joker)
 
-## Implement Business Decisions
+### CLEANING DATA: 
 
-## Communicate analysis (Visualizations)
+* IST736_HW3_dirtydata -- Dirty Data
+
+### LABELING DATA:
+
+* Amazon Mechanical Turk (IST736_HW5)
+
+## 3. Identify Patterns & Visualize Data
+
+* HW7 -- Kaggle Sentiment 
+
+## 4. Analyze Data
+
+* Naive Bayes (IST736_HW4_HW6)
+* SVM (IST736_HW7_V2)
+* Topic Modeling (IST736_HW8)
+
+## 5. Implement Business Decisions
+
+* Joker?
+* Scripting for IMDB 
+
+## 6. Communicate analysis (Visualizations)
 
 * World Happiness Report
 
-## Review ethical ramifications
+## 7. Review ethical ramifications
 
 * Scraping TMDB
 * Using ARM for IMDB (Woody Allen)
