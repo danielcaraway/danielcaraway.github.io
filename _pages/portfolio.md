@@ -25,9 +25,23 @@ permalink: /portfolio/
 * Using ARM for IMDB (Woody Allen)
 
 
-# 10 Projects
+# 10 Projects By Class:
+
+## IST 736 -- Text Mining 
 
 [HW1](https://danielcaraway.github.io/assets/portfolio/IST736_HW1.pdf)
+
+[HW2](https://danielcaraway.github.io/assets/portfolio/IST736_HW2.pdf)
+
+[HW3](https://danielcaraway.github.io/assets/portfolio/IST736_HW3_dirtydata.pdf)
+
+[HW4 & HW6](https://danielcaraway.github.io/assets/portfolio/IST736_HW4_HW6.pdf)
+
+[HW5](https://danielcaraway.github.io/assets/portfolio/IST736_HW5.pdf)
+
+[HW7 (v2)](https://danielcaraway.github.io/assets/portfolio/IST736_HW7_V2.pdf)
+
+[HW8](https://danielcaraway.github.io/assets/portfolio/IST736_HW8.pdf)
 
 
 ## 10: IST 736 HW8 -- Topic Modeling
