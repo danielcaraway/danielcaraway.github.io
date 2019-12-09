@@ -27,7 +27,7 @@ permalink: /portfolio/
 
 # 10 Projects
 
-[HW1](https://danielcaraway.github.io/assets/IST736_HW1.pdf)
+[HW1](https://danielcaraway.github.io/assets/portfolio/IST736_HW1.pdf)
 
 
 ## 10: IST 736 HW8 -- Topic Modeling
