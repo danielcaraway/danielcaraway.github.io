@@ -1,4 +1,10 @@
-# MBC-638:71077 Data Analysis & Decision Making 2018-0629
+---
+layout: single
+title: 'MBC 638'
+permalink: /mbc638/
+---
+
+# MBC-638: Data Analysis & Decision Making 2018-0629
 
 ## Welcome and Introduction
 ### Welcome and Course Overview
