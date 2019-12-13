@@ -46,6 +46,9 @@ programmers, statisticians, and other relevant professionals in their organizati
 * HW7 -- Kaggle Sentiment 
 [HW7_V2](https://danielcaraway.github.io/assets/portfolio/IST736_HW7_V2.pdf)
 
+* Data Viz -- Happiness Graphs
+[Graphs in R](https://yesthisiskendra.github.io/datascience/data_visualization/IST_719_best_happiness_plots.html)
+
 ## 4. Analyze Data
 
 * Naive Bayes (IST736_HW4_HW6)
