@@ -10,6 +10,10 @@ tags: regex
 
 (Assignment )( Complete).+
 
+(Assignment |Page | )( Not completed| Complete).+
+
+---
+
 Completed.+
 
 Not Completed.+
@@ -31,7 +35,7 @@ Page
 ## Formatting markdown
 (if it starts with a space)
 ^\s
-(replace it with... `###`)
+(replace it with... `####`)
 (if it starts with a 'W')
 ^W
-(replace it with `# W`)
+(replace it with `## W`)
