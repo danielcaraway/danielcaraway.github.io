@@ -8,6 +8,7 @@ tags: regex
 
 (Page |Assignment )( Completed| Not completed).+
 
+(Assignment )( Complete).+
 
 Completed.+
 
@@ -31,3 +32,6 @@ Page
 (if it starts with a space)
 ^\s
 (replace it with... `###`)
+(if it starts with a 'W')
+^W
+(replace it with `# W`)
