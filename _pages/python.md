@@ -6,6 +6,12 @@ permalink: /python/
 
 # Python
 
+## Iteration
+
+
+
+[Helpful read](https://towardsdatascience.com/python-basics-iteration-and-looping-6ca63b30835c)
+
 ## Get unique list
 
 `python

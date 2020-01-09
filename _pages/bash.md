@@ -1,6 +1,7 @@
 ---
 layout: single
 title: 'BASH NOTES'
+permalink: /bash/
 ---
 
 jupyter nbconvert --execute --to html notebook.ipynb
