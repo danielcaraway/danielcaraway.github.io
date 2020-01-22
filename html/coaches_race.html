@@ -1,9 +1,18 @@
 <html>
-<div id="observablehq-17611174"></div>
-<script type="module">
-import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
-import define from "https://api.observablehq.com/@danielcaraway/bar-chart-race-explained.js?v=3";
-const inspect = Inspector.into("#observablehq-17611174");
-(new Runtime).module(define, name => (name === "chart") && inspect());
-</script>
+    <style>
+    body {
+        font-family: sans-serif;
+        font-size: 20px;
+    }
+    </style>
+    <body>
+        <h1>NCAA Conference Winners</h1>
+        <div id="observablehq-17611174"></div>
+        <script type="module">
+        import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@4/dist/runtime.js";
+        import define from "https://api.observablehq.com/@danielcaraway/bar-chart-race-explained.js?v=3";
+        const inspect = Inspector.into("#observablehq-17611174");
+        (new Runtime).module(define, name => (name === "chart") && inspect());
+        </script>
+    </body>
 </html>
