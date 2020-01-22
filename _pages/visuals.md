@@ -3,6 +3,23 @@ layout: single
 title: "Python Cheatsheet"
 permalink: /visuals/
 ---
+## Variable size
+
+```python
+g = sns.FacetGrid(...)
+g.map(plt.scatter, x_var, y_var, size_var)
+```
+
+## Bar chart of count
+
+```python
+seaborn.countplot(x='reputation', data=df)
+```
+
+To do it with barplot you'd need something like this:
+```python
+seaborn.barplot(x=df.reputation.value_counts().index, y=df.reputation.value_counts())
+```
 
 ## ## ok but really proud of these visuals
 

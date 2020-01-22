@@ -4,7 +4,11 @@ title: "Data Prep"
 permalink: /dataprep/
 ---
 
+## Counting Unique
 
+df.groupby(['group']).agg(['min','max','count','nunique'])
+
+df.groupby('param')['group'].nunique()
 
 ## Dealing with Skewness
 
