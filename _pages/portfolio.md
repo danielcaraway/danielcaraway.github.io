@@ -123,6 +123,20 @@ programmers, statisticians, and other relevant professionals in their organizati
 [HW3_A](https://danielcaraway.github.io/assets/portfolio/IST736_HW3.pdf)
 
 
+---
+
 # CLASSES:
 
-[652](https://danielcaraway.github.io/ist652/)
+## iSchool:
+
+IST 718 -- In Progress
+
+[IST 652 -- SCRIPTING](https://danielcaraway.github.io/ist652/)
+
+[IST 664 -- NLP](https://danielcaraway.github.io/ist664/)
+
+[IST 659 -- DBA](https://danielcaraway.github.io/ist659/)
+
+## MBA Program:
+
+[MBC 638 -- ](https://danielcaraway.github.io/mbc638/)
