@@ -121,3 +121,8 @@ programmers, statisticians, and other relevant professionals in their organizati
 ## Projects In Progress
 
 [HW3_A](https://danielcaraway.github.io/assets/portfolio/IST736_HW3.pdf)
+
+
+# CLASSES:
+
+[652](https://danielcaraway.github.io/ist652/)
