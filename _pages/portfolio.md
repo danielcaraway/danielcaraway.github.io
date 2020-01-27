@@ -131,6 +131,8 @@ programmers, statisticians, and other relevant professionals in their organizati
 
 IST 718 -- In Progress
 
+[IST 736 -- TEXT MINING](https://danielcaraway.github.io/ist736/)
+
 [IST 652 -- SCRIPTING](https://danielcaraway.github.io/ist652/)
 
 [IST 664 -- NLP](https://danielcaraway.github.io/ist664/)
