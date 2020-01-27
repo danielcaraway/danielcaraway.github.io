@@ -1,0 +1,93 @@
+#Week 1 learning code
+#calculator
+1+1
+Y <- 1+1
+x
+#w1 Functions
+
+age<- c(40, 50, 60)
+wt<- c(100, 130, 150)
+
+age[1]
+
+#calculate the mean
+mean(age)
+length(age)
+range(wt)
+sum(age)
+
+
+if(age[2]>age[1]) "Yes" else "No" 
+
+# if statement has 3 parts, boolean, if true, if false
+
+if(age[1] >30)  print("greater") else print ("less")
+if(age[1] >30) "greater" else "less"
+if(age[1] >30)  paste(age[1], "Greater", "I got this")  else "less"
+
+#test if 1st value in age is greater than 30
+age[1]>30
+
+testAge <- 50
+
+#test if each value in vector age is greater than testAge
+age>testAge
+
+# age of those greater than 50 only
+old <- age[age>testAge]
+
+#how many values with the condition
+Results <- age>testAge
+
+#convert boolean values into numberic if true then 
+as.numeric(Results)
+
+#calculate the number of values that are greater than testAge
+sum(Results)
+
+MyRange <- range(age)
+
+#create vector X
+X <- c(88,5,12,13)
+
+#Return 1st value from Vector X
+X[-1]
+X <- X[-1]
+
+#Return values 1:3 from Vector X
+X[1:3]
+
+#Insert value 86 before 13
+X<- c(X[1:3], 86, X[4])
+
+length(X) #how many values 
+X[4]<- 66 
+
+X+5 #ADD 5 to each value
+
+#sum up values from two vectors and insert into vector Y
+Y <- c(1, 2, 4) + age
+
+#Delete values in vector Y
+Y <- NULL
+
+#insert values from 1 to 100 into vector z
+z <- 1:100
+
+# insert values from 1 to 30 of the multibles of 3
+A <- seq(from = 1, to = 30, by = 3)
+
+A <- seq(from = 1, to = 30, by = 3)
+
+# insert 10 values from 1 to 2 distributed equally 
+B <- seq(from = 1, to = 2, length = 1000000)
+
+#test if 2 is more than 1 OR 3 is less than 2
+Z <- 2 > 1 | 3 < 2 
+Z <- !TRUE
+!TRUE #! Means NOT
+
+rm(list=ls(all=TRUE)) #will clear the global environment 
+
+?lm #help with a particular command
+

@@ -1,0 +1,127 @@
+rm(list=ls(all=TRUE))
+#Function
+
+a <- c(1, 2, 3, 4, 5, 6, 7, 8)
+b = 5
+xmean <- function(x){
+  y <- sum(x)/length(x)
+  z <- y/5
+  return(z)
+}
+
+xmean(a)
+
+#Function to sum 2 values
+myFunc1 <- function(a,b){ #starts with curly bracket
+  c <- a+b
+  return(c)
+} #ends with curly bracket
+
+myFunc1(5, 6)#call the function and send 2 values
+
+myFunc1 <- function(a){ #starts with curly bracket
+  c <- sum(a)
+  l <- length(a)
+  d <- c/l
+  return(d)
+} #ends with curly bracket
+
+
+
+# another function to return values between a range
+myFunc2 <- function(v,x,z){
+  s <- v[v>x] 
+  s <- s[s<z] 
+  return(s)
+}
+
+d <- c(20:30) #set the list of values for v
+
+myFunc2(d, 22, 27) #call the function and send 1 vector and 2 values
+
+# to debug and test
+myFunc2 <- function(v,MinVal, MaxVal){
+  s <- v[v>MinVal] 
+  cat("This is 1st s:", s, "\n")
+  
+  s <- s[s<MaxVal] 
+  cat("This is 2nd s:", s, "\n")
+  return(s)
+}
+myFunc2(d, 10, 29)
+
+#you can call all your codes outside of the function before running the finction to make sure and see your results
+
+#find the car with max hp
+myFunc3 <- function(a, b){
+  index <- which.max(a)
+  rnames <- rownames(b)
+  car <- rnames[index] 
+  return(car)
+}
+
+myFunc3(mtcars$cyl, mtcars)
+
+
+#function for weight and hight
+myFunc4 <- function(x, y){
+  newWeight <- x+5
+  Calculate <- newWeight/y
+  return(Calculate)
+  }
+
+z <- c(59,60,61,58,67,72,70)
+b <- c(150,140,180,220,160,140,130)
+
+myFunc4(z, b)            
+       
+myFunc5 <- function(a,b){
+  c<-length(a[a>b])
+  e<-c/length(a)
+  # Question 11: The function will return the percentage of elements in vector more than the number
+  return(e)
+}
+
+myFunc5 <- function(a){
+  c<-length(a)
+  d<-sum(a)
+  e <- d/c
+  return(e)
+}
+
+myFunc5(z, 69)
+
+# Question 12: Vector has 5 elements, the number passed into the function is 2, result is 0.2
+TestingVector <- 1
+num <- 2
+myFunc5(1,2)
+
+#HW3 Framework
+
+testFrame <- read.csv(url("http://www2.census.gov/programs-surveys/popest/tables/2010-2011/state/totals/nst-est2011-01.csv"))
+str(testFrame)
+head(testFrame, 1)
+View(testFrame)
+
+testFrame <- testFrame[-1:-8,]
+rownames(testFrame) <- NULL
+testFrame <- testFrame[-52:-80,]
+testFrame <- testFrame[,-6:-10]
+# ----------------Rename Rows and Columns
+# ----Renumber the rownames
+rownames(testFrame) <- NULL
+
+# ----Renumber the column names
+colnames(testFrame) <- c("Name", "X","","","")
+
+testFrame
+
+# Eliminate periods in state names
+testFrame$Name <- gsub("\\.","",testFrame$Name)
+
+# Clean up population data (remove commas), should be applied to some columns
+testFrame$X <- gsub("\\,", "", testFrame$X)
+testFrame$X <- as.numeric(testFrame$X)
+str(testFrame)
+
+# Step 7 has incorrect mean in the HW

@@ -1,0 +1,74 @@
+library(ggplot2)
+
+oilChange <- c(1:10)
+repairs <- c(15, 12, 8, 5, 4, 4, 5, 3, 2, 2)
+
+df <- data.frame(oilChange, repairs)
+plot(df$oilChange, df$repairs)
+
+m <- lm(repairs ~ oilChange, data = df)
+
+summary(m)
+abline(m)
+
+g <- ggplot(df, aes(x = oilChange, y = repairs)) + geom_point()
+g
+g + stat_smooth(method = "lm", col = "red")
+
+predict(m)
+
+#use cars data set to predict the mpg using other variables
+mpg.ml = lm(formula = mpg ~ wt, data = mtcars)
+summary(mpg.ml)
+
+plot(mtcars$wt, mtcars$mpg)
+abline(mpg.ml)
+
+mpg.ml = lm(formula = mpg ~ hp, data = mtcars)
+summary(mpg.ml)
+
+mpg.ml = lm(formula = mpg ~ wt + hp, data = mtcars)
+summary(mpg.ml)
+
+
+#so many variables may neg impat the accuracy of the model
+mpg.ml = lm(formula = mpg ~ ., data = mtcars)
+summary(mpg.ml)
+
+mpg.ml = lm(formula = mpg ~ wt + cyl, data = mtcars)
+summary(mpg.ml)
+
+
+newdata <- data.frame(cyl = 4, wt = 2.8)
+predict(mpg.ml, newdata, type = "response")
+
+sum.model <- summary(mpg.ml)
+sum.model$adj.r.squared
+
+g <- ggplot(mtcars, aes(x = cyl, y = wt)) + geom_point(aes(size = mpg, color = mpg))
+g
+g + stat_smooth(method = "lm")
+
+
+#mpg.lm = lm(formula = mpg ~ ., data=mtcars)
+#step(mpg.lm, data=mtcars, direction = "backward")
+#AIC (Akaike information criterion) 
+
+#------------------------------------------------HW8
+library(readxl)
+
+# Read data into R
+df <- data.frame(read_excel("G:\\My Drive\\Applied data science\\Fall 2019\\W8\\mlr01.xls", na="empty"))
+#rename columns
+colnames(df) <- c("fawn", "adultPop", "annualPrecip", "badWinter")
+
+#Inspect the data to ensure 8 observations of 4 variables
+str(df)
+
+# adj R-squared how well the model is fitting the actual data
+#Residual Standard Error: Residual Standard Error is measure of the quality of a linear regression fit
+#The coefficient t-value is a measure of how many standard deviations our coefficient estimate is far away from 0
+#Residuals are essentially the difference between the actual observed response values
+#F-statistic is a good indicator of whether there is a relationship between our predictor and the response variables
+
+

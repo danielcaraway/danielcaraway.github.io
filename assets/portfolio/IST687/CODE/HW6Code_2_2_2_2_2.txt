@@ -1,0 +1,105 @@
+## Week 6 Homework
+
+## Step 1: Load the data
+install.packages("ggplot2")
+install.packages("reshape2") 
+library(ggplot2)
+library(reshape2)
+
+air <- airquality
+View(air)
+str(air)
+
+## Step 2: Clean the data
+# Check for NA's in the columns
+any(is.na(air$Ozone)) # do any NA's exist in Ozone col? returns T or F
+
+length(air[air=='NA'])
+colnames(air)[colSums(is.na(air))>0]
+
+# Replace NA's with mean of column
+air$Ozone[is.na(air$Ozone)] <- mean(air$Ozone,na.rm=TRUE) # replace NA's in Ozone col with mean of col (where NA is discarded when calculating the mean)
+air$Solar.R[is.na(air$Solar.R)] <- mean(air$Solar.R,na.rm=TRUE) # replace NA's in Solar.R col with mean of col
+View(air)
+
+## Step 3: Understand the data distribution
+# histograms for each of the variables
+# histogram for ozone
+g.ozone <- ggplot(air, aes(x=Ozone)) + geom_histogram(binwidth=5, color="black", fill="white")
+g.ozone # inspect histogram
+
+# histogram for solar
+g.solar <- ggplot(air, aes(x=Solar.R)) + geom_histogram(binwidth=5, color="black", fill="white")
+g.solar # inspect histogram
+
+# histogram for wind
+g.wind <- ggplot(air, aes(x=Wind)) + geom_histogram(binwidth=5, color="black", fill="white")
+g.wind # inspect histogram
+
+# histogram for temp
+g.temp <- ggplot(air, aes(x=Temp)) + geom_histogram(binwidth=5, color="black", fill="white")
+g.temp # inspect histogram
+
+# histogram for month
+g.month <- ggplot(air, aes(x=Month)) + geom_histogram(binwidth=1, color="black", fill="white")
+g.month # inspect histogram
+
+# histogram for day
+g.day <- ggplot(air, aes(x=Day)) + geom_histogram(binwidth=5, color="black", fill="white")
+g.day # inspect histogram
+
+# boxplot for ozone
+gbox.ozone <- ggplot(air, aes(x=factor(0),Ozone)) + geom_boxplot()
+gbox.ozone # inspect boxplot
+
+# boxplot for wind
+gbox.wind <- ggplot(air, aes(x=factor(0),Solar.R)) + geom_boxplot()
+gbox.wind # inspect boxplot
+
+## Step 3: Explore how the data changes over time
+# Paste value in Month and Day columns and 1973 and assign to column "Date"
+air$Date <- as.Date(paste("1973", air$Month, air$Day, sep="-"),"%Y-%m-%d")
+str(air) # check structure to see if conversion works
+# create line charts for ozone, temp, wind and Solar.R
+# line chart for ozone
+gline.ozone <- ggplot(air, aes(x=Date, y=Ozone)) + geom_line()
+gline.ozone
+
+# line chart for temp
+gline.temp <- ggplot(air, aes(x=Date, y=Temp)) + geom_line()
+gline.temp
+
+# line chart for wind
+gline.wind <- ggplot(air, aes(x=Date, y=Wind)) + geom_line()
+gline.wind
+
+# line chart for solar
+gline.solar <- ggplot(air, aes(x=Date, y=Solar.R)) + geom_line()
+gline.solar
+
+# create one chart with 4 lines
+air <- air[,-5:-6]
+
+airLong <- melt(air, id="Date")
+# create chart with all 4 variables
+gline.all <- ggplot(airLong, aes(x=Date, y=value, color=variable)) + geom_line() + geom_smooth()
+gline.all # inspect chart
+
+#Another way to do it, create line chart for all 4 elements in one
+ggplot(air, aes(x=Date)) + 
+  geom_line(aes(y=Ozone, color="Ozone")) + 
+  geom_line(aes(y=Temp, color="Temp")) +  
+  geom_line(aes(y=Wind, color="Wind")) +
+  geom_line(aes(y=Solar.R, color="Solar.R")) +  theme(plot.title=element_text(hjust=.5)) + 
+  labs(title="1973 Environment", x="Date", y="Ozone / Temp / Wind / Solar.R")
+
+## Step 4: Look at all the data via a Heatmap
+htmap <- ggplot(airLong, aes(x=Date, y=variable)) + geom_tile(aes(fill=value)) + scale_fill_gradient(low="white", high="red")
+htmap # inspect heatmap
+
+## Step 5: Look at all the data via a scatter chart
+gscatter <- ggplot(air, aes(x=Wind, y=Temp)) + geom_point(aes(size=Ozone, color=Solar.R))
+gscatter # inspect scatter plot
+
+
+## Step 6: Final Analysis

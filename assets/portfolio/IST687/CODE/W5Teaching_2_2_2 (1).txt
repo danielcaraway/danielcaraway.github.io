@@ -1,0 +1,123 @@
+#-----------------Demonstration
+#install libraries if not installed yet
+install.packages("RCurl")
+install.packages("RJSONIO")
+install.packages("sqldf")
+install.packages("jsonlite")
+#Call the libraries
+library("RCurl")
+library("RJSONIO")
+library("sqldf")
+library("jsonlite")
+
+#tapply(Summary Variable, Group Variable (and a condition), Function)
+
+mycars <- mtcars
+#attach so you donn't have to call the df for each attrbiute
+attach(mycars)
+
+mean(mpg)
+
+tapply(mpg, cyl, mean)
+
+tapply(cyl, cyl, length)
+
+tapply(wt, cyl==8, mean)
+
+tapply(mpg, list(vs, cyl), mean)
+
+tapply(mpg, list(hp > 65, cyl), mean)
+
+tapply(wt, mpg>mean(mpg), mean)
+
+x <- tapply(cyl, list(mpg>mean(mpg), cyl), mean)
+
+#sapply, aggregate, tapply
+
+x["TRUE"]
+
+#sql commands:
+#select   - what columns
+#from    - what data set
+#where   - filter e.g. cyl = 4
+#and   - adding 
+#group by  _ grouper
+#count  - length in R
+#sum  - sum in R
+#avg - mean in R
+#median - median in R
+
+sqldf("select avg(mpg), cyl, sum(wt) from mycars group by cyl")
+
+#aggregate(mtcars[,c('mpg','hp')], list(cyl = mtcars$cyl), FUN = mean)
+
+sqldf("select count(mpg), cyl, vs from mycars group by cyl, vs")
+
+sqldf("select sum(mpg), cyl, count(hp) from mycars where cyl > 4 group by cyl")
+
+sqldf("SELECT (MPG), cyl, gear FROM mycars where cyl > 5 group by cyl, gear")
+
+
+#sqldf("select #### from #### where ####")
+
+#play with sqldf library
+TestQuery <- sqldf("select count(mpg), cyl from mycars group by cyl")
+
+
+#HW5 ------------------------------------------------------------------
+
+#Step 1
+#install libraries if not installed yet
+install.packages("RCurl")
+install.packages("RJSONIO")
+install.packages("jsonlite")
+#Call the libraries
+library("RCurl")
+library("RJSONIO")
+library("jsonlite")
+
+link<-'https://data.maryland.gov/api/views/pdvh-tf2u/rows.json?accessType=DOWNLOAD'
+
+JSONInput<-fromJSON("https://data.maryland.gov/api/views/pdvh-tf2u/rows.json?accessType=DOWNLOAD")
+
+JSONData<-JSONInput$data
+
+MyData<-data.frame(JSONData)
+
+#LOOK into the data
+str(MyData)
+View(MyData)
+
+MyData[,22] <- as.numeric(MyData[,22])
+str(MyData[,22])
+
+#Start Cleaning
+#there are some none values that you need to replace with NA, use a function we used before for replacement
+#You need to replace the null values with NA
+#get rid of the NAs or Manage them in a good way, use the na omit function or replace them with possible values 
+# aq$Ozone[is.na(aq$Ozone)] <- mean(aq$Ozone, na.rm = TRUE)
+#Remove the 1st 8 columns
+#Name the colmns
+#when searching for the day of "Sunday", you need to manage the space that may exist, you may decide to remove it, using gsub function for example
+
+
+namesOfColumns <-  c("CASE_NUMBER","BARRACK","ACC_DATE","ACC_TIME","ACC_TIME_CODE","DAY_OF_WE
+    EK","ROAD","INTERSECT_ROAD","DIST_FROM_INTERSECT","DIST_DIRECTION","CITY_NA
+    ME","COUNTY_CODE","COUNTY_NAME","VEHICLE_COUNT","PROP_DEST","INJURY","COLLI
+    SION_WITH_1","COLLISION_WITH_2")
+
+
+colnames(MyData) <- namesOfColumns
+
+View(MyData)
+
+#Step 3 using sqldf
+
+FirstQuery <- sqldf("select sum(x13) from MyData where Day = 'Sunday'")
+SecondQuery <- sqldf("select Count(###) from ### where ###")
+ThirdQuery <- sqldf("select Count(###), day from ### Group By day")
+
+#Step 4 do the same using tapply
+#use similar to what I used in  tapply(mpg, cyl==8, length)
+
+

@@ -1,0 +1,78 @@
+install.packages("ggplot2")
+library(ggplot2)
+
+air <- airquality
+
+##Clean the data set from NAs
+any(is.na(air$Ozone)) # do any NA's exist in Ozone col? returns T or F
+
+length(air[air=='NA'])
+colnames(air)[colSums(is.na(air))>0]
+
+# Replace NA's with mean of column
+air$Ozone[is.na(air$Ozone)] <- mean(air$Ozone,na.rm=TRUE) # replace NA's in Ozone col with mean of col (where NA is discarded when calculating the mean)
+air$Solar.R[is.na(air$Solar.R)] <- mean(air$Solar.R,na.rm=TRUE) # replace NA's in Solar.R col with mean of col
+
+ggplot(air, aes(x=Ozone)) + geom_line(aes(y=Temp)) + geom_histogram()
+
+p <- ggplot(data=air, aes(x=Ozone, y=Temp, color=Month)) + geom_line() + stat_smooth()
+
+
+##Generate charts, histogram, box plot, line plot, point plot, and tile plot for heat map
+MyGraph <- ggplot(air, aes(x=Ozone)) + geom_histogram(binwidth=10, color="white", fill="red")
+
+MyGraph <- MyGraph + ggtitle("Test") + theme(plot.title = element_text(hjust = 0.5)) + xlab("OZ") + ylab("Frequency")
+MyGraph
+
+#The next is to create a boxplot
+gbox.ozone <- ggplot(airquality, aes(0,Ozone)) + geom_boxplot() 
+gbox.ozone
+# create a boxplot for wind
+
+
+#Explore how the data changes over time
+# Paste value in Month and Day columns and 1973 and assign to column "Date"
+air$Date <- paste("1973", air$Month, air$Day, sep="-")
+air$Date <- as.Date(air$Date,"%Y-%m-%d")
+
+str(air) # check structure to see if conversion works
+air <- air[,-5:-6]
+str(air) 
+
+# create line charts for ozone, temp, wind and Solar.R
+# line chart for ozone
+gline.ozone <- ggplot(data = air, aes(x=Date, y=Ozone)) + theme_classic(base_size = 10)
+gline.ozone + geom_line() 
+# create for the other variables
+#
+#
+#
+# create one chart with 4 lines
+# use melt function to transform the data frame
+#to use melt install.packages("reshape2") 
+library(reshape2)
+airLong <- melt(air, id="Date")
+head(airLong[order(airLong$Date),])
+
+# create chart with all 4 variables
+gline.all <- ggplot(airLong, aes(x=Date, y=value, color=variable)) + geom_line()
+gline.all # inspect chart
+
+
+## Step 4: Look at all the data via a Heatmap
+htmap <- ggplot(airLong, aes(x=Date, y=variable)) + geom_tile(aes(fill=value)) + scale_fill_gradient(low="white", high="red")
+htmap # inspect heatmap
+
+## Step 5: Look at all the data via a scatter chart
+gscatter <- ggplot(air) +  geom_point(aes(x=Wind, y=Temp, size=Ozone, color=Solar.R))
+gscatter # inspect scatter plot
+
+## Step 6: Final Analysis
+#
+#
+#
+#
+
+
+
+

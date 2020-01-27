@@ -1,0 +1,55 @@
+#Step 1
+#install libraries if not installed yet
+install.packages("RCurl")
+install.packages("RJSONIO")
+install.packages("sqldf")
+install.packages("jsonlite")
+#Call the libraries
+library("RCurl")
+library("RJSONIO")
+library("sqldf")
+library("jsonlite")
+
+link<-'https://data.maryland.gov/api/views/pdvh-tf2u/rows.json?accessType=DOWNLOAD'
+JSONInput<-fromJSON(txt=link)
+
+JSONData<-JSONInput$data
+MyData<-data.frame(JSONData,stringsAsFactors = FALSE)
+
+#Step 2 Cleansing
+str(MyData)
+
+MyData<- MyData[,-1:-8]
+
+namesOfColumns<- colnames(MyData)
+namesOfColumns <- c("CASE_NUMBER","BARRACK","ACC_DATE","ACC_TIME","ACC_TIME_CODE","DAY_OF_WEEK","ROAD","INTERSECT_ROAD","DIST_FROM_INTERSECT","DIST_DIRECTION","CITY_NAME","COUNTY_CODE","COUNTY_NAME","VEHICLE_COUNT","PROP_DEST","INJURY","COLLISION_WITH_1","COLLISION_WITH_2")
+colnames(MyData)<- namesOfColumns
+colnames(MyData)
+
+#Step 3
+#Get rid of null
+
+step2<- MyData
+step22<-na.omit(step2)
+any(is.na(step22))
+MyData<- step22
+
+# returns string w/o leading or trailing whitespace
+
+MyData$DAY_OF_WEEK <- gsub(" ", "", MyData$DAY_OF_WEEK)
+View(MyData)
+
+step3result<- nrow(sqldf("select * from MyData where DAY_OF_WEEK='SUNDAY'"))
+step3result
+
+step32result<- sqldf("select count(*) from MyData where INJURY='YES'")
+step32result
+
+step33result<- sqldf("select Count(*), DAY_OF_WEEK from MyData Group By DAY_OF_WEEK")
+step33result
+
+#Step 4
+tapply(MyData$DAY_OF_WEEK, MyData$DAY_OF_WEEK=='SUNDAY', length)
+tapply(MyData$INJURY, MyData$INJURY=='YES', length)
+tapply(MyData$DAY_OF_WEEK, MyData$DAY_OF_WEEK, length)
+

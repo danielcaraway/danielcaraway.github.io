@@ -1,0 +1,45 @@
+# Homework 2
+# Copy mtcars dataset into new variable called myCars
+myCars <- mtcars
+# Step 1 - What is the hp
+# Question 1: find highest horsepower
+max(myCars$hp)
+# Question 2: find the car with highest horsepower
+index <- which.max(myCars$hp)
+Myrnames <- rownames(myCars[index,])
+Myrnames
+# Step 2 - Explore mpg
+# Question 3: What is the highest mpg?
+max(myCars$mpg)
+# Question 4: Which car has the highest mpg?
+
+index <- which.max(myCars$mpg)
+rnames <- rownames(myCars)
+car <- rnames[index]
+car
+
+cat("Max mpg and car name:", car, max(myCars$mpg))
+
+# Question 5: Create a sorted dataframe based on mpg
+sortedMPG <- myCars[order(-myCars$mpg),]
+sortedMPG
+# Step 3 - Which car has the best combination of mpg and hp
+# Question 6: What logic did you use?
+myCars$mpgAndHp <- c(myCars$mpg * myCars$hp)
+MyIndex <- which.max(myCars$mpgAndHp)
+rownames(myCars[MyIndex,])
+#2 lines at once: rownames(myCars[which.max(myCars$mpgAndHp),])
+
+# Question 7: Which car?
+rownames(myCars[MyIndex,])
+
+# Step 4 - Which car has the best car combination of mpg and hp, given equal weight?
+#create normalized columns of mpg and hp
+myCars$scaleMPG <- scale(myCars$mpg)
+myCars$scaleHP <- scale(myCars$hp)
+
+myCars$scaledMPGAndHp <- myCars$scaleMPG + myCars$scaleHP
+# find the car with best combination
+MyIndex <- which.max(myCars$scaledMPGAndHp)
+rownames(myCars[MyIndex,])
+

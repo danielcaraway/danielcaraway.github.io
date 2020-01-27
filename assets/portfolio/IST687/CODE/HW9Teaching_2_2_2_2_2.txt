@@ -1,0 +1,268 @@
+#
+# -------------------------- Week 9 Synchronous Code -----------------------------
+# install.packages("kernlab")   
+# library("kernlab")
+# library(e1071)
+# library(ggplot2)
+# library(gridExtra)
+
+#  Packages: kernlab, e1071, gridExtra, ggplot2, caret
+
+#specify the packages of interest
+packages=c("arulesViz", "kernlab","e1071","gridExtra","ggplot2", "caret", "arules")
+
+#use this function to check if each package is on the local machine
+#if a package is installed, it will be loaded
+#if any are not, the missing package(s) will be installed and loaded
+package.check <- lapply(packages, FUN = function(x) {
+  if (!require(x, character.only = TRUE)) {
+    install.packages(x, dependencies = TRUE)
+    library(x, character.only = TRUE)
+  }
+})
+
+#verify they are loaded
+search()
+
+
+# -------------------Association rules chapter 17
+data("Groceries")
+inspect(head(Groceries))
+
+itemFrequencyPlot(Groceries, support=0.05, cex.names=0.5)
+
+ruleset <- apriori(Groceries, parameter = list(support = 0.005, confidence=0.7))
+ruleset <- apriori(Groceries, parameter = list(support = 0.01, confidence=0.5))
+summary(ruleset)
+inspect(ruleset)
+
+ruleset <- apriori(Groceries, parameter = list(support = 0.005, confidence=0.35))
+plot(ruleset)
+goodrules <- ruleset[quality(ruleset)$lift>3]
+df <- inspect(goodrules)
+plot(goodrules)
+#Support, from all data records what percentage represents this role
+#Confidence, from all the records in the left what percentage has this right
+#lift,Confidence to Expected Confidence. measured against a random choice targeting model
+#For example, suppose a population has an average response rate of 5%, but a certain model (or rule) has identified a segment with a response rate of 20%. 
+#Then that segment would have a lift of 4.0 (20%/5%).
+
+
+# --------------------------------------------------------------------HW9
+# Step 1: Load the data
+air <- data.frame(airquality) 
+colnames(air)[colSums(is.na(air)) > 0] # find which columns in the dataframe contain NAs.
+air$Ozone[is.na(air$Ozone)] <- mean(air$Ozone, na.rm=TRUE) # find the NAs in column "Ozone" and replace them by the mean value of this column
+air$Solar.R[is.na(air$Solar.R)] <- mean(air$Solar.R, na.rm=TRUE)# find the NAs in column "Solar.R" and replace those NAs by the mean value of this column
+# --------------------------------------------------------------------
+# Step 2: Create train and test data sets
+# create a list of random index for air data and store the index in a variable called "ranIndex"
+# 
+dim(air)
+air[1:5,]
+randIndex <- sample(1:dim(air)[1])
+length(randIndex)
+
+#  # In order to split data, create a 2/3 cutpoint and round the number
+cutpoint2_3 <- floor(2*dim(air)[1]/3)
+# check the 2/3 cutpoint
+cutpoint2_3
+#  
+# create train data set, which contains the first 2/3 of overall data
+#  
+trainData <- air[randIndex[1:cutpoint2_3],]
+dim(trainData)
+head(trainData)
+#  
+# create test data, which contains the left 1/3 of the overall data
+#  
+testData <- air[randIndex[(cutpoint2_3+1):dim(air)[1]],]
+dim(testData)   # check test data set
+head(trainData)
+
+#------------------------------------------------------lm model
+model <- lm(Ozone ~.,data=trainData)
+summary(model)
+lmPred <- predict(model,testData)
+
+str(lmPred)
+compTable3 <- data.frame(testData[,1],lmPred)
+colnames(compTable3) <- c("test","Pred")
+sqrt(mean((compTable3$test-compTable3$Pred)^2))
+
+#lm plot
+compTable3$error <- abs(compTable3$test - compTable3$Pred)
+Plot3 <- data.frame(compTable3$error, testData$Temp, testData$Wind)
+colnames(Plot3) <- c("error","Temp","Wind")
+lm.plot <- ggplot(Plot3, aes(x=Temp,y=Wind)) + geom_point(aes(size=error, color=error)) + ggtitle("lm")
+lm.plot
+# --------------------------------------------------------------------KSVM
+# Step 3: Build a Model using KSVM & visualize the results
+# 1) Build a model to predict Ozone and name it "svmOutput"
+#    This is the Training step
+svmOutput <- ksvm(Ozone~., # set "Ozone" as the target predicting variable; "." means use all other variables to predict "Ozone"
+                  data = trainData, # specify the data to use in the analysis
+                  kernel = "rbfdot", # kernel function that projects the low dimensional problem into higher dimensional space
+                  kpar = "automatic",# kpar refer to parameters that can be used to control the radial function kernel(rbfdot)
+                  C = 10, # C refers to "Cost of Constrains"
+                  cross = 10, # use 10 fold cross validation in this model
+                  prob.model = TRUE # use probability model in this model
+)
+# check the model
+svmOutput
+
+# 2) Test the model with the testData data set
+svmPred <- predict(svmOutput, # use the built model "svmOutput" to predict 
+                   testData, # use testData to generate predictions
+                   type = "votes" # request "votes" from the prediction process
+)
+
+
+# create a comparison dataframe that contains the exact "Ozone" value and the predicted "Ozone" value
+# use for RMSE calc 
+
+compTable <- data.frame(testData[,1], svmPred[,1])
+# change the column names to "test" and "Pred"
+colnames(compTable) <- c("test","Pred")
+  
+# compute the Root Mean Squared Error
+sqrt(mean((compTable$test-compTable$Pred)^2)) #A smaller value indicates better model performance.
+
+# 3) Plot the results
+# compute absolute error for each case
+compTable$error <- abs(compTable$test - compTable$Pred)
+# create a new dataframe contains error, tempreture and wind
+svmPlot <- data.frame(compTable$error, testData$Temp, testData$Wind, testData$Ozone)
+# assign column names
+colnames(svmPlot) <- c("error","Temp","Wind", "Ozone")
+# polt result using ggplot, setting "Temp" as x-axis and "Wind" as y-axis
+plot.ksvm <- ggplot(svmPlot, aes(x=Temp,y=Wind)) + 
+  # use point size and color shade to illustrate how big is the error
+  geom_point(aes(size=error, color=error))+
+  ggtitle("ksvm")
+
+
+# Step 4: Create a "goodOzone" variable
+# calculate average Ozone
+meanOzone <- mean(air$Ozone,na.rm=TRUE)
+# create a new variable named "goodOzone" in train data set
+# goodOzone = 0 if Ozone is below average Ozone
+# googOzone = 1 if Ozone is eaqual or above the average ozone
+trainData$goodOzone <- ifelse(trainData$Ozone<meanOzone, 0, 1)
+# do the same thing for test dataset
+testData$goodOzone <- ifelse(testData$Ozone<meanOzone, 0, 1)
+# remove "Ozone" from train data
+trainData <- trainData[,-1]
+# remove "Ozone" from test data
+testData <- testData[,-1]
+
+# Step 5: See if we can do a better job predicting 'good' and 'bad' days
+# convert "goodOzone" in train data from numeric to factor
+trainData$goodOzone <- as.factor(trainData$goodOzone)
+# convert "goodOzone" in test data from numeric to factor
+testData$goodOzone <- as.factor(testData$goodOzone)
+
+# 1)	Build a model 
+# build a model using ksvm function,and use all other variables to predict
+svmGood <- ksvm(goodOzone~., # set "Ozone" as target variable; "." means use all other variables to predict "Ozone"
+                data=trainData, # specify the data to use in the analysis
+                kernel="rbfdot", # kernel function that projects the low dimensional problem into higher dimensional space
+                kpar="automatic",# kpar refer to parameters that can be used to control the radial function kernel(rbfdot)
+                C=10, # C refers to "Cost of Constrains"
+                cross=10, # use 10 fold cross validation in this model
+                prob.model=TRUE # use probability model in this model
+)
+# check the model
+svmGood
+
+# 2) Test the model
+goodPred <- predict(svmGood, # use model "svmGood" to predict
+                    testData # use testData to do the test
+)
+# create a dataframe that contains the exact "goodOzone" value and the predicted "goodOzone"
+compGood1 <- data.frame(testData[,6], goodPred)
+# change column names
+colnames(compGood1) <- c("test","Pred")
+# Compute the percentage of correct cases
+perc_ksvm <- length(which(compGood1$test==compGood1$Pred))/dim(compGood1)[1]
+perc_ksvm
+
+# Confusion Matrix
+#   
+results <- table(test=compGood1$test, pred=compGood1$Pred)
+print(results)
+
+#       pred
+#  test  0  1
+#     0 19  7      #  read horizontal,, 0 class, 19 identified correctly, 7 incorrectly
+#     1  7 18      #                    1 class, 7 identified incorrectly, 18 correctly
+
+
+
+
+# 3)	Plot the results. 
+# determine the prediction is "correct" or "wrong" for each case
+compGood1$correct <- ifelse(compGood1$test==compGood1$Pred,"correct","wrong")
+# create a new dataframe contains correct, tempreture and wind, and goodZone
+Plot_ksvm <- data.frame(compGood1$correct,testData$Temp,testData$Wind,testData$goodOzone,compGood1$Pred)
+# change column names
+colnames(Plot_ksvm) <- c("correct","Temp","Wind","goodOzone","Predict")
+# polt result using ggplot
+# size representing correct/wrong; color representing actual good/bad day; shape representing predicted good/bad day.
+plot.ksvm.good <- ggplot(Plot_ksvm, aes(x=Temp,y=Wind)) + 
+  geom_point(aes(size=correct,color=goodOzone,shape = Predict))+
+  ggtitle("ksvm - good/bad ozone")
+
+plot.ksvm.good
+
+# --------------------------------------------------------------------SVM Model
+svmGood2 <- svm(goodOzone~.,data=trainData,kernel="radial",C=10,cross=10,prob.model=TRUE)
+svmGood2
+
+#test the svm model
+goodPred2 <- predict(svmGood2,testData)
+
+compGood2 <- data.frame(testData[,6],goodPred2)
+colnames(compGood2) <- c("test","Pred")
+perc_svm <- length(which(compGood2$test==compGood2$Pred))/dim(compGood2)[1]
+perc_svm
+#confusion matrix
+results2 <- table(test=compGood2$test,pred=compGood2$Pred)
+print(results2)
+
+#plot results of svm model
+compGood2$correct <- ifelse(compGood2$test==compGood2$Pred,"correct","wrong")
+plot.svm <- data.frame(compGood2$correct,testData$Temp,testData$Wind,testData$goodOzone,compGood2$Pred)
+colnames(plot.svm) <- c("correct","Temp","Wind","goodOzone","Predict")
+plot.svm.good <- ggplot(plot.svm,aes(x=Temp,y=Wind)) + geom_point(aes(size=correct,color=goodOzone,shape=Predict)) + ggtitle("svm - ggod/bad ozone")
+plot.svm.good
+
+#-------------------------------------------------------------------buid a naive bayes model
+#Use the Function "naiveBayes"
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#plot.nb.good <- ggplot(.....# similar to the previous models plot the results using the naive bayes
+#plot.nb.good
+
+#5. Show all three results in one window using gridArrange function
+grid.arrange(plot.ksvm.good,plot.svm.good, ncol=2, nrow=2, top="Model Comparison")
+
+##################################################
+# Step 6: Which are the best models for this data?
+##################################################
+#
+#
+#
+#
+#
+#
+
+

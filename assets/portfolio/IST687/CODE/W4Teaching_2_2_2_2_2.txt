@@ -1,0 +1,110 @@
+# IST 687 - Applied Data Science
+# Week 4
+#
+#                                   W4 Teaching and HW4
+# Step 1  
+v <- c(1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 6,6, 6, 6, 7,7, 7,  8,8, 8,  10000)
+hist(v)
+curve(v)
+#inside a function do the following
+mean(v)
+median(v)
+max(v)
+min(v)
+sd(v)
+length(v)
+length(v[v=="1"])
+
+#Your HW4 Function should look similar to this
+Info <- function(x){
+  #statistical measurments
+  a<-mean(x)
+  b<-median(x)
+  z <- max(x)
+  #All Others
+  #Report the results
+  cat("mean:",a,"\nmedian:",b, "\nmax:", z)
+}
+Info(v)
+
+quantile(v,0.5) 
+quantile(v,0.25)
+hist(v)
+
+#install package to use the function skewness
+#install.packages("moments")
+library(moments)
+skewness(v) #measure of symmetry
+
+v2 <- c(10000, 2, 2, 3, 3, 3, 4, 4, 4, 4, 4 ,4, 5, 5, 5, 6, 6, 7)
+mean(v2)
+hist(v2)
+skewness(v2)
+
+#generate random numbers with a normal distribution using n, mean, and SD
+#install.packages("stringr")
+library(stringr)
+
+hist(rnorm(1000, 10, 10))
+
+mean(rnorm(3, 0, 2))
+skewness(rnorm(20000000, 10, 2))
+#How to replicate
+#HW3 step 2
+
+A <- "Head"
+B <- "Tail"
+
+RepA <- replicate(100,A)
+RepB <- replicate(100,B)
+
+#Store All results in one bucket
+MyBucket <- c(RepA, RepB)
+
+#Sample function, subset
+SamMyBucket <- sample(MyBucket,20,replace=TRUE)
+SamMyBucket
+
+#number of tails in my sample
+TailCount <- length(SamMyBucket[SamMyBucket=="Tail"])
+#TailCount <- length(grep("Tail",SamMyBucket))
+TailPerc <- TailCount / length(SamMyBucket) * 100
+
+cat(TailCount, "Tail, which is" ,TailPerc, "%")
+
+# create a function to do sampling
+sam <- function(v, x){
+  samp <- sample(v,x,replace=TRUE)
+  num <- length(samp[samp=="Tail"])/length(samp) *100
+  return(num)
+}
+
+
+sam(MyBucket, 10)
+
+#multible iterations
+x <- mean(replicate(10,sam(MyBucket, 10)))
+#store in a variable
+sampleMeans <- replicate(20,sam(MyBucket, 100))
+
+hist(sampleMeans)
+Info(x)
+
+#step #2 clarification
+#6 Sample 10 samples from your Jar, e.g. sam(MyBucket, 10)
+#7 generate a sample of 20 means, each was measured from the mean of 10 samples, e.g. replicate(20,mean(replicate(10,sam(MyBucket, 10))))
+#8 generate a sample of 20 means, each was measured from the mean of 100 samples
+#9 generate a sample of 100 means, each was measured from the mean of 100 sampless
+
+# Step 3: Explore the airquality dataset
+# Question 10
+D <- airquality
+any(is.na(D))
+# Remove NA rows using the following function
+DD <- na.omit(D)
+#use the following code to replace NA wih the mean
+#DataFrame$Column[is.na(DataFrame$Column)] <- mean(DataFrame$Column) 
+#Mice package https://cran.r-project.org/web/packages/mice/mice.pdf
+
+ 
+ 

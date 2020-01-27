@@ -1,0 +1,98 @@
+install.packages("moments")
+# IST 687 - Applied Data Science
+# Homework 4
+# Step 1: Write a summarizing function to undersand the distribution of a vector
+# Question 1 and 2
+printVecInfo <- function(v){
+  a<-mean(v)
+  b<-median(v)
+  c<-min(v)
+  d<-max(v)
+  e<-sd(v)
+  f<-quantile(v,probs=0.05)
+  g<-quantile(v,probs=0.95)
+  library(moments)
+  h<-skewness(v)
+  cat("mean:",a,"\nmedian:",b,"\nmin:",c,"max:",d,"\nsd:",e,"\nquantile (0.05 - 0.95):",f,"--",g,"\nskewness:",h)
+}
+# Question 3
+vect <- c(1,2,3,4,5,6,7,8,9,10,50)
+printVecInfo(vect)
+
+# Step 2: Creating Samples in a Jar
+# Question 4
+blu <- "blue"
+red <- "red"
+v.blu <- replicate(50,blu)
+v.red <- replicate(50,red)
+jar <- c(v.blu, v.red)
+# Question 5
+length(jar[jar==red])
+# Question 6
+jarSam <- sample(jar,10,replace=TRUE)
+jarSam
+numRed <- length(jarSam[jarSam==red])
+perRed <- numRed / 10 *100
+cat("Number of red marbles:",numRed,"\nPercent red marbles:",perRed,"%")
+
+# Question 7a
+sam <- function(j){
+  samp <- sample(j,10,replace=TRUE)
+  num <- length(samp[samp==red])
+  return(num)
+}
+sam(jar)
+# Question 7b
+mean(replicate(20,sam(jar)))
+# Question 7c
+sampleMeans <- replicate(20,mean(replicate(20,sam(jar))))
+printVecInfo(sampleMeans)
+
+hist(sampleMeans)
+# Question 8
+sam2 <- function(j){
+  samp <- sample(j,100,replace=TRUE)
+  num <- length(samp[samp==red])
+  return(num)
+}
+sam2(jar)
+mean(replicate(100,sam2(jar)))
+sampleMeans2 <- replicate(20,mean(replicate(100,sam(jar))))
+printVecInfo(sampleMeans2)
+hist(sampleMeans2)
+# Question 9
+sam3 <- function(j){
+  samp <- sample(j,100,replace=TRUE)
+  num <- length(samp[samp==red])
+  return(num)
+}
+sam3(jar)
+mean(replicate(100,sam3(jar)))
+sampleMeans3 <- replicate(100,mean(replicate(100,sam(jar))))
+printVecInfo(sampleMeans3)
+hist(sampleMeans3)
+
+# Step 3: Explore the airquality dataset
+# Question 10
+aq <- airquality
+# Question 11
+
+any(is.na(aq))
+length(aq[aq=='NA'])
+str(aq)
+aq <- na.omit(aq)
+str(aq)
+
+rownames(aq) <- NULL
+# Question 12
+ozone <- aq[,1]
+wind <- aq[,3]
+temp <- aq[,4]
+printVecInfo(ozone)
+hist(ozone)
+printVecInfo(wind)
+hist(wind)
+printVecInfo(temp)
+hist(temp)
+
+
