@@ -1,7 +1,7 @@
 ---
 layout: single
 title: 'MBC 638'
-permalink: /mbc638/
+permalink: /mbc638_outline/
 ---
 
 # MBC-638: Data Analysis & Decision Making 2018-0629
