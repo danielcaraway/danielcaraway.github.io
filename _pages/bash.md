@@ -27,6 +27,10 @@ for f in /IST_736_TextMining/* IST_736_TextMining/**/* ; do
   echo "$f"
 done
 
+for f in /ALI/* ALI/**/* ; do
+  echo "$f"
+done
+
 
 recursive_list2() {
   for d in *; do
@@ -178,5 +182,57 @@ recursive_list_4() {
         echo "$filename"
         cp $d all_html/"$filename" || cp $d ../all_html/"$filename"
     fi
+  done
+}
+
+
+## RENAMING FILES WITH DATE
+
+recursive_list_4() {
+  for d in *; do
+    if [ -d "$d" ]; then
+      (cd -- "$d" && recursive_list_4)
+    fi
+    if [[ $d == *.pdf ]] ; then
+        newdate=$(stat -f %SB -t %Y_%m_%d "$d")
+        filename=${newdate}_${d%%.*}.pdf
+        echo "$filename"
+        cp $d all_files/"$filename" || cp $d ../all_files/"$filename"
+    fi
+  done
+}
+
+
+recursive_list_5() {
+  for d in *; do
+    if [ -d "$d" ]; then
+      (cd -- "$d" && recursive_list_5)
+    fi
+      newdate=$(stat -f %SB -t %Y_%m_%d "$d")
+      filename=${newdate}_${d##*/}
+      echo "$filename"
+      <!-- cp $d all_files/"$filename" || cp $d ../all_files/"$filename" -->
+  done
+}
+
+recursive_list_5() {
+  for d in *; do
+    if [ -d "$d" ]; then
+      (cd -- "$d" && recursive_list_5)
+    fi
+      newdate=$(stat -f %SB -t %Y_%m_%d "$d")
+      filename=${newdate}_${d##*/}
+      echo "$filename"
+  done
+}
+
+## RENAME FILES (below not recursive)
+
+recursive_list_6() {
+  for d in *; do
+    newdate=$(stat -f %SB -t %Y_%m_%d "$d")
+    filename=${newdate}_${d##*/}
+    echo "$filename"
+    cp $d dated/"$filename" || cp $d ../dated/"$filename"
   done
 }

@@ -8,6 +8,10 @@ permalink: /pandas/
 #### A semi-cheatsheet? 
 
 `python
+df1 = df[(df.a != -1) & (df.b != -1)]
+`
+
+`python
 deals = weights['! ;) :) half off free crazy deal only $ 80 %'.split()].round(3) * 100
 ['! ;) :) half off free crazy deal only $ 80 %'.split()]
 `

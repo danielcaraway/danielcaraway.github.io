@@ -1,0 +1,123 @@
+<html> 
+<head> 
+	<title>Stacked Bar Chart</title> 
+	<script type="text/javascript" src="js/protovis-r3.2.js"></script>
+	<style type="text/css">
+	#figure-wrapper {
+		width: 495px;
+		font-family: Georgia;
+	}
+	#figure {
+		height: 400px;
+	}
+	#lead-in {
+		padding-left: 14px;
+	}
+	h1 {
+		font-size: 18px;
+		text-transform: uppercase;
+		margin-bottom: 0px;
+	}
+	p {
+		font-size: 13px;
+		line-height: 1.4em;
+	}
+	.label {
+		position: absolute;
+		left: 438px;
+		font-size: 12px;
+		font-style: italic;
+	}
+	#approve { top: 332px; }
+	#disapprove { top: 218px; }
+	#no-opinion { top: 128px; }
+	</style>
+</head> 
+<body>
+	<div id="figure-wrapper">
+		<div id="lead-in">
+			<h1>Approval Ratings for Barack Obama</h1>
+			<p>Recent Gallup and CBS polls show a 52% approval rating for Barack Obama in race relations. It is the only issue out of the below thirteen where he has a majority approval. In eight of the thirteen, results show a majority disapproval.</p>
+		</div><!-- @end lead-in -->
+		<div id="figure">
+			<div id="no-opinion" class="label">No Opinion</div>
+			<div id="approve" class="label">Approve</div>
+			<div id="disapprove" class="label">Disapprove</div>
+			
+	    <script type="text/javascript+protovis"> 
+	
+		var data = {
+		  "Issue":["Race Relations","Education","Terrorism","Energy Policy","Foreign Affairs","Environment","Situation in Iraq","Taxes","Healthcare Policy","Economy","Situation in Afghanistan","Federal Budget Deficit","Immigration"],
+		  "Approve":[52,49,48,47,44,43,41,41,40,38,36,31,29],
+		  "Disapprove":[38,40,45,42,48,51,53,54,57,59,57,64,62],
+		  "None":[10,11,7,11,8,6,6,5,3,3,7,5,9]
+		};
+		var cat = data.Issue;
+		var data = [data.Approve, data.Disapprove, data.None];
+
+		var w = 400,
+		    h = 250,
+			x = pv.Scale.ordinal(cat).splitBanded(0, w, 4/5),
+			y = pv.Scale.linear(0, 100).range(0, h),
+			fill = ["#809EAD", "#B1C0C9", "#D7D6CB"];
+
+		var vis = new pv.Panel()
+		    .width(w)
+		    .height(h)
+		    .bottom(90)
+		    .left(32)
+		    .right(10)
+		    .top(15);
+
+		// Stacked layout 
+		var bar = vis.add(pv.Layout.Stack)
+		    .layers(data)
+		    .x(function() x(this.index))
+		    .y(function(d) y(d))
+		  .layer.add(pv.Bar)
+			.fillStyle(function() fill[this.parent.index])
+			.title(function(d) d + "%")
+			.width(x.range().band)
+		  .event("mouseover", function() this.fillStyle("#555"))
+		  .event("mouseout", function() this.fillStyle(fill[this.parent.index]));
+
+		// Labels
+		bar.anchor("center").add(pv.Label)
+			.visible(function(d) d > 11)
+			.textStyle("white")
+			.text(function(d) d.toFixed(0));
+		
+		bar.anchor("bottom").add(pv.Label)
+			.visible(function() !this.parent.index)
+			.textAlign("right")
+			.top(260)
+			.left(function() x(this.index)+20)
+			.textAngle(-Math.PI / 4)
+			.text(function() cat[this.index]);
+
+		// Ticks
+		vis.add(pv.Rule)
+			.data(y.ticks())
+			.bottom(y)
+			.left(-15)
+			.width(15)
+			.strokeStyle(function(d) d > 0 ? "rgba(0,0,0,0.3)" : "#000")
+		  .anchor("top").add(pv.Label)
+			.bottom(function(d) y(d)+2)
+			.text(function(d) d == 100 ? "100%" : d.toFixed(0));
+		
+		vis.add(pv.Rule)
+			.bottom(y)
+			.left(-15)
+			.right(0)
+			.strokeStyle("#000")
+
+		vis.render();
+
+	    </script>
+	
+		
+		</div><!-- @end figure -->
+	</div><!-- @end figure-wrapper -->
+</body> 
+</html>
