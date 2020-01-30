@@ -129,7 +129,7 @@ programmers, statisticians, and other relevant professionals in their organizati
 
 ## iSchool:
 
-IST 718 -- In Progress
+[IST 718 -- BIG DATA ANALYTICS](https://danielcaraway.github.io/ist718/)
 
 [IST 736 -- TEXT MINING](https://danielcaraway.github.io/ist736/)
 
@@ -137,8 +137,20 @@ IST 718 -- In Progress
 
 [IST 664 -- NLP](https://danielcaraway.github.io/ist664/)
 
-[IST 659 -- DBA](https://danielcaraway.github.io/ist659/)
+[IST 719 -- DATA VISUALIZATION](https://danielcaraway.github.io/ist719/)
+
+[IST 707 -- DATA ANALYTICS](https://danielcaraway.github.io/ist707/)
+
+[IST 659 -- DATABASE ADMIN & MGMT](https://danielcaraway.github.io/ist659/)
+
+[IST 687 -- INTRO TO DATA SCIENCE](https://danielcaraway.github.io/ist687/)
 
 ## MBA Program:
 
-[MBC 638 -- ](https://danielcaraway.github.io/mbc638/)
+[FIN 654 -- FINANCIAL ANALYTICS ](https://danielcaraway.github.io/fin654/)
+
+[MAR 653 -- MARKETING ANALYTICS ](https://danielcaraway.github.io/mar653/)
+
+[SCM 651 -- BUSINESS ANALYTICS ](https://danielcaraway.github.io/scm651/)
+
+[MBC 638 -- DATA ANALYSIS & DECISION MAKING ](https://danielcaraway.github.io/mbc638/)
