@@ -1,0 +1,43 @@
+LAB 3
+
+PROBLEM 1:
+D
+
+PROBLEM 2: 
+def computepay(h, r):
+    hours = int(h)
+    rate = int(r)
+    overtimeearnings = 0
+    overtimehours = 0
+    if hours > 40:
+        overtimehours = hours - 40
+        overtimerate = rate * 1.5
+        overtimeearnings = overtimerate * overtimehours
+
+    print('EARNINGS: ', (float(hours-overtimehours)*float(rate)) + overtimeearnings)
+
+
+hours = input('Enter Hours: ')
+rate = input('Enter Rate: ')
+computepay(hours, rate)
+
+===
+
+OUTPUT
+(base) Kendras-MacBook-Pro:IST_652 kendraosburn$ python IST_652_LAB3.py
+Enter Hours: 9
+Enter Rate: 10
+EARNINGS:  90.0
+(base) Kendras-MacBook-Pro:IST_652 kendraosburn$ python IST_652_LAB3.py
+Enter Hours: 100
+Enter Rate: 100
+EARNINGS:  13000.0
+(base) Kendras-MacBook-Pro:IST_652 kendraosburn$ python IST_652_LAB3.py
+Enter Hours: 40
+Enter Rate: 10
+EARNINGS:  400.0
+(base) Kendras-MacBook-Pro:IST_652 kendraosburn$ python IST_652_LAB3.py
+Enter Hours: 45
+Enter Rate: 10
+EARNINGS:  475.0
+(base) Kendras-MacBook-Pro:IST_652 kendraosburn$ 
