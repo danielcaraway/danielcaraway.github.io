@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['timeline']});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var container = document.getElementById('timeline');
+        var chart = new google.visualization.Timeline(container);
+        var dataTable = new google.visualization.DataTable();
+
+        dataTable.addColumn({ type: 'string', id: 'Skills' });
+        dataTable.addColumn({ type: 'date', id: 'Start' });
+        dataTable.addColumn({ type: 'date', id: 'End' });
+        dataTable.addRows([
+          [ 'HTML & CSS', new Date(2009, 5, 1), new Date(2019, 5, 1) ],
+          [ 'Photoshop', new Date(2011, 3, 1), new Date(2019, 5, 1) ],
+          [ 'Illustrator', new Date(2012, 0, 1), new Date(2013, 0, 1) ],
+          [ 'Illustrator', new Date(2015, 0, 1), new Date(2019, 5, 1) ],
+          [ 'PHP', new Date(2011, 7, 1),  new Date(2012, 5, 1) ],
+          [ 'PHP', new Date(2018, 7, 1),  new Date(2019, 5, 1) ],
+          [ 'Ruby', new Date(2012, 5, 1),  new Date(2013, 5, 1) ],
+          [ 'JavaScript', new Date(2012, 7, 1),  new Date(2019, 5, 1) ],
+          [ 'Angular',  new Date(2016, 2, 4),  new Date(2017, 1, 0) ],
+          [ 'React',  new Date(2017, 1, 0),  new Date(2019, 5, 1) ],
+          [ 'R',  new Date(2018, 5, 1),  new Date(2019, 5, 1) ],
+          [ 'Python',  new Date(2012, 0, 1),  new Date(2012, 5, 1) ],
+          [ 'Python',  new Date(2018, 5, 1),  new Date(2019, 5, 1) ],
+          [ 'Regex',  new Date(2019, 4, 1),  new Date(2019, 5, 1) ],
+        ]);
+
+        chart.draw(dataTable);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="timeline" style="height: 700px;"></div>
+  </body>
+</html>

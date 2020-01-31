@@ -1,0 +1,106 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart', 'timeline']});
+      
+      google.charts.setOnLoadCallback(drawAllCharts);
+
+      var intViewportWidth = window.innerWidth;
+      function drawAllCharts(){
+        drawCityTimeline();
+        drawPetCharts();
+        drawSkillTimeline();
+      }
+
+      function drawCityTimeline() {
+        var container = document.getElementById('example5.4');
+        var chart = new google.visualization.Timeline(container);
+        var dataTable = new google.visualization.DataTable();
+        dataTable.addColumn({ type: 'string', id: 'Role' });
+        dataTable.addColumn({ type: 'string', id: 'Name' });
+        dataTable.addColumn({ type: 'date', id: 'Start' });
+        dataTable.addColumn({ type: 'date', id: 'End' });
+        dataTable.addRows([
+          [ 'City', 'Pasadena, California', new Date(1988, 12, 1), new Date(1995, 0, 1) ],
+          [ 'City', 'La Canada, California', new Date(1995, 0, 1), new Date(2007, 8, 1) ],
+          [ 'City', 'San Diego, California', new Date(2007, 8, 1), new Date(2011, 0, 1) ],
+          [ 'City', 'Santa Monica, California', new Date(2011, 0, 1), new Date(2012, 6, 1) ],
+          [ 'City', 'San Francisco, California', new Date(2012, 6, 1), new Date(2013, 0, 1) ],
+          [ 'City', 'Santa Monica, California', new Date(2013, 0, 1), new Date(2015, 6, 1) ],
+          [ 'City', 'West Hollywood, California', new Date(2015, 6, 1), new Date(2016, 6, 1) ],
+          [ 'City', 'Atwater Village, California', new Date(2016, 6, 1), new Date(2019, 6, 1) ],
+          ]);
+        var options = {
+          colors: ['#cbb69d', '#603913', '#c69c6e'],
+        };
+        chart.draw(dataTable);
+      }
+
+      function drawPetCharts() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Individual Pets');
+        data.addRows([
+          ['Fish', 2],
+          ['Bunnies', 3],
+          ['Rats', 4],
+          ['Dogs', 3],
+          ['Cats', 10]
+        ]);
+
+        var piechart_options = {title:'Pie Chart: The Many Pets of Kendra',
+                       width:((intViewportWidth/2)-2),
+                       height:300};
+        var piechart = new google.visualization.PieChart(document.getElementById('piechart_div'));
+        piechart.draw(data, piechart_options);
+
+        var barchart_options = {title:'Barchart: The Many Pets of Kendra',
+                       width: ((intViewportWidth/2)-2),
+                       height:300,
+                       legend: 'none'};
+        var barchart = new google.visualization.BarChart(document.getElementById('barchart_div'));
+        barchart.draw(data, barchart_options);
+      }
+      
+      function drawSkillTimeline() {
+        var container = document.getElementById('timeline');
+        var chart = new google.visualization.Timeline(container);
+        var dataTable = new google.visualization.DataTable();
+
+        dataTable.addColumn({ type: 'string', id: 'Skills' });
+        dataTable.addColumn({ type: 'date', id: 'Start' });
+        dataTable.addColumn({ type: 'date', id: 'End' });
+        dataTable.addRows([
+          [ 'HTML & CSS', new Date(2009, 5, 1), new Date(2019, 5, 1) ],
+          [ 'Photoshop', new Date(2011, 3, 1), new Date(2019, 5, 1) ],
+          [ 'Illustrator', new Date(2012, 0, 1), new Date(2013, 0, 1) ],
+          [ 'Illustrator', new Date(2015, 0, 1), new Date(2019, 5, 1) ],
+          [ 'PHP', new Date(2011, 7, 1),  new Date(2012, 5, 1) ],
+          [ 'PHP', new Date(2018, 7, 1),  new Date(2019, 5, 1) ],
+          [ 'Ruby', new Date(2012, 5, 1),  new Date(2013, 5, 1) ],
+          [ 'JavaScript', new Date(2012, 7, 1),  new Date(2019, 5, 1) ],
+          [ 'Angular',  new Date(2016, 2, 4),  new Date(2017, 1, 0) ],
+          [ 'React',  new Date(2017, 1, 0),  new Date(2019, 5, 1) ],
+          [ 'R',  new Date(2018, 5, 1),  new Date(2019, 5, 1) ],
+          [ 'Python',  new Date(2012, 0, 1),  new Date(2012, 5, 1) ],
+          [ 'Python',  new Date(2018, 5, 1),  new Date(2019, 5, 1) ],
+          [ 'Regex',  new Date(2019, 4, 1),  new Date(2019, 5, 1) ],
+        ]);
+        
+        chart.draw(dataTable);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="example5.4" style="height: 150px;"></div>
+        <table class="columns">
+      <tr>
+        <td><div id="piechart_div" style="border: 1px solid #ccc"></div></td>
+        <td><div id="barchart_div" style="border: 1px solid #ccc"></div></td>
+      </tr>
+    </table>
+    <div id="timeline" style="height: 700px;"></div>
+  </body>
+</html>

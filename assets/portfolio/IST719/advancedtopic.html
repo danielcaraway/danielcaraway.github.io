@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+      google.charts.load('current', {'packages':['corechart']});
+
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Regions');
+        data.addRows([
+					['Australia & N.Zeal',	7.302500008],
+					['Central & E.Europe', 5.371183908],
+					['Eastern Asia', 5.632333313],
+					['LtnAm. & Caribbean',	6.050920641],
+					['MidEast & N.Africa',	5.362175433],
+					['North America',	7.227166669],
+					['Southeastern Asia',	5.404750001],
+					['Southern Asia',	4.590857139],
+					['Sub-Saharan Africa', 4.14007843],
+					['Western Europe', 6.693000006]
+        ]);
+
+        var options = {'title':'Global Happiness Ladder Rank, by Region',
+                       'width':1200,
+                       'height':300,
+                     		animation: {"startup": true, "duration": 4000, "easing": "out"}};
+        var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="chart_div"></div>
+  </body>
+</html>

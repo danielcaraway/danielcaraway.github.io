@@ -1,0 +1,168 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Fira+Sans&display=swap" rel="stylesheet">
+    <script type="text/javascript">
+      google.charts.load('current', {
+        'packages':['corechart','geochart'],
+        'mapsApiKey': 'AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY'
+      });
+      google.charts.setOnLoadCallback(drawGeoChart);
+      google.charts.setOnLoadCallback(drawColumnChart);
+      google.charts.setOnLoadCallback(drawNewChart);
+      google.charts.setOnLoadCallback(drawYearChart);
+      google.charts.setOnLoadCallback(drawCandleChart);
+
+      // var myQuery = 'select B, avg(E) group by B'
+      function drawGeoChart(){
+        function draw() {
+          var opts = {sendMethod: 'auto'};
+          var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1DVi9z4XEfnou-PAdoFSbYFzEMDz8gsbk6GdU693VTBs/gviz/tq?range=A1:M448');
+          query.setQuery('select B, avg(E) group by B');
+          query.send(handleQueryResponse);
+        }
+
+        function handleQueryResponse(response) {
+          var data = response.getDataTable();
+          var geochart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+          var options = {
+            colorAxis: {colors: ['yellow', 'red']}
+          };
+          geochart.draw(data, options);
+        }
+        draw();
+      }
+
+      var myQuery = 'select C, avg(F) group by C'
+      function drawColumnChart(){
+        function draw() {
+          var opts = {sendMethod: 'auto'};
+          var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1DVi9z4XEfnou-PAdoFSbYFzEMDz8gsbk6GdU693VTBs/gviz/tq?gid-0&range=A1:M448');
+          query.setQuery(myQuery);
+          query.send(handleQueryResponse);
+        }
+
+        function handleQueryResponse(response) {
+          var data = response.getDataTable();
+          var columnchart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+          var options = {
+            height: 400, 
+            colors: ['orange']
+          };
+          columnchart.draw(data, options);
+           // chart.draw(data, { height: 400 });
+          console.log(data)
+        }
+        draw();
+      }
+
+      function dothing(thing){
+        myQuery = thing;
+        drawColumnChart();
+      }
+
+      // var myQuery = 'select C, avg(F) group by C'
+      function drawNewChart(){
+        function draw() {
+          var opts = {sendMethod: 'auto'};
+          var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1DVi9z4XEfnou-PAdoFSbYFzEMDz8gsbk6GdU693VTBs/gviz/tq?gid=382247107&range=A1:B11');
+          // query.setQuery('select Aa');
+          query.send(handleQueryResponse);
+        }
+
+        function handleQueryResponse(response) {
+          var data = response.getDataTable();
+          var columnchart = new google.visualization.PieChart(document.getElementById('chart_div_2'));
+          var options = {
+            height: 400
+          };
+          // data = google.visualization.data.group(data, [2], [0,2])
+          columnchart.draw(data, options);
+           // chart.draw(data, { height: 400 });
+          console.log(data)
+        }
+        draw();
+      }
+
+      function drawYearChart(){
+        function draw() {
+          var opts = {sendMethod: 'auto'};
+          var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1DVi9z4XEfnou-PAdoFSbYFzEMDz8gsbk6GdU693VTBs/gviz/tq?gid=1702607425&range=A1:L4');
+          // query.setQuery('select Aa');
+          query.send(handleQueryResponse);
+        }
+
+        function handleQueryResponse(response) {
+          var data = response.getDataTable();
+          var columnchart = new google.visualization.ComboChart(document.getElementById('year_chart'));
+        var options = {
+          title : 'Yearly Happiness Score by Region',
+          vAxis: {title: 'Score'},
+          hAxis: {title: 'Year'},
+          seriesType: 'bars',
+          series: {10: {type: 'line'}},
+          height: 500
+        };
+          // data = google.visualization.data.group(data, [2], [0,2])
+          columnchart.draw(data, options);
+           // chart.draw(data, { height: 400 });
+          console.log(data)
+        }
+        draw();
+      }
+
+      function drawCandleChart(){
+        function draw() {
+          var opts = {sendMethod: 'auto'};
+          var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1DVi9z4XEfnou-PAdoFSbYFzEMDz8gsbk6GdU693VTBs/gviz/tq?gid=537457188&range=A1:C152');
+          // query.setQuery('select Aa');
+          query.send(handleQueryResponse);
+        }
+
+        function handleQueryResponse(response) {
+          var data = response.getDataTable();
+          var columnchart = new google.visualization.CandlestickChart(document.getElementById('candle_chart'));
+        // var options = {
+        //   title : 'Yearly Happiness Score by Region',
+        //   vAxis: {title: 'Score'},
+        //   hAxis: {title: 'Year'},
+        //   seriesType: 'bars',
+        //   series: {10: {type: 'line'}},
+        //   height: 500
+        // };
+          // data = google.visualization.data.group(data, [2], [0,2])
+          columnchart.draw(data);
+           // chart.draw(data, { height: 400 });
+          console.log(data)
+        }
+        draw();
+      }
+    </script>
+  </head>
+  <style>
+    body {
+      margin: 50px auto;
+      width: 900px;
+      text-align: center;
+      font-family: 'Fira Sans', sans-serif;
+    }
+    h1 {
+      margin: 20px;
+      font-size: 60px;
+    }
+  </style>
+  <body>
+    <h1>Global Happinesss</h1>
+    <h3>A Google Charts Experiment</h3>
+    <div id="regions_div" style="width: 900px; height: 500px;"></div>
+    <div id="year_chart"></div>
+    <h2>Number of Countries within each Region</h2>
+    <div id="chart_div_2"></div>
+    <div id="chart_div"></div>
+    
+
+    <button onclick="dothing('select C, avg(E) group by C')">toggle</button>
+    
+    <!-- <div id="candle_chart"></div> -->
+  </body>
+</html>

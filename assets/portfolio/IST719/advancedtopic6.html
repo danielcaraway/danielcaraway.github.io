@@ -1,0 +1,55 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type='text/javascript'>
+      google.charts.load('current', {'packages':['annotationchart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('date', 'Date');
+        data.addColumn('number', 'Human Stress Level about Cats');
+        data.addColumn('string', 'Human title');
+        data.addColumn('string', 'Human text');
+        data.addColumn('number', 'Cat Stress Level about Humans');
+        data.addColumn('string', 'Cat title');
+        data.addColumn('string', 'Cat text');
+        data.addRows([
+          [new Date(2019, 4, 12), 0, undefined, undefined, 5, undefined, undefined],
+          [new Date(2019, 4, 13), 0, undefined, undefined, 5, undefined, undefined,],
+          [new Date(2019, 4, 14), 5, 'Humans', 'First observe pregnant kitty running through driveway.', 6, undefined, undefined,],
+          [new Date(2019, 4, 15), 0, undefined, undefined, 5, undefined, undefined,],
+          [new Date(2019, 4, 16), 5, 'Humans', 'Pregnant kitty comes into yard', 6, undefined, undefined],
+          [new Date(2019, 4, 17), 5, 'Humans', 'OMG where is she!?', 5, 'Cats', 'Food. I need food.'],
+          [new Date(2019, 4, 18), 6, 'Humans', 'We will wait for kitty', 5, 'Cats', 'I wonder if those strange humans have food?'],
+          [new Date(2019, 5, 5), 6, undefined, undefined, 5, 'Cats', 'Give birth!'],
+          [new Date(2019, 5, 15), 8, 'Humans', 'I think we need to trap the mom', 5, undefined, undefined],
+          [new Date(2019, 5, 16), 9, 'Humans', 'WE MUST SAVE THE KITTIES', 9, 'Cats', 'I HAVE BEEN TRAPPED BY THE HUMANS'],
+          [new Date(2019, 5, 17), 5, 'Humans', 'Finally safe inside', 8, 'Cats', 'WE ARE INSIDE. WITH THE HUMANS.'],
+          [new Date(2019, 5, 18), 4, 'Humans', 'I am in love', 7, 'Cats', 'The humans are giving us food?'],
+          [new Date(2019, 5, 19), 4, 'Humans', 'Heavy casualties', 6, 'Cats', 'More food please.'],
+          [new Date(2019, 5, 20), 4, 'Humans', 'I love kitties', 6, 'Cats', 'More food please.'],
+          [new Date(2019, 5, 24), 3, 'Humans', 'Does mama cat like me?', 5, 'Cats', 'Will this large creature ever leave me alone?'],
+          [new Date(2019, 5, 25), 3, 'Humans', 'Does mama cat know she is loved??', 5, 'Cats', 'Will this large creature ever leave me alone?']
+        ]);
+
+        var chart = new google.visualization.AnnotationChart(document.getElementById('chart_div'));
+
+        var options = {
+          displayAnnotations: true,
+          displayAnnotationsFilter: true,
+          table: {
+            sortAscending: true,
+            sortColumn: 0
+          }
+        };
+
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id='chart_div' style='width: 900px; height: 500px;'></div>
+  </body>
+</html>

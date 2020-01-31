@@ -1,0 +1,89 @@
+<html>
+  <head>
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+      // Load the Visualization API and the corechart package.
+      google.charts.load('current', {'packages':['corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.charts.setOnLoadCallback(drawChart);
+      var myQuery = 'select C, avg(E) group by C'
+      function dothing(thing){
+        alert(thing);
+        myQuery = thing;
+        initialize();
+      }
+
+      function initialize() {
+        var opts = {sendMethod: 'auto'};
+        var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1DVi9z4XEfnou-PAdoFSbYFzEMDz8gsbk6GdU693VTBs/gviz/tq?range=A1:M448');
+        query.setQuery(myQuery);
+        query.send(handleQueryResponse);
+      }
+
+      function handleQueryResponse(response) {
+        var data = response.getDataTable();
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, { height: 400 });
+        console.log(data)
+      }
+      google.setOnLoadCallback(initialize)
+      function drawChart() {
+
+        // Create the data table.
+     //    var data = new google.visualization.DataTable();
+     //    data.addColumn('string', 'Topping');
+     //    data.addColumn('number', 'Regions');
+     //    data.addRows([
+					// ['Australia and New Zealand',	7.302500008],
+					// ['Central and Eastern Europe', 5.371183908],
+					// ['Eastern Asia', 5.632333313],
+					// ['Latin America and Caribbean',	6.050920641],
+					// ['Middle East and Northern Africa',	5.362175433],
+					// ['North America',	7.227166669],
+					// ['Southeastern Asia',	5.404750001],
+					// ['Southern Asia',	4.590857139],
+					// ['Sub-Saharan Africa', 4.14007843],
+					// ['Western Europe', 6.693000006]
+     //    ]);
+
+                var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Topping');
+        data.addColumn('number', 'Regions');
+        data.addRows([
+					['Australia & N.Zeal',	7.302500008],
+					['Central & E.Europe', 5.371183908],
+					['Eastern Asia', 5.632333313],
+					['LtnAm. & Caribbean',	6.050920641],
+					['MidEast & N.Africa',	5.362175433],
+					['North America',	7.227166669],
+					['Southeastern Asia',	5.404750001],
+					['Southern Asia',	4.590857139],
+					['Sub-Saharan Africa', 4.14007843],
+					['Western Europe', 6.693000006]
+        ]);
+
+        // Set chart options
+        var options = {'title':'Global Happiness Ladder Rank, by Region',
+                       'width':1200,
+                       'height':300};
+
+       
+        // var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+        var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+        
+
+
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+
+  <body>
+    <!--Div that will hold the pie chart-->
+    <div id="chart_div"></div>
+    <button onclick="dothing('select C, sum(E) group by C')">do the thing</button>
+  </body>
+</html>

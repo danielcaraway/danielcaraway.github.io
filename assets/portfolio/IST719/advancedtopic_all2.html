@@ -1,0 +1,52 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {
+        'packages':['corechart','geochart'],
+        // Note: you will need to get a mapsApiKey for your project.
+        // See: https://developers.google.com/chart/interactive/docs/basic_load_libs#load-settings
+        'mapsApiKey': 'AIzaSyD-9tSrke72PouQMnMX-a7eZSW0jkFMBWY'
+      });
+      google.charts.setOnLoadCallback(initialize);
+
+      var myQuery = 'select B, avg(E) group by B'
+      function initialize() {
+        var opts = {sendMethod: 'auto'};
+        var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1DVi9z4XEfnou-PAdoFSbYFzEMDz8gsbk6GdU693VTBs/gviz/tq?range=A1:M448');
+        
+        // Optional request to return only column C and the sum of column B, grouped by C members.
+        query.setQuery(myQuery);
+
+        // Send the query with a callback function.
+        query.send(handleQueryResponse);
+      }
+
+      function handleQueryResponse(response) {
+        var data = response.getDataTable();
+        var geochart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+        var options = {
+          colorAxis: {colors: ['yellow', 'red']}
+        };
+        geochart.draw(data, options);
+
+        var columnchart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        columnchart.draw(data, { height: 400 });
+        // chart.draw(data, { height: 400 });
+        console.log(data)
+      }
+    </script>
+  </head>
+  <style>
+    body {
+      margin: 0 auto;
+      width: 900px;
+      text-align: center;
+    }
+  </style>
+  <body>
+    <h1>Global Happinesss</h1>
+    <div id="regions_div" style="width: 900px; height: 500px;"></div>
+    <div id="chart_div"></div>
+  </body>
+</html>
