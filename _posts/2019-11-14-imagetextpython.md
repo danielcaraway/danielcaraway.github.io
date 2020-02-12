@@ -17,6 +17,7 @@ brew install tesseract
 ```console
 python3 -m venv ocr-env
 source ocr-virt/bin/activate
+source ocr-env/bin/activate
 ```
 
 3. Pip install `pytesseract` (which should also download PIL -- Python Image Library)
