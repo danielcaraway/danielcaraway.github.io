@@ -6,9 +6,25 @@ permalink: /python/
 
 # Python
 
+## Timeit
+[from](https://www.programiz.com/python-programming/time)
+
+start
+
+`python
+seconds = time.time()
+print("Seconds since epoch =", seconds)	
+`
+
+`python
+import time
+# seconds passed since epoch
+seconds = 1545925769.9618232
+local_time = time.ctime(seconds)
+print("Local time:", local_time)
+`
+
 ## Iteration
-
-
 
 [Helpful read](https://towardsdatascience.com/python-basics-iteration-and-looping-6ca63b30835c)
 
