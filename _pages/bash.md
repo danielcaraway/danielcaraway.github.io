@@ -4,11 +4,30 @@ title: 'BASH NOTES'
 permalink: /bash/
 ---
 
+## CONVERT ONE FILE
+
 jupyter nbconvert --execute --to html notebook.ipynb
 
 
+## ADD DATE TO FILE NAME:
 
-BASH SCRIPT:
+for d in *; do
+  newdate=$(stat -f %SB -t %Y_%m_%d "$d")
+  filename=${newdate}_${d##*/}
+  echo "$filename"
+  cp $d "$filename" 
+done
+
+## CONVERT ALL .ipynb FILES TO .html
+
+for d in *.ipynb ; do
+    jupyter nbconvert --to html $d
+done
+
+---
+
+
+# BASH SCRIPT:
 
 List files in directory
 list sub files in directory 
@@ -236,3 +255,10 @@ recursive_list_6() {
     cp $d dated/"$filename" || cp $d ../dated/"$filename"
   done
 }
+
+for d in *; do
+  newdate=$(stat -f %SB -t %Y_%m_%d "$d")
+  filename=${newdate}_${d##*/}
+  echo "$filename"
+  cp $d "$filename" 
+done
