@@ -3,6 +3,11 @@ layout: single
 title: 'BASH NOTES'
 permalink: /bash/
 ---
+## Fixing File Permissions (especially on jupyter notebook)
+/usr/local/share/jupyter/nbconvert/templates
+sudo chmod a+rwx html/
+
+[help here](https://www.chriswrites.com/how-to-change-file-permissions-using-the-terminal/)
 
 ## CONVERT ONE FILE
 
