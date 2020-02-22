@@ -11,6 +11,10 @@ sudo chmod a+rwx html/
 
 ## CONVERT ONE FILE
 
+jupyter nbconvert --to html notebook.ipynb
+
+### (IF YOU WANT IT TO EXECUTE)
+
 jupyter nbconvert --execute --to html notebook.ipynb
 
 
