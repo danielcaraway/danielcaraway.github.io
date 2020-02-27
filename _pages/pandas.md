@@ -7,6 +7,15 @@ permalink: /pandas/
 # Pandas 
 #### A semi-cheatsheet? 
 
+last column to first column
+
+`python
+cols = list(df.columns)
+cols = [cols[-1]] + cols[:-1]
+df = df[cols]
+df
+`
+
 `python
 df1 = df[(df.a != -1) & (df.b != -1)]
 `
