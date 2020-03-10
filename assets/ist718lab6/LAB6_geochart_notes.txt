@@ -1,0 +1,46 @@
+
+      function drawGeoChart2(){
+        function draw() {
+          var opts = {sendMethod: 'auto'};
+          var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1oPquf-XdqYWVECV9SWRaX9so-JL2VnjYJHV3EL8_Ndw/gviz/tq?range=A1:L52');
+          query.setQuery('select B, avg(M) group by B');
+          query.send(handleQueryResponse);
+        }
+
+        function handleQueryResponse(response) {
+          var data = response.getDataTable();
+          var geochart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+          var options = {
+            colorAxis: {colors: ['yellow', 'red']},
+            region: 'US',
+            displayMode: 'regions',
+            resolution: 'provinces'
+          };
+          geochart.draw(data, options);
+        }
+        draw();
+      }
+
+//  ATTEMPT AT REGIONAL DATA
+    //   function drawGeoChart2(){
+    //     function draw() {
+    //       var opts = {sendMethod: 'auto'};
+    //       var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1iMIxUTOdzop_NjKZxysVncRHSDoDN6cQ6ypiubBq_BY/gviz/tq?range=A1:L52');
+    //       query.setQuery('select B, avg(H) group by B');
+    //       query.send(handleQueryResponse);
+    //     }
+
+    //     function handleQueryResponse(response) {
+    //       var data = response.getDataTable();
+    //       var geochart = new google.visualization.GeoChart(document.getElementById('regions_div_2'));
+    //       var options = {
+    //         colorAxis: {colors: ['yellow', 'red']},
+    //         region: 'US',
+    //         displayMode: 'regions',
+    //         resolution: 'metros'
+    //       };
+    //       geochart.draw(data, options);
+    //     }
+    //     draw();
+    //   }
+
