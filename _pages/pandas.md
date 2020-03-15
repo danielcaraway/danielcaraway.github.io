@@ -7,6 +7,14 @@ permalink: /pandas/
 # Pandas 
 #### A semi-cheatsheet? 
 
+
+Percentage missing
+```python
+df_na = pd.DataFrame(df.isna().sum())
+df_na['percent'] = (df_na[0] / df.shape[0]) *100
+df_na.sort_values(by="percent", ascending = False)
+```
+
 last column to first column
 
 `python
