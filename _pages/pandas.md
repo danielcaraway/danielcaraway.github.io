@@ -7,6 +7,23 @@ permalink: /pandas/
 # Pandas 
 #### A semi-cheatsheet? 
 
+Numpy unique
+
+```
+>>> a = numpy.array([0, 3, 0, 1, 0, 1, 2, 1, 0, 0, 0, 0, 1, 3, 4])
+>>> unique, counts = numpy.unique(a, return_counts=True)
+>>> dict(zip(unique, counts))
+{0: 7, 1: 4, 2: 1, 3: 2, 4: 1}
+Non-numpy way:
+
+Use collections.Counter;
+
+>> import collections, numpy
+
+>>> a = numpy.array([0, 3, 0, 1, 0, 1, 2, 1, 0, 0, 0, 0, 1, 3, 4])
+>>> collections.Counter(a)
+Counter({0: 7, 1: 4, 3: 2, 2: 1, 4: 1})
+```
 
 Percentage missing
 ```python

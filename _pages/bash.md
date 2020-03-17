@@ -3,6 +3,21 @@ layout: single
 title: 'BASH NOTES'
 permalink: /bash/
 ---
+
+## Convert notebook to html if not already html
+
+```console
+for d in *; do
+    if [[ $d != *.html ]] ; then
+        echo "$d"
+        jupyter nbconvert --to html $d
+    fi
+done
+
+
+```
+
+
 ## Fixing File Permissions (especially on jupyter notebook)
 /usr/local/share/jupyter/nbconvert/templates
 sudo chmod a+rwx html/
