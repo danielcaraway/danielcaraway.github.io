@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="https://d3js.org/d3.v3.js"></script>
+    <script>
+        //   var tests = <?php echo $tests; ?>;
+        //   console.log("tests=" +JSON.stringify(tests));
+        //   var events = <?php echo $events; ?>;
+        //   console.log("events=" +JSON.stringify(events));
+    
+    finalproject_subset.csv
+    var tests = {
+
+    }
+
+    var margin = {top: 50, right: 20, bottom: 60, left: 90},
+        width = 900 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+    var x = d3.time.scale()
+        .range([0, width]);
+
+    var y = d3.scale.linear()
+        .range([height, 0]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .ticks(d3.time.years,1)
+        //makes the xAxis ticks a little longer than the xMinorAxis ticks
+        .tickSize(10)
+        .orient("bottom");
+
+    var xMinorAxis = d3.svg.axis()
+        .scale(x)
+        .ticks(d3.time.months,1)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+
+    var line = d3.svg.line()
+        .x(function(d) { return x(d.date); })
+        .y(function(d) { return y(d.total_km); });
+
+    var svg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // function for the y grid lines
+    function make_y_axis() {
+      return d3.svg.axis()
+          .scale(y)
+          .orient("left")
+          .ticks(5) //somehow this makes the y-axis grid draw every other line, rather than every line
+    }
+
+    var data = [];
+    function DataPoint(x,y) {
+        this.date_time = x;
+        this.total_km = y;
+    }
+
+    var lowerLimit;
+    var upperLimit;
+    function loadData() {
+        for (i=1; i < tests.length; i++) {
+            var test = tests[i];
+            console.log("x="+test[0]+", y="+test[1]);
+            data.push(new DataPoint(test[0],test[1]));
+            lowerLimit = test[2];
+            upperLimit = test[3];
+        }
+    }
+    loadData();
+    console.log("data1="+JSON.stringify(data));
+
+    function processData(data) {
+        data.forEach(function(d) {
+            console.log("d.date_time="+d.date_time +", d.total_km="+d.total_km);
+            d.date = new Date(d.date_time);
+            console.log("d.date=" +d.date);
+        });
+
+        //using imported data to define extent of x and y domains
+        x.domain(d3.extent(data, function(d) { return d.date; }));
+        y.domain(d3.extent(data, function(d) { return d.total_km; }));
+
+        // Draw the y Grid lines
+        svg.append("g")            
+            .attr("class", "grid")
+            .call(make_y_axis()
+                .tickSize(-width, 0, 0) //causes the line to be drawn the full width of the chart
+                .tickFormat("")
+            )
+
+        //draw the data line
+        svg.append("path")
+            .datum(data)
+            .attr("class", "line")
+            .attr("d", line);
+
+        //draw the upper limit
+        var minDate = new Date(data[0].date_time);
+        console.log("minDate="+minDate +", x(minDate)="+x(minDate));
+        var maxDate = new Date(data[data.length-1].date_time);
+        console.log("maxDate="+maxDate +", x(maxDate)="+x(maxDate));
+        svg.append("line")
+            .attr("class", "x")
+            .style("stroke", "red")
+            .style("stroke-dasharray", "3,3")
+            .style("opacity", 0) 
+            .attr("x1", x(minDate))
+            .attr("y1", y(upperLimit))
+            .attr("x2", x(maxDate))      
+            .attr("y2", y(upperLimit));
+
+    //creating a group(g) and will append a circle and 2 lines inside each group
+    var g = svg.selectAll()
+            .data(data).enter().append("g");
+
+       //The markers on the line
+         g.append("circle")
+             //circle radius is increased
+            .attr("r", 4.5)
+            .attr("cx", function(d) { return x(d.date); })
+            .attr("cy", function(d) { return y(d.total_km); });
+
+    svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis)
+          .selectAll(".tick text")
+          .call(wrap, 35);
+
+    svg.append("g")
+        .attr("class","xMinorAxis")
+        .attr("transform", "translate(0," + height + ")")
+        .style({ 'stroke': 'Black', 'fill': 'none', 'stroke-width': '1px'})
+        .call(xMinorAxis)
+        .selectAll("text").remove();
+
+    svg.append("text")      // text label for the x-axis
+            .attr("x", width / 2 )
+            .attr("y",  height + margin.bottom)
+            .style("text-anchor", "middle")
+            .text("Date");
+
+    svg.append("text")      // text label for the y-axis
+            .attr("y",30 - margin.left)
+            .attr("x",50 - (height / 2))
+            .attr("transform", "rotate(-90)")
+            .style("text-anchor", "end")
+            .style("font-size", "16px")
+            .text("Tryglycerides (mg/dL)");
+
+    svg.append("text")      // text label for chart Title
+            .attr("x", width / 2 )
+            .attr("y", 0 - (margin.top/2))
+            .style("text-anchor", "middle")
+            .style("font-size", "16px") 
+            .style("text-decoration", "underline") 
+            .text("Tryglyceride Levels");
+
+    svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis)
+  };
+  processData(data);
+</script>
+</body>
+</html>

@@ -3,6 +3,9 @@ layout: single
 title: "Python Cheatsheet"
 permalink: /visuals/
 ---
+
+[SEABORN BARS](https://seaborn.pydata.org/generated/seaborn.barplot.html)
+
 ## Variable size
 
 ```python
