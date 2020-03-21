@@ -12,6 +12,9 @@ tags: ist718 lab
 
 ## Step 3: Start small
 
+
+<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vTpk5aPVmo7zRT0iyXmEopwMh_bUuBc5j4sO3qZkiG6OaDkFYxmu0ORlsiyWArX8tMIf9zZGguswAqt/embed?start=false&loop=false&delayms=5000" frameborder="0" width="960" height="569" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+
 <div>
 {% for file in site.static_files %}
     {% if file.path contains 'ist718finalproject' %}
