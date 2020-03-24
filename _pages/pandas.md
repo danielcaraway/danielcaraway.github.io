@@ -4,8 +4,22 @@ title: "Pandas"
 permalink: /pandas/
 ---
 
-# Pandas 
-#### A semi-cheatsheet? 
+# Pandas: An on-the-go "cheat sheet" 
+# ==================================
+## PRO TIP: do a ctrl f first
+# ==================================
+
+## MERGING
+
+```python
+## WHAT THE DOCS SAID 
+df1.merge(df2, left_on='ds')
+
+## WHAT STACKOVERFLOW SAID (and what worked) 
+df_merged = pd.merge(df1, df2, how='left', on='ds', suffixes=('_v1', '_v2'))
+```
+
+## UNIQUE
 
 Numpy unique
 
