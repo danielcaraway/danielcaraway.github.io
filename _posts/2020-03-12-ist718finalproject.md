@@ -18,14 +18,31 @@ tags: ist718 lab
 
 ## FILES: 
 
+### HTML:
+
 <div>
 {% for file in site.static_files %}
     {% if file.path contains 'ist718finalproject' %}
-        
+        {% if file.extname contains '.html' %}
             <div>
                 <a href="https://danielcaraway.github.io/{{ file.path }}">{{ file.basename }}</a>
             </div>
-
+        {% endif %}
     {% endif %}
 {% endfor %}
 </div>
+
+### IPYNB
+
+<div>
+{% for file in site.static_files %}
+    {% if file.path contains 'ist718finalproject' %}
+        {% if file.extname contains '.ipynb' %}
+            <div>
+                <a href="https://danielcaraway.github.io/{{ file.path }}">{{ file.basename }}</a>
+            </div>
+        {% endif %}
+    {% endif %}
+{% endfor %}
+</div>
+
