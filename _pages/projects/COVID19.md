@@ -46,7 +46,7 @@ permalink: /projects/COVID19/
 </div>
 
 
-### POSTS TAGGED 1
+<!-- ### POSTS TAGGED 1
 
 {% include base_path %}
 {% include group-by-array collection=site.posts field="tags" %}
@@ -57,7 +57,7 @@ permalink: /projects/COVID19/
   {% for post in posts %}
     {% include archive-single.html %}
   {% endfor %}
-{% endfor %}
+{% endfor %} -->
 
 ### POSTS TAGGED 2
 
