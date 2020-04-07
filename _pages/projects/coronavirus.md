@@ -1,6 +1,6 @@
 ---
-title: "COVID19"
-permalink: /projects/COVID19/
+title: "CORONAVIRUS"
+permalink: /projects/coronavirus/
 ---
 
 
@@ -45,20 +45,6 @@ permalink: /projects/COVID19/
 {% endfor %}
 </div>
 
-
-<!-- ### POSTS TAGGED 1
-
-{% include base_path %}
-{% include group-by-array collection=site.posts field="tags" %}
-
-{% for tag in group_names %}
-  {% assign posts = group_items[forloop.index0] %}
-  <h2 id="{{ tag | slugify }}" class="archive__subtitle">{{ tag }}</h2>
-  {% for post in posts %}
-    {% include archive-single.html %}
-  {% endfor %}
-{% endfor %} -->
-
 ### POSTS TAGGED 2
 
 {% capture site_tags %}{% for tag in site.tags %}{{ tag | first | downcase }}#{{ tag | first }}{% unless forloop.last %},{% endunless %}{% endfor %}{% endcapture %}
@@ -77,4 +63,3 @@ permalink: /projects/COVID19/
       {% endif %}
 {% endfor %}
 </ul>
-
