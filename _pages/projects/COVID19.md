@@ -45,7 +45,21 @@ permalink: /projects/COVID19/
 {% endfor %}
 </div>
 
-### POSTS TAGGED
+
+### POSTS TAGGED 1
+
+{% include base_path %}
+{% include group-by-array collection=site.posts field="tags" %}
+
+{% for tag in group_names %}
+  {% assign posts = group_items[forloop.index0] %}
+  <h2 id="{{ tag | slugify }}" class="archive__subtitle">{{ tag }}</h2>
+  {% for post in posts %}
+    {% include archive-single.html %}
+  {% endfor %}
+{% endfor %}
+
+### POSTS TAGGED 2
 
 {% capture site_tags %}{% for tag in site.tags %}{{ tag | first | downcase }}#{{ tag | first }}{% unless forloop.last %},{% endunless %}{% endfor %}{% endcapture %}
 {% assign tag_hashes = site_tags | split:',' | sort %}
@@ -55,7 +69,7 @@ permalink: /projects/COVID19/
   {% capture tag_word %}{{ keyValue[1] | strip_newlines }}{% endcapture %}
     {% if tag_word contains 'covid' %}
         <li class="list-group-item">
-            <a href="/tags/{{ tag_word }}">
+            <a href="/tags/#{{ tag_word }}">
             {{ tag_word }}
             <span class="badge pull-right">{{ site.tags[tag_word].size }}</span>
             </a>
