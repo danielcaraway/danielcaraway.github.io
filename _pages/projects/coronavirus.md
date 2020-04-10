@@ -3,8 +3,6 @@ title: "CORONAVIRUS"
 permalink: /projects/coronavirus/
 ---
 
-
-
 ## SUPPORT MATERIAL
 
 ### INSPIRATION
@@ -14,6 +12,24 @@ permalink: /projects/coronavirus/
 ### DATA 
 
 [NYTimes Data](https://github.com/nytimes/covid-19-data)
+[SRK Kaggle Data](https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset)
+
+### KAGGLE NOTEBOOKS
+
+[SEIR-HCD By Datasaurus](https://www.kaggle.com/anjum48/seir-hcd-model)
+[LightGBM](https://www.kaggle.com/osciiart/covid19-lightgbm/data)
+[Guy with Worldometer charts at the end](https://www.kaggle.com/binhlc/sars-cov-2-exponential-model-week-2)
+[Current most popular notebok -- Patrick Sanchez](https://www.kaggle.com/saga21/covid-global-forecast-sir-model-ml-regressions)
+[Inspired by Datasaurs](https://www.kaggle.com/super13579/covid-19-global-forecast-seir-visualize/data#SEIR-&-PR-Model-for-COVID19-Global-forecast)
+
+
+### OTHER
+
+[Math of Epidimecs -- Intro to SIR Model](https://www.youtube.com/watch?v=Qrp40ck3WpI)
+[3Blue1Brown Simulating epidemic](https://www.youtube.com/watch?v=gxAaO2rsdIs)
+[Pandas -- cummax](https://www.kaggle.com/c/covid19-global-forecasting-week-1/discussion/139172)
+[Simple multi-line chart](https://python-graph-gallery.com/122-multiple-lines-chart/)
+.ravel()
 
 ## FILES: 
 
@@ -63,3 +79,14 @@ permalink: /projects/coronavirus/
       {% endif %}
 {% endfor %}
 </ul>
+
+[Currently useless google doc](https://docs.google.com/document/d/1hakPdBy-8GfjuxMmeDYl4ySOmEOK1X0PX0o20LwwFDc/edit)
+
+### LOG 
+
+4/9/20
+left off locally here 
+* COVID19_KAGGLE_BREAKING_DOWN_WK3_SUBMISSION
+* COVID19_KAGGLE_WK3_QUICK_EDA
+* KAGGLE_WK3
+* [COLAB](https://colab.research.google.com/drive/1aUEdPSt6C3mW2NpYbT5DxRt4BPksfQKR#scrollTo=PlGeMDSvBgsC)
