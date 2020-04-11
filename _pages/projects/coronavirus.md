@@ -5,6 +5,13 @@ permalink: /projects/coronavirus/
 
 ## CURRENT STATUS
 
+
+### JUST MARCH
+
+<div class="flourish-embed flourish-bar-chart-race" data-src="visualisation/1897466" data-url="https://flo.uri.sh/visualisation/1897466/embed"><script src="https://public.flourish.studio/resources/embed.js"></script></div>
+
+### SINCE JAN
+
 <div class="flourish-embed flourish-bar-chart-race" data-src="visualisation/1897175" data-url="https://flo.uri.sh/visualisation/1897175/embed"><script src="https://public.flourish.studio/resources/embed.js"></script></div>
 
 ## SUPPORT MATERIAL
