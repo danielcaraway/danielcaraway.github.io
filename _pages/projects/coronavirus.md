@@ -3,6 +3,10 @@ title: "CORONAVIRUS"
 permalink: /projects/coronavirus/
 ---
 
+## CURRENT STATUS
+
+<div class="flourish-embed flourish-bar-chart-race" data-src="visualisation/1897175" data-url="https://flo.uri.sh/visualisation/1897175/embed"><script src="https://public.flourish.studio/resources/embed.js"></script></div>
+
 ## SUPPORT MATERIAL
 
 ### INSPIRATION
