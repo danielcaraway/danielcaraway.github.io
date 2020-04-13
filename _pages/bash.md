@@ -4,12 +4,48 @@ title: 'BASH NOTES'
 permalink: /bash/
 ---
 
+## GET FILENAME WITHOUT EXTENSION
+
+```console
+filename=$(basename -- "$fullfile")
+extension="${filename##*.}"
+filename="${filename%.*}"
+```
+
 ## Convert notebook to html if not already html
 
 IN ENGLISH: 
 For all python files, 
 check if an html already exists. 
 If not, make one.
+
+
+#### ADDING TO AN ARRAY 
+
+```console
+args=()
+for i in *.html; do
+    args+=("$i")
+done
+echo "${args[@]}"
+
+for i in *.ipynb; do
+  if [[ ! " ${args[@]} " =~ " ${i%.*}.html " ]]; then
+    jupyter nbconvert --to html $i
+    echo "$i"
+  fi
+done
+```
+
+## CHECK IF FILE EXISTS IN FOLDER:
+
+```console
+for i in *.ipynb; do     
+  find "${i%.*}.html"; 
+done
+```
+
+#### OLD, NOT WORKING LIKE I WANTED LOL
 
 ```console
 for d in *; do
