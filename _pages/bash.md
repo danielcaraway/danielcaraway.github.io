@@ -6,6 +6,22 @@ permalink: /bash/
 
 ## Convert notebook to html if not already html
 
+IN ENGLISH: 
+For all python files, 
+check if an html already exists. 
+If not, make one.
+
+```console
+for d in *; do
+  if [[ $d == *.ipynb ]] ; then
+      if [[ $d != *.html ]] ; then
+          echo "$d"
+          jupyter nbconvert --to html $d
+      fi
+    fi
+done
+```
+
 ```console
 for d in *; do
     if [[ $d != *.html ]] ; then
@@ -13,8 +29,6 @@ for d in *; do
         jupyter nbconvert --to html $d
     fi
 done
-
-
 ```
 
 
