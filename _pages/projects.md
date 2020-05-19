@@ -7,7 +7,8 @@ permalink: /projects/
 
 <ul>
     {% for page in site.pages %}
-        {% if file.path contains 'pages' %}
+
+        {% if file.path contains 'projects' %}
             <li>{{page.title}}</li>
         {% endif %} 
     {% endfor %} 
