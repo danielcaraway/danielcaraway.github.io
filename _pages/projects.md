@@ -7,7 +7,7 @@ permalink: /projects/
 
 <ul>
     {% for page in site.pages %}
-    <li>{{page.title}}</li>
+    <li>{{page.path}}</li>
     {% endfor %} 
 </ul>
 
