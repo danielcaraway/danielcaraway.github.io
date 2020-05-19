@@ -5,7 +5,11 @@ permalink: /projects/
 
 ## IN PROGRESS
 
-
+<ul>
+    {% for page in site.pages %}
+    <li>{{page.title}}</li>
+    {% endfor %} 
+</ul>
 
 [IST718_FinalProject](https://danielcaraway.github.io/support_material/IST718_FinalProject.md)
 
