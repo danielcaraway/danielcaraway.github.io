@@ -104,3 +104,56 @@ permalink: /projects/ISL/
 5. LAB 2: Clustering
 6. LAB 3: NC160 Data Example
 7. EXERCISES 
+
+## CHAPTER OUTLINES
+
+### Chapter 1: Introduction
+
+### Chapter 2: Statistical Learning 
+
+1. What is Statistical Learning?
+   1. Why Estimate F?
+   2. How do we estimate F?
+   3. The Trade-Off between Prediction Accuracy and Model Interpretability
+   4. Supervised versus  Unsupervised Learning
+   5. Regression Versus Classification Problems 
+2. Assessing Model Accuracy
+   1. Measuring the Quality of Fit
+   2. The Bias-Variance Trade-Off
+   3. The Classification Setting
+3. LAB: Intro to R
+4. EXERCISES
+
+
+#### 1. What is Statistical Learning?
+
+TL;DR: A set of approaches for estimating f 
+(Where f is a function of X, our predictors/input variables, that equal Y our output variable)
+   1. Why Estimate F?
+      1. Prediction
+         1. f can be a black box
+         2. EX: We want to see if this patient's blood sample will tell us if this person is at high risk for something
+      2. Inference
+         1. When we want to understand the relationship between X and Y 
+         2. How Y changes as a function of X
+         3. f cannot be a black box
+         * Which predictors are associated with the response?
+         * What is the relationship between the response and each predictor?
+         * Can the relationship between Y and each predictor be adequately summarized using a linear equation or is the relationship more complicated? 
+   2. How do we estimate F?
+      1. Parametric Methods
+      2. Non-parametric Methods
+   3. The Trade-Off between Prediction Accuracy and Model Interpretability
+      1. Inflexible == more linear == less accurate, easier to interpret
+      2. Flexible == non linear (think svms) == more accurate, harder to interpret 
+   4. Supervised versus Unsupervised Learning
+      1. 
+   5. Regression Versus Classification Problems 
+
+#### 2. Assessing Model Accuracy
+   1. Measuring the Quality of Fit
+   2. The Bias-Variance Trade-Off
+   3. The Classification Setting
+      1. The Bayes Classifier
+      2. K-Nearest Neighbors
+      3. 
