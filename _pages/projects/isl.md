@@ -133,13 +133,18 @@ TL;DR: A set of approaches for estimating f
       1. Prediction
          1. f can be a black box
          2. EX: We want to see if this patient's blood sample will tell us if this person is at high risk for something
-      2. Inference
+         * Who will respond positively to a mailing? 
+      1. Inference
          1. When we want to understand the relationship between X and Y 
          2. How Y changes as a function of X
          3. f cannot be a black box
          * Which predictors are associated with the response?
          * What is the relationship between the response and each predictor?
          * Can the relationship between Y and each predictor be adequately summarized using a linear equation or is the relationship more complicated? 
+         * What effect will changing the price of a product have on sales?
+         * How much extra will a house be worth if it has a view of the river?
+      TL;DR -- Linear is good for inference, non-linear is better for prediction (and worse for interpretability)
+
    2. How do we estimate F?
       1. Parametric Methods
       2. Non-parametric Methods
