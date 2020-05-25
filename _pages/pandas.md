@@ -9,6 +9,15 @@ permalink: /pandas/
 ## PRO TIP: do a ctrl f first
 # ==================================
 
+## Creating multiple columns from an apply
+
+[so](https://stackoverflow.com/questions/16236684/apply-pandas-function-to-column-to-create-multiple-new-columns)
+
+```python
+appiled_df = df.apply(lambda row: get_times(row.time_usec), axis='columns', result_type='expand')
+df = pd.concat([df, appiled_df], axis='columns')
+```
+
 ## MERGING
 
 ```python
