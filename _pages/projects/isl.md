@@ -147,7 +147,11 @@ TL;DR: A set of approaches for estimating f
 
    2. How do we estimate F?
       1. Parametric Methods
+         1. Trying to fit to a linear model
+         2. DEF: reduce the problem of estimating f down to one of estimating a set of PARAMETERS
       2. Non-parametric Methods
+         1. DEF: Seek an estimate of f that gets as close to the dta points as possible without being too rough or wiggly 
+         2. Large number of observations needed
    3. The Trade-Off between Prediction Accuracy and Model Interpretability
       1. Inflexible == more linear == less accurate, easier to interpret
       2. Flexible == non linear (think svms) == more accurate, harder to interpret 
