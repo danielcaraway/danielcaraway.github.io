@@ -125,7 +125,7 @@ permalink: /projects/ISL/
 4. EXERCISES
 
 
-#### 1. What is Statistical Learning?
+#### 2.1: What is Statistical Learning?
 
 TL;DR: A set of approaches for estimating f 
 (Where f is a function of X, our predictors/input variables, that equal Y our output variable)
@@ -156,10 +156,13 @@ TL;DR: A set of approaches for estimating f
       1. Inflexible == more linear == less accurate, easier to interpret
       2. Flexible == non linear (think svms) == more accurate, harder to interpret 
    4. Supervised versus Unsupervised Learning
-      1. 
+      1. SUPERVISED: For each observation of the predictor measurements (xi), there is an associated response measurement (yi)
+         1. PREDICTION: Accurately predict the response for future observations
+         2. INFERENCE: Better understand the relationship between the response and predictors 
+      2. UNSUPERVISED: "Flying blind" -- it's not possible to fit a linear regression bc we don't have a response variable that can "supervise" our analysis. 
    5. Regression Versus Classification Problems 
 
-#### 2. Assessing Model Accuracy
+#### 2.2: Assessing Model Accuracy
    1. Measuring the Quality of Fit
    2. The Bias-Variance Trade-Off
    3. The Classification Setting
