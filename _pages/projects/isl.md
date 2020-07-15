@@ -5,6 +5,8 @@ permalink: /projects/ISL/
 
 # Introduction to Statistical Learning 
 
+[Symbols](https://www.rapidtables.com/math/symbols/Statistical_Symbols.html)
+
 ## OUTLINE A
 
 1. Introduction
