@@ -12,6 +12,12 @@ permalink: /pandas/
 
 # ==================================
 
+## Select rows whos columns are
+
+```python
+df.loc[df['column_name'].isin(some_values)]
+```
+
 ## Rename column
 
 ```python
