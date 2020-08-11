@@ -51,3 +51,26 @@ How do we fit a piecewise constant function? (Step functions)
   - Provides a simple way to fit non-linear data
 - Step Functions
   - Cuts a predictor K into many pieces making a quantitative variable a qualitative variable
+
+### NOTES FROM VIDEO
+
+Create new variables as TRANSFORMATIONS of the original variables
+
+EX: x1 = x, x2 = x^2, x3 = x^3
+
+POINTWISE: showing at any given POINT what the standard error is
+(NOT Global Confidence Bands)
+
+pointwise-variances
+
+#### STEP FUNCTIONS
+
+Another way of fitting nonlinearities
+
+- Popular in epidemiology and biostatistics
+
+HOW TO:
+
+1. cut your continuous variable into discrete sub-ranges
+
+Turns into a "Piecewise Constant Model"
