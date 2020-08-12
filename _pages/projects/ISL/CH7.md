@@ -74,3 +74,12 @@ HOW TO:
 1. cut your continuous variable into discrete sub-ranges
 
 Turns into a "Piecewise Constant Model"
+
+### NOTES FROM QUIZ
+
+What can we add to linear models to capture non-linear effects?
+
+- Spline terms
+- Polynomial terms
+- Interactions
+- Step functions
