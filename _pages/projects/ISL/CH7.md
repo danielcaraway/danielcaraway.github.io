@@ -83,3 +83,25 @@ What can we add to linear models to capture non-linear effects?
 - Polynomial terms
 - Interactions
 - Step functions
+
+  7.2
+
+Explanation
+
+Every function in the basis must be continuous at t, and we must be able to represent any piecewise linear function with a single knot at t as a linear combination of the functions in the basis.
+
+## Smoothing Splines
+
+### 7.3 (In Videos) 7.5 (In book)
+
+Smoothing a spline is a way to fit data without having to worry about knots
+You can estimate the smoothing parameter by cross-validation
+Leave One Out cross validation is attractive with spine-smoothing because, like linear regression, there is some tidy math behind it
+
+in R `smooth.spline(age, wage)`
+
+### 7.3.1 QUIZ
+
+In terms of model complexity, which is more similar to a smoothing spline with 100 knots and 5 effective degrees of freedom?
+
+A natural cubic spline with 5 knots

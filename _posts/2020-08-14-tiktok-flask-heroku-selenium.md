@@ -58,7 +58,7 @@ None of these methods seem to work...????
 
 SOLUTION:
 
-Peek at the TikTokApi code so you can see what's happening under the hood. Oh! We can read it! This is excellent!! Maybe I can try just running the file like he has it here!
+[Peek at the TikTokApi code](https://github.com/davidteather/TikTok-Api/blob/master/TikTokApi/tiktok.py) so you can see what's happening under the hood. Oh! We can read it! This is excellent!! Maybe I can try just running the file like he has it here!
 
 PROBLEM:
 
@@ -93,3 +93,11 @@ SOLUTION:
 [MY DUDE](https://medium.com/@mikelcbrowne/running-chromedriver-with-python-selenium-on-heroku-acc1566d161c)
 
 I haven't tried all of this yet, but once I figure out something that Selenium actually does (something small) you can bet your booty that I will be trying it.
+
+### Resources:
+
+[Selenium webdriver javascript](https://stackoverflow.com/questions/42860703/how-to-use-selenium-webdriver-on-heroku)
+
+### STATUS:
+
+[tiktok-flask](https://tiktok-flask.herokuapp.com/)
