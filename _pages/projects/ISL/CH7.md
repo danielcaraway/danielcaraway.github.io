@@ -105,3 +105,21 @@ in R `smooth.spline(age, wage)`
 In terms of model complexity, which is more similar to a smoothing spline with 100 knots and 5 effective degrees of freedom?
 
 A natural cubic spline with 5 knots
+
+---BOOK
+
+## 7.6 Local Regression
+
+## 7.7 Generalized Additive Models
+
+### 7.7.1 GAMS for Regression Problems
+
+### 7.7.2 GAMS for Classification Problems
+
+--- VIDEOS
+
+## 7.4 Generalized Additive Models and Local Regression
+
+- GAMS allow for non-linearity in several variables
+- We like GAMS because you can retain the additivity of linear models and they are easy to interpret
+- GAMS are "additive" meaning there aren't interactions in the model
