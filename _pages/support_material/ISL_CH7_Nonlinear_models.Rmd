@@ -1,0 +1,25 @@
+---
+title: "ISL_CH7"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+require(ISLR)
+attach(Wage)
+```
+
+## Polynomials
+
+1. FIRST focus on a single predictor, AGE
+
+```{r}
+fit=lm(wage~poly(age,4),data=Wage)
+summary(fit)
+```
+
+
+NOTES FROM VIDEO:
+We will fit a fourth degree polynomial to The Age/Wage regression 
+The function `poly` does the matrix-making for us!
+
+
