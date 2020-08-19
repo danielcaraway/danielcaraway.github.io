@@ -17,6 +17,35 @@ fit=lm(wage~poly(age,4),data=Wage)
 summary(fit)
 ```
 
+```{r fig.width=3, fig.height=3}
+# get limits from age range
+agelims=range(age)
+# creates a sequence of nums from both ends of agelist
+age.grid=seq(from=agelims[1],to=agelims[2])
+# makes the predictions, also includes standard error
+# returns two lists, one list of predictions, one with the standard errors
+preds=predict(fit,newdata=list(age=age.grid),se=TRUE)
+# use cbind to take two columns (lists) and turn into matrix
+# And use +2 and -2 to create our Standard Error Bands
+# preds$fit = predictions | preds$se = standard error
+se.bands=cbind(preds$fit+2*preds$se, preds$fit-2*preds$se)
+# first plot the data
+plot(age, wage, col="darkgrey")
+# then plot our error bands
+lines(age.grid, preds$fit, lwd=2, col="blue")
+matlines(age.grid,se.bands,col="blue",lty=2)
+```
+
+There are other ways we can do this in R
+
+```{r}
+# wrap ^2 in "identity function" so the carat won't be 
+# interpreted as part of the forumla -- I(age^2) == age squared
+# I(age^3) == age cubed etc.
+fit_v2=lm(wage~age+I(age^2)+I(age^3)+I(age^4),data=Wage)
+summary(fit_v2)
+```
+
 
 NOTES FROM VIDEO:
 We will fit a fourth degree polynomial to The Age/Wage regression 
