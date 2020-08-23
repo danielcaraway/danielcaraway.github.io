@@ -3,7 +3,8 @@ title: "ISL_CH7"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r}
+rm(Wage)
 require(ISLR)
 attach(Wage)
 ```

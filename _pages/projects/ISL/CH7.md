@@ -123,3 +123,5 @@ A natural cubic spline with 5 knots
 - GAMS allow for non-linearity in several variables
 - We like GAMS because you can retain the additivity of linear models and they are easy to interpret
 - GAMS are "additive" meaning there aren't interactions in the model
+
+git s

@@ -112,6 +112,8 @@ last column to first column
 ## Converting Column Content
 
 ```python
+
+df['color'] = ['red' if x == 'Z' else 'green' for x in df['Set']]
 # w.female[w.female == 'female'] = 1
 # w.female[w.female == 'male']   = 0
 

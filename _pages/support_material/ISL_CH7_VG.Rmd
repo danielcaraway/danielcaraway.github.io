@@ -1,0 +1,41 @@
+---
+title: "ISL_CH7_VG"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+
+VG_Wage = read.csv('/Users/kendraryan/Projects/virgin_galactic/VG_Wage.csv')
+
+```
+
+## Polynomials
+
+1. FIRST focus on a single predictor, Seniority
+
+```{r}
+fit=lm(salary_int~poly(seniority_int,4),data=VG_Wage)
+summary(fit)
+```
+
+## 
+
+```{r fig.width=3, fig.height=3}
+# get limits from age range
+senlims=range(seniority_int)
+# creates a sequence of nums from both ends of agelist
+sen.grid=seq(from=senlims[1],to=senlims[2])
+# makes the predictions, also includes standard error
+# returns two lists, one list of predictions, one with the standard errors
+preds=predict(fit,newdata=list(seniority_int=sen.grid),se=TRUE)
+# use cbind to take two columns (lists) and turn into matrix
+# And use +2 and -2 to create our Standard Error Bands
+# preds$fit = predictions | preds$se = standard error
+se.bands=cbind(preds$fit+2*preds$se, preds$fit-2*preds$se)
+# first plot the data
+plot(seniority_int, salary_int, col="darkgrey")
+# then plot our error bands
+lines(sen.grid, preds$fit, lwd=2, col="blue")
+matlines(sen.grid,se.bands,col="blue",lty=2)
+```
