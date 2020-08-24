@@ -125,3 +125,31 @@ A natural cubic spline with 5 knots
 - GAMS are "additive" meaning there aren't interactions in the model
 
 git s
+
+
+---
+## GENERAL NOTES
+
+### ELI5 ANOVA?
+
+ANOVA = Analysis of Variance 
+
+[From Reddit](https://www.reddit.com/r/explainlikeimfive/comments/16gt7r/eli5_ttest_and_anova/)
+
+START: We want to measure all the 5 year olds in the world
+
+PROBLEM: There are wayyy too many 5 year olds for us to do this in a day!
+
+SOLUTION: Take a small sample of 5 year olds, maybe the 5 year olds in your town
+
+PROBLEM: What if there is something in the water that causes all the 5 year olds in your town to be slightly taller, on average, than 5 year olds of another town?
+
+SOLUTION: We can get more samples (maybe call your friend two towns over, and your cousin in another state)  and do a T-test!
+
+-- From the reddit post
+
+How do we know that the difference in heights isn't due to chance alone?
+
+That's where the T-Test comes in. The T-Test allows us to compare results in terms of that variation. It allows us to say with confidence that the kids in Bigtown are taller than kids in Littletown (we call this "statistical significance") or that the 1-inch difference likely was found due to natural randomness in our samples.
+
+Now ANOVA also deals with variation (in fact ANOVA stands for "Analysis of Variance"), but in a slightly different way. When comparing two or more groups, say the height of the five-year-olds in Mr. Smith's, Mrs. Jones, and Dr. Baker's classes, we want to know if there really is a significant difference in height. We do this by comparing the amount of variation within each group, vs the amount of variation between each group. If there's a lot of variation within each class (lots of tall kids and short kids), and only a little bit of variation between each class (the average height of each class is about the same), then it's harder to say that the result is "significant" -- it might be due to chance alone. However if it's the other way around, then we can be relatively confident that the difference is real.
