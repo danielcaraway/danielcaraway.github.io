@@ -3,6 +3,21 @@ title: "Learning How to Learn"
 permalink: /projects/LHTL/WK2
 ---
 
+8 - 24 - 20
+
+* Dive into a position where you are WRONG as quickly as possible
+* Using the Feynman technique
+  * Take paper out and try to teach someone else 
+* CREATE VIVID EXAMPLES: -- simple analogies and metaphors. 
+* MENTAL TOOLS FOR MOTIVATION: Little mini projects, little mini steps
+* PROJECTS for self-education:
+  * Benny Lewis: Always have a mission (3 months in a country to learn a language)
+  * make CONCRETE projects that excite you
+* MIT's opencourseware have exams, so exam + problem set + book 
+* "Learn more by studying less" -- low efficiency low intensity
+  * Try specific chunks of time 4 hours :) 
+
+
 8 - 18 - 20
 
 Chunking is important!
