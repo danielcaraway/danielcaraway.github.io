@@ -13,6 +13,14 @@ attach(Wage)
 
 1. FIRST focus on a single predictor, AGE
 
+
+NOTES FROM VIDEO:
+We will fit a fourth degree polynomial to The Age/Wage regression 
+The function `poly` does the matrix-making for us!
+
+
+
+
 ```{r}
 fit=lm(wage~poly(age,4),data=Wage)
 summary(fit)
@@ -57,8 +65,29 @@ fitd=lm(wage~education+poly(age,3),data=Wage)
 anova(fita, fitb, fitc, fitd)
 ```
 
-NOTES FROM VIDEO:
-We will fit a fourth degree polynomial to The Age/Wage regression 
-The function `poly` does the matrix-making for us!
+NOTES FROM THE VIDEO: 
+
+We use the ANOVA to tell us which variables we need.
+As we can see by the `***` we clearly need Age, and Age ^2. 
+Age ^3 is only statistically significant at the 5% level (see `Signif.codes: *`)
+
+## POLYNOMIAL LOGISTIC REGRESSION
+
+We are going to separate out the "big wage earners" into a binary variable
+And then fit this to a logistic regression (which only works with binary response variables)
+
+```{r}
+# Run the model
+fit=glm(I(wage>250) ~ poly(age,3), data=Wage, family=binomial)
+# Get the summary
+summary(fit)
+# Get the prediction
+preds=predict(fit,list(age=age.grid),se=T)
+# Create Standard Error Bands
+se.bands=preds$fit + cbind(fit=0,lower=-2*preds$se,upper=2*preds$se)
+se.bands[1:5,]
+```
+
+
 
 
