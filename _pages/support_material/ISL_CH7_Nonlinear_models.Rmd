@@ -88,6 +88,18 @@ se.bands=preds$fit + cbind(fit=0,lower=-2*preds$se,upper=2*preds$se)
 se.bands[1:5,]
 ```
 
+```{r}
+prob.bands=exp(se.bands)/(1+exp(se.bands))
+matplot(age.grid,prob.bands,col="blue",lwd=c(2,1,1),lty=c(1,2,2),type="l",ylim=c(0,.1))
+# we use the jitter function to show just how much data happened at each age
+points(jitter(age), I(wage>250)/10,pch="l",cex=.5)
+```
+
+### PURPOSE: 
+* Confidence band is first computed on the LOGIT scale (where we are comparing the binary high/low earners) 
+* And then APPLIED to our probability scale 
+
+UPNEXT: Splines
 
 
 
