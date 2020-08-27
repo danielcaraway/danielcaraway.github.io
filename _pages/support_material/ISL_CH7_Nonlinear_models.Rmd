@@ -102,4 +102,31 @@ points(jitter(age), I(wage>250)/10,pch="l",cex=.5)
 UPNEXT: Splines
 
 
+# SPLINES
+
+Splines are more flexible than polynomials 
+(but the idea is similar)
+
+### Exploring cubic splines
+
+A spline is a cubic polynomial
+Splines help us fit more flexible functions
+The knots break down the data
+Splines are more "local" than polynomials
+
+Here is a "fixed knot regression spline"
+
+```{r}
+require(splines)
+fit=lm(wage~bs(age, knots=c(25,40,60)), data=Wage)
+plot(age,wage,col="darkgrey")
+lines(age.grid,predict(fit,list(age=age.grid)),col="darkgreen",lwd=2)
+abline(v=c(25,40,60),lty=2,col="darkgreen")
+```
+
+
+
+FIN.
+
+
 
