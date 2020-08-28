@@ -123,6 +123,60 @@ plot(age,wage,col="darkgrey")
 lines(age.grid,predict(fit,list(age=age.grid)),col="darkgreen",lwd=2)
 abline(v=c(25,40,60),lty=2,col="darkgreen")
 ```
+## SMOOTHING SPLINE
+
+Smoothing spline does not require knot selection 
+it DOES have a smoothing parameter
+and it can be specified via the "degress of freedom" or `df`
+```{r}
+fit=lm(wage~bs(age, knots=c(25,40,60)), data=Wage)
+plot(age,wage,col="darkgrey")
+lines(age.grid,predict(fit,list(age=age.grid)),col="darkgreen",lwd=2)
+abline(v=c(25,40,60),lty=2,col="darkgreen")
+# ----------
+fit=smooth.spline(age,wage,df=16)
+lines(fit,col="red",lwd=2)
+```
+
+Alternately we can use LOO cross-validation 
+Which selects our smoothing parameter for us automatically
+
+```{r}
+fit=lm(wage~bs(age, knots=c(25,40,60)), data=Wage)
+plot(age,wage,col="darkgrey")
+lines(age.grid,predict(fit,list(age=age.grid)),col="darkgreen",lwd=2)
+abline(v=c(25,40,60),lty=2,col="darkgreen")
+# ----------
+fit=smooth.spline(age,wage,df=16)
+lines(fit,col="red",lwd=2)
+# ----------
+fit=smooth.spline(age,wage,cv=TRUE)
+lines(fit,col="purple",lwd=2)
+fit
+```
+## What about MULTIPLE non-linear terms?
+
+So far, we've only looked at single non-linear terms.
+Thankfully, the `gam` package makes working with multiple non-linear terms easier 
+
+```{r}
+require(gam)
+# We tell "gam" the the response is WAGE
+# We want a smooth term in age, with four degrees of freedom
+# We want a smooth term in year, also with four degrees of freedom
+# As edu is a factor variable, it will make dummy variables for us
+# NOTE: S is a special function in `gam` that denotes smoothing
+gam1=gam(wage~s(age,df=4)+s(year,df=4)+education,data=Wage)
+par(mfrow=c(1,3))
+# Excellent way to fit and plot non-linear functions across several variables
+plot(gam1,se=T)
+gam2=gam(I(wage>250)~s(age,df=4)+s(year,df=4)+education,data=Wage,family=binomial)
+# Left off standard errors on this one
+plot(gam2)
+```
+
+`gam` also works for logistic regression and other kinds of generalized Linear Models
+
 
 
 
