@@ -3,6 +3,7 @@ title: "Learning How to Learn"
 permalink: /projects/LHTL/WK3
 ---
 
+# Procrastination
 
 ### Habits have four parts:
 
@@ -33,3 +34,14 @@ permalink: /projects/LHTL/WK3
 
 * Don't let the distraction annoy you or get you down -- like meditation, simply let the distraction drift by 
 * Use noise-cancelling headphones or other physical interventions that might help!
+
+
+# MEMORY
+
+## Diving Deeper into Memory
+
+
+What is a concept you're trying to learn in class, or a concept or series of ideas you've always simply wanted to be able to remember?  Can you think of an image that could help you to encapsulate the concept or ideas in memory so that you can more readily call them to mind? Write your thoughts in the box below.
+
+RECURSION!!
+I seem to always forget how necessary it is to have a base-case, so I will try to recall the Original Recursion Dragon who will only multiply one number at a time. I will try to remember how no Dragon wants zero treasure and having recursion without a base case is like coming to the Recursion Dragon with an empty treasure chest? 
