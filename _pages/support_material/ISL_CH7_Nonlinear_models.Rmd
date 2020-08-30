@@ -203,6 +203,13 @@ plot.Gam(lm1,se=T)
 
 # GENERALIZED ADDITIVE MODELS
 
+### From the quiz
+
+```{r}
+plot(x,y)
+lm(y~x)
+lm(y~1+x+I(x^2))
+```
 
 FIN.
 
