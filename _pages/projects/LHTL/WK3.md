@@ -51,3 +51,12 @@ I seem to always forget how necessary it is to have a base-case, so I will try t
 * ASTROCYTES!! Einstein's brain had many more ASTROCYTES than the average human.
 * Neurons aren't the only cells that support the brain! The brain also has glial cells. Of the glial cells, the astrocyte is the most abundant!
 * Astrocytes provide nutrients to neurons, they maintain extra cellular ion balance and help with repairs
+
+
+## THE MEMORY PALACE
+
+Q: Think of someplace you are very familiar with that you would like to use as your memory palace.  Gradually start placing items in it that you want to remember for the next time you go to the store.  Write a brief, one or two sentence description of your memory palace below?
+
+Bonus question: How could you use the memory palace technique in relation to what you are currently learning?
+
+A: So I think I'm going to try to use an ex-boyfriend's house as a palace and I'm going to try to commit lm(y~x) to memory -- this is the simple equation for linear regression in R and I always forget the syntax. So first, what can make me think of linear regression?????? or should I just try for lm(y~x)?? Could I do that phonetically? ell emm paren y squiggle ex?? What could I use to mentally model parentheses? I think I will use the function as the thing -- and whatever is getting passed to the function (whatever is inside the parens) as a new visual INSIDE a BOWL. So a Lin Manuel holding a bowl -- scratch that. A diorama of YoYoMa and Xan and between them there is a jump rope to denote that squiggly line 

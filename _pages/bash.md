@@ -4,6 +4,12 @@ title: "BASH NOTES"
 permalink: /bash/
 ---
 
+## LIST ALL PROCESSES
+
+```console
+ ps ax 
+ ps ax -o pid,ni,command
+```
 ## FLATTEN
 
 ```console
