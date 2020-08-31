@@ -4,6 +4,20 @@ title: "BASH NOTES"
 permalink: /bash/
 ---
 
+## FLATTEN
+
+```console
+find dir1 -type f -exec mv {} dir1 \; 
+find dir1 -depth -exec rmdir {} \;
+```
+
+## LIST DIRECTORIES (and list while removing slash)
+
+```console
+ls -d */ 
+ls -d */ | cut -f1 -d'/'
+```
+
 ## FIND DIFFERENCE IN TWO FOLDERS/DIRECTORIES
 
 ```console

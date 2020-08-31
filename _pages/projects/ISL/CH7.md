@@ -153,3 +153,11 @@ How do we know that the difference in heights isn't due to chance alone?
 That's where the T-Test comes in. The T-Test allows us to compare results in terms of that variation. It allows us to say with confidence that the kids in Bigtown are taller than kids in Littletown (we call this "statistical significance") or that the 1-inch difference likely was found due to natural randomness in our samples.
 
 Now ANOVA also deals with variation (in fact ANOVA stands for "Analysis of Variance"), but in a slightly different way. When comparing two or more groups, say the height of the five-year-olds in Mr. Smith's, Mrs. Jones, and Dr. Baker's classes, we want to know if there really is a significant difference in height. We do this by comparing the amount of variation within each group, vs the amount of variation between each group. If there's a lot of variation within each class (lots of tall kids and short kids), and only a little bit of variation between each class (the average height of each class is about the same), then it's harder to say that the result is "significant" -- it might be due to chance alone. However if it's the other way around, then we can be relatively confident that the difference is real.
+
+
+## Interview with Jerome Friedman
+
+* Responsible for a lot of applied techniques used in this course! Such as CART!
+* Jon Bentley developed k-d trees
+* Programs in FourTran for fun, as a hobby :D 
+* Started to rethink k-d trees for nearest neighbor because he was interested in pattern recognition and learning

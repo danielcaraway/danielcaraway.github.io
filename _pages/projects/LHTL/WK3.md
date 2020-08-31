@@ -45,3 +45,9 @@ What is a concept you're trying to learn in class, or a concept or series of ide
 
 RECURSION!!
 I seem to always forget how necessary it is to have a base-case, so I will try to recall the Original Recursion Dragon who will only multiply one number at a time. I will try to remember how no Dragon wants zero treasure and having recursion without a base case is like coming to the Recursion Dragon with an empty treasure chest? 
+
+* Memories are not fixed -- they are living, breathing parts of you that can change over time
+* Revisiting a memory (recalling it) changes the memory, a process called `reconsolodation`
+* ASTROCYTES!! Einstein's brain had many more ASTROCYTES than the average human.
+* Neurons aren't the only cells that support the brain! The brain also has glial cells. Of the glial cells, the astrocyte is the most abundant!
+* Astrocytes provide nutrients to neurons, they maintain extra cellular ion balance and help with repairs
