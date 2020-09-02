@@ -65,3 +65,37 @@ Short term memory is like a chalkboard
 We're only able to hold about four items in our working memory
 
 Mastery in a subject helps to compact these items and save space!
+
+## INTERVIEW WITH KEITH DEVLIN (the NPR "Math Guy"):
+
+### What should students do when they get to a math problem they can't solve?
+
+1. DON'T PANIC
+
+2. Ask yourself:
+
+- What are you trying to do?
+- What do you want to achieve?
+- What information do you have?
+
+Begin by understanding the numbers
+Maybe try drawing it out
+
+SOLVING A PROBLEM IS A JOURNEY!!
+BASH AWAY AT IT...
+If nothing happens, go walk away for 3-4 hours of exercise :)
+BASH AWAY AT IT...
+If nothing happens, go walk away for 3-4 hours of exercise :)
+etc. etc.
+
+---
+
+Math is a SLOW process. You're taking a STONE AGE BRAIN to a domain that is just a 1000 years old and modern mathematics is just a few decades old!. Very new!! Not enough time for our brain to catch up with development!!
+
+The key is to become so familiar with the math problem (or general problem) that it is like a family member -- and we are good at solving social problems!! Because evolution set us up for that!! Social problems!!
+
+SOLVING the problem isn't the hard part -- getting the problem inside your brain, getting familiar with the problem. living INSIDE the problem -- that's the hard part.
+
+The only REAL difference with math problems vs. other problems is that mathematics deals almost exclusively with abstraction
+
+"Yes, in many ways, mathematic's problems are not fundamentally different from other problems except in one respect, they are about totally abstract things. So someone solving a math problem has an initial problem that someone doesn't have if they're solving a problem in real life, or a coaching problem in sort of football. Most of the time, and I used to spend a lot of time rock-climbing. Rock-climbing is partly physical, but it's also a lot of problem solving, because you're having to look for these moves, you're having to move your body in the right way. So there's an awful lot of problem solving that we do all of the time and that's what the brain evolved to do. In the case of mathematics however, the world in which you are solving those problems isn't one we're familiar with. You initially have to create that world inside of you. This I think, is why it's essential to knock away at the problem for 10-15 minutes, a day, two days before you let the brain do it's own thing. My guess and my perception of what's going on is that that process is making my mind familiar with that domain, with that problem, to such an extent that that problem is just like a problem I'd have with my family or my workplace or whatever. I've got all of this apparatus for solving real-world problems and social problems. Once that math problem is inside my mind, it's another problem just like that. So, solving the math problem usually isn't the hard part. The hard part is getting that problem familiar inside your mind. The only way to do that is just keep living in the problem, get inside the problem, really live inside that problem for 10 minutes, half an hour, maybe even a few days."
