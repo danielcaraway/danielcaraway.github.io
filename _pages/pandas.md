@@ -12,6 +12,16 @@ permalink: /pandas/
 
 # ==================================
 
+## ADD A COLUMN FROM A GROUPBY
+
+WHAT IS THIS MAGIC!?
+[SO](https://stackoverflow.com/questions/12200693/python-pandas-how-to-assign-groupby-operation-results-back-to-columns-in-parent)
+[SPECIFICALLY THIS](https://stackoverflow.com/a/39029294/12357926)
+
+```python
+bdata['group_MarketCap'] = bdata.groupby('yearmonth')['MarketCap'].transform('sum')
+```
+
 ## Select rows whos columns are
 
 ```python
