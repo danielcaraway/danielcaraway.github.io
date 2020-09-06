@@ -15,6 +15,13 @@ permalink: /projects/ISL/CH8
 
 - Bushy trees have high variance -- they are overfitting the data and likely not going to predict well
 
+#### PRUNING:
+
+- A good strategy is to build a large tree and PRUNE it back to obtain a SUBTREE
+- Cost Complexity Pruning, aka weakest link pruning
+  - Similar to LASSO in regression
+  - We use Cross Validation to help us choose alpha
+
 ### 8.3 Classification Trees
 
 ### 8.4 Bagging and Random Forests

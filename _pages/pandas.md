@@ -12,6 +12,19 @@ permalink: /pandas/
 
 # ==================================
 
+## Pandas Plotting
+
+[stacked bars](https://pandas.pydata.org/docs/user_guide/visualization.html)
+
+## To numeric
+
+Use pd.to_numeric with errors='coerce'
+
+```python
+pd.to_numeric(df['column'], errors='coerce')
+pd.to_numeric(df['column'], errors='coerce').fillna(0)
+```
+
 ## ADD A COLUMN FROM A GROUPBY
 
 WHAT IS THIS MAGIC!?
