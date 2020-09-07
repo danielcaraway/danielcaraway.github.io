@@ -22,6 +22,8 @@ permalink: /projects/ISL/CH8
   - Similar to LASSO in regression
   - We use Cross Validation to help us choose alpha
 
+Cross Validation is what we use to help us prune our tree -- it will show us where our error is reduced (look at baseball example, and we can see the cv is lowest at 3) so we can tell our tree to have three terminal nodes.
+
 ### 8.3 Classification Trees
 
 ### 8.4 Bagging and Random Forests
