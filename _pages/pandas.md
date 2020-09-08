@@ -12,6 +12,24 @@ permalink: /pandas/
 
 # ==================================
 
+## PIVOT TABLES
+
+```python
+# Year    Country          medal    no of medals
+# 1896    Afghanistan      Gold        5
+# 1896    Afghanistan      Silver      4
+# 1896    Afghanistan      Bronze      3
+# 1896    Algeria          Gold        1
+# 1896    Algeria          Silver      2
+# 1896    Algeria          Bronze      3
+
+# Year    Country      Gold   Silver   Bronze
+# 1896    Afghanistan    5      4         3
+# 1896    Algeria        1      2         3
+
+# medals = df.pivot_table('no of medals', ['Year', 'Country'], 'medal')
+```
+
 ## Pandas Plotting
 
 [stacked bars](https://pandas.pydata.org/docs/user_guide/visualization.html)

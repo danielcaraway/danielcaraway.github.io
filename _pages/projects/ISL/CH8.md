@@ -26,6 +26,18 @@ Cross Validation is what we use to help us prune our tree -- it will show us whe
 
 ### 8.3 Classification Trees
 
+If response is a _categorical variable_, we call that a CLASSIFICATION TREE!!
+
+#### How do we split?!
+
+Binary (into two parts), recursively (meaning over and over until an end case is met)
+
+#### What is the criteria for splitting?
+
+We can't use RSS (like in regression), so we use classification error rate (which is just the fraction of the training data that does not match the classification criterion)
+
+NEED TO VERIFY but if we have 8 cats and 1 turtle, our error rate would be 1/9 as we'd assume cats and we'd be wrong 1 out of the 9 times we were guessing which random household creature Colin was holding. (This is not including the fact that we hold Leo less because he is less "holdable" than a cat. Also, salmonella, apparently.)
+
 ### 8.4 Bagging and Random Forests
 
 ### 8.5 Boosting
