@@ -38,6 +38,18 @@ We can't use RSS (like in regression), so we use classification error rate (whic
 
 NEED TO VERIFY but if we have 8 cats and 1 turtle, our error rate would be 1/9 as we'd assume cats and we'd be wrong 1 out of the 9 times we were guessing which random household creature Colin was holding. (This is not including the fact that we hold Leo less because he is less "holdable" than a cat. Also, salmonella, apparently.)
 
+Gini index: if it is small, one class is favored and the rest are all really small.
+
+PROS OF DECISION TREES!
+
+- Easy to understand by non subject matter experts
+
+CONS OF DECISION TREES:
+
+- Not great at predictability
+
+![trees vs linear models](IISL_CH8_TREES.png "Trees")
+
 ### 8.4 Bagging and Random Forests
 
 ### 8.5 Boosting
