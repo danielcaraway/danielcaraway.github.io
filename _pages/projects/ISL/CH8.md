@@ -43,6 +43,8 @@ Gini index: if it is small, one class is favored and the rest are all really sma
 PROS OF DECISION TREES!
 
 - Easy to understand by non subject matter experts
+- Trees often mimic normal human decision making!
+- Trees can easily handle categorical variables without having to use dummy variables
 
 CONS OF DECISION TREES:
 
