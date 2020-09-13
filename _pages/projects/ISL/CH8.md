@@ -52,7 +52,35 @@ CONS OF DECISION TREES:
 
 ![trees vs linear models](IISL_CH8_TREES.png "Trees")
 
+#### QUIZ!
+
+You have a bag of marbles with 64 red marbles and 36 blue marbles.
+
+What is the value of the Gini Index for that bag? Give your answer to the nearest hundredth:
+
+.64(1-.64) + .36(1-.36)
+
+NOTE: I was close but forgot the plus :(
+
+##### Gini Index = .64*(1-.64) + .36*(1-.36) = .4608
+
+##### Cross Entropy = -.64*ln(.64) - .36*ln(.36) = .6534
+
+BONUS!! I learned a little bit more about how to "read" the fun fancy equations. For every instance of thing, sum it up. That is what the episolon means and technically I knew this but I didn't KNOW this -- it meant nothing in the real world to me. So, if there is a minus sign before the episolon, it is `- (thing)- (thing)`
+
 ### 8.4 Bagging and Random Forests
+
+#### BAGGING!!
+
+Bagging stands for BOOSTRAP AGGREGATION.
+
+Bootstrap + Aggregation = Bagging.
+
+Bagging is basically averaging. It is used all across stats but we bring it up here as it is particularly useful in trees.
+
+Bagging is the process of reducing variance by averaging a set of observations.
+
+But, since we don't usually have many different samples, we take multiple samples of the same dataset -- this is called BOOTSTRAPPING -- we are faking our way to having "multiple" training datasets by simply resampling over and over
 
 ### 8.5 Boosting
 
