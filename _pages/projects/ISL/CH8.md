@@ -82,6 +82,17 @@ Bagging is the process of reducing variance by averaging a set of observations.
 
 But, since we don't usually have many different samples, we take multiple samples of the same dataset -- this is called BOOTSTRAPPING -- we are faking our way to having "multiple" training datasets by simply resampling over and over
 
+#### RANDOM FOREST!!
+
+- Random Forest is an advanced form of bagging (which, to review, is just averaging a bunch of different iterations of experimentation)
+- "Out of the bag" is a "free way" of doing LOOCV (leave one out Cross Validation)
+- Wrapping up bagging -- we get LOO (Leave One Out) Cross-Validation for free!! Because when we are bootstrapping, we are leaving out 1/3 of the data... so we can get LOOCV "for free" by gathering all of the instance where our observation isn't in the training data and average THAT!
+
+* Adding trees in Random Forest will never hurt you. At a certain point, it levels off and the "help" it gives you (a reduced error rate) stops increasing in helpfulness
+* Random forest is slightly counter-intuitive in that it takes only SOME of the predictors. Specifically, the squareroot of the number of predictors -- so if we have 100 predictors, random forest chooses 10.
+
+* What can we do with high dimensional data? We can remove some of the predictors with low variance. Not in comparison to one another (the other predictors), but in comparison to itself. Because we're looking at overall variance without regard to the label, it is not cheating.
+
 ### 8.5 Boosting
 
 ### 8.R -- Tree-Based methods in R

@@ -4,23 +4,36 @@ title: "BASH NOTES"
 permalink: /bash/
 ---
 
+## LIST ALL FILES CREATED TODAY
+
+```console
+find . -mtime -1 -type f -print
+```
+
+### EXPORT TO A CSV
+
+```console
+find . -mtime -1 -type f -print > opened-today.csv
+```
+
 ## LIST ALL PROCESSES
 
 ```console
- ps ax 
+ ps ax
  ps ax -o pid,ni,command
 ```
+
 ## FLATTEN
 
 ```console
-find dir1 -type f -exec mv {} dir1 \; 
+find dir1 -type f -exec mv {} dir1 \;
 find dir1 -depth -exec rmdir {} \;
 ```
 
 ## LIST DIRECTORIES (and list while removing slash)
 
 ```console
-ls -d */ 
+ls -d */
 ls -d */ | cut -f1 -d'/'
 ```
 
@@ -110,10 +123,10 @@ jupyter nbconvert --execute --to html notebook.ipynb
 ## ADD DATE TO FILE NAME:
 
 for d in _; do
-newdate=$(stat -f %SB -t %Y_%m_%d "$d")
-filename=${newdate}_${d##_/}
+newdate=\$(stat -f %SB -t %Y_%m*%d "$d")
+filename=${newdate}*${d##_/}
 echo "$filename"
-  cp $d "\$filename"
+cp $d "\$filename"
 done
 
 ## CONVERT ALL .ipynb FILES TO .html
@@ -138,7 +151,7 @@ for d in \*.ipynb ; do
 jupyter nbconvert --to html \$d
 done
 
-for f in /IST_736_TextMining/_ IST_736_TextMining/\*\*/_ ; do
+for f in /IST*736_TextMining/* IST*736_TextMining/\*\*/* ; do
 echo "\$f"
 done
 
@@ -146,19 +159,19 @@ for f in /ALI/_ ALI/\*\*/_ ; do
 echo "\$f"
 done
 
-recursive_list2() {
-for d in _; do
+recursive*list2() {
+for d in *; do
 if [ -d "$d" ]; then
 (cd -- "$d" && recursive_list)
     fi
-    if [[ $d == _.ipynb ]] ; then
+    if [[ $d == \_.ipynb ]] ; then
 echo "\$d"
 fi
 done
 }
 
-recursive_list2() {
-for d in _; do
+recursive*list2() {
+for d in *; do
 if [[ \$d == _.ipynb ]] ; then
 echo "\$d"
 fi
@@ -171,12 +184,12 @@ echo "\$d"
 fi
 }
 
-recursive_list2() {
-for d in _; do
+recursive*list2() {
+for d in *; do
 if [ -d "$d" ]; then
 (cd -- "$d" && list_files)
     fi
-    if [[ $d == _.ipynb ]] ; then
+    if [[ $d == \_.ipynb ]] ; then
 echo "\$d"
 fi
 done
@@ -190,23 +203,23 @@ fi
 done
 }
 
-recursive_list_3() {
-for d in _; do
+recursive*list_3() {
+for d in *; do
 if [ -d "$d" ]; then
 (cd -- "$d" && recursive_list_3)
     fi
-    if [[ $d == _.ipynb ]] ; then
+    if [[ $d == \_.ipynb ]] ; then
 echo "\$d"
 fi
 done
 }
 
-recursive_list_3() {
-for d in _; do
+recursive*list_3() {
+for d in *; do
 if [ -d "$d" ]; then
 (cd -- "$d" && recursive_list_3)
     fi
-    if [[ $d == _.ipynb ]] ; then
+    if [[ $d == \_.ipynb ]] ; then
 cp $d all_html/ || cp $d ../all_html/
 fi
 done
@@ -244,8 +257,8 @@ for d in *; do
 if [ -d "$d" ]; then
 (cd -- "$d" && recursive_list_4)
     fi
-    if [[ $d == *.ipynb ]] ; then
-newdate=\$(stat -f %SB -t %Y*%m*%d "$d")
+    if [[ $d == _.ipynb ]] ; then
+newdate=\$(stat -f %SB -t %Y_%m*%d "$d")
         filename=${newdate}*${d%%.*}.
         echo "$filename"
 fi
@@ -253,8 +266,8 @@ done
 }
 
 for f in _.ipynb; do
-newdate=$(stat -f %SB -t %Y_%m_%d "$f")
-filename=${newdate}_${f%%._}
+newdate=\$(stat -f %SB -t %Y_%m*%d "$f")
+filename=${newdate}*${f%%._}
 echo "\$filename"
 done
 
@@ -263,8 +276,8 @@ for d in *; do
 if [ -d "$d" ]; then
 (cd -- "$d" && recursive_list_4)
     fi
-    if [[ $d == *.ipynb ]] ; then
-newdate=\$(stat -f %SB -t %Y*%m*%d "$d")
+    if [[ $d == _.ipynb ]] ; then
+newdate=\$(stat -f %SB -t %Y_%m*%d "$d")
         filename=${newdate}*${d%%.*}.ipynb
         echo "$filename"
 cp $d all_html/"$filename" || cp $d ../all_html/"$filename"
@@ -279,8 +292,8 @@ for d in *; do
 if [ -d "$d" ]; then
 (cd -- "$d" && recursive_list_4)
     fi
-    if [[ $d == *.pdf ]] ; then
-newdate=\$(stat -f %SB -t %Y*%m*%d "$d")
+    if [[ $d == _.pdf ]] ; then
+newdate=\$(stat -f %SB -t %Y_%m*%d "$d")
         filename=${newdate}*${d%%.*}.pdf
         echo "$filename"
 cp $d all_files/"$filename" || cp $d ../all_files/"$filename"
@@ -296,7 +309,9 @@ if [ -d "$d" ]; then
       newdate=$(stat -f %SB -t %Y*%m*%d "$d")
       filename=${newdate}*${d##*/}
       echo "$filename"
+
 <!-- cp $d all_files/"$filename" || cp $d ../all_files/"$filename" -->
+
 done
 }
 
@@ -323,8 +338,8 @@ done
 }
 
 for d in _; do
-newdate=$(stat -f %SB -t %Y_%m_%d "$d")
-filename=${newdate}_${d##_/}
+newdate=\$(stat -f %SB -t %Y_%m*%d "$d")
+filename=${newdate}*${d##_/}
 echo "$filename"
-  cp $d "\$filename"
+cp $d "\$filename"
 done
