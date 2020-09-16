@@ -93,6 +93,21 @@ But, since we don't usually have many different samples, we take multiple sample
 
 * What can we do with high dimensional data? We can remove some of the predictors with low variance. Not in comparison to one another (the other predictors), but in comparison to itself. Because we're looking at overall variance without regard to the label, it is not cheating.
 
+#### QUIZ
+
+Suppose we produce ten bootstrap samples from a data set containing red and green classes. We then apply a classification tree to each bootstrap sample and, for a specific value of X, produce 10 estimates of P(Class is Red|X):
+
+0.1,0.15,0.2,0.2,0.55,0.6,0.6,0.65,0.7, and 0.75
+There are two common ways to combine these results together into a single class prediction. One is the majority vote approach discussed in the notes. The second approach is to classify based on the average probability.
+
+What is the final classification under the majority vote method?:
+
+##### ANSWER: Red! (simply take the majority)
+
+What is the final classification under the average probability method?:
+
+##### ANSWER: Green! (simply take the average)
+
 ### 8.5 Boosting
 
 ### 8.R -- Tree-Based methods in R
