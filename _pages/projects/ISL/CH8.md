@@ -110,6 +110,24 @@ What is the final classification under the average probability method?:
 
 ### 8.5 Boosting
 
+Boosting is similar to bagging, except where bagging just independently creates a bunch of trees, BOOSTING is sequential, meaning it builds trees off of what it learns from previous trees.
+
+---
+
+#### QUIZ
+
+In order to perform Boosting, we need to select 3 parameters: number of samples B, tree depth d, and step size 𝜆 .
+
+How many parameters do we need to select in order to perform Random Forests?:
+
+##### ANSWER: 2 -- To perform Random Forests we need to select 2 parameters: number of samples B and m= number of variables sampled at each split.
+
 ### 8.R -- Tree-Based methods in R
 
 ### Chapter 8 Quiz
+
+Examine the plot on pg 23. Assume that we wanted to select a model using the one-standard-error rule on the Cross-Validated error. What tree size would end up being selected?:
+
+Explanation
+
+Cross-Validated error is minimized at tree size 3. The error for Tree size 2 is within one standard error of the minimum, but the error for tree size 1 is not. Thus, the one-standard-error rule selects tree size 2.
