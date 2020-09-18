@@ -68,3 +68,17 @@ What might stop us from doing this?
 - Not knowing what to jump to
 
 MAYBE we could jump and do 5 minutes of "Doc Control?" or writing down what we've done? Or commenting our code!!
+
+## MODULE 4 SUMMARY
+
+If you don't go back and check your work, you're acting like someone who is deliberately refusing to use parts of his/her brain
+
+"Fear" and "Nervousness" are simply chemicals -- work to change the negative impact of these chemicals by going from:
+
+"This X has made me afraid" to "This X has me determined to do my best!"
+
+BREATHING TECHNIQUES ARE USEFUL!
+
+Whenever you can, shift your focus, blink, breathe and return to the problem asking yourself if it makes sense.
+
+"Brains do not come with an instruction manual, so we have to write one ourselves!"
