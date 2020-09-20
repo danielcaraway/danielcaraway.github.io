@@ -1,0 +1,68 @@
+---
+title: "ISL_CH8_Trees"
+output: html_document
+---
+
+[Class Resources](https://courses.edx.org/asset-v1:StanfordOnline+STATSX0001+1T2020+type@asset+block/ch8.html)
+[Other Resources](https://blog.princehonest.com/stat-learning/)
+
+# DECISION TREES
+
+## DATA: Carseats
+## PACKAGE: `tree`
+
+```{r}
+rm(Sales)
+rm(High)
+rm(Carseats)
+require(ISLR)
+require(tree)
+attach(Carseats)
+hist(Sales)
+# High=ifelse(Sales<=8,"No","Yes")
+# Carseats=data.frame(Carseats,High)
+# tree.carseats=tree(High~.-Sales,Carseats)
+# summary(tree.carseats)
+# plot(tree.carseats)
+
+High=ifelse(Sales<=8,"No", "Yes")
+Carseats=data.frame(Carseats,High)
+Carseats = na.omit(Carseats)
+tree.carseats =tree(High~.-Sales , Carseats )
+test = na.omit(tree.carseats)
+summary(test)
+```
+
+```{r}
+
+```
+
+```{r}
+tree.carseats=tree(High~.-Sales,data=Carseats)
+summary(tree.carseats)
+plot(tree.carseats)
+```
+
+
+
+-----
+```{r}
+high_binary = ifelse(Sales <= 8, "No", "Yes")
+c_df = data.frame(Carseats, high_binary)
+high
+```   
+### Now, we want to fit a tree to the data!
+
+NOTE: We must remove `Sales` because the response is derived from `Sales`
+
+```{r}
+tree.carseats = tree(high_binary ~ . - Sales, data = c_df)
+summary(tree.carseats)
+```
+----------------------
+
+# RANDOM FORESTS AND BOOSTING
+
+## Random Forests
+
+## Boosting
