@@ -25,8 +25,10 @@ hist(Sales)
 # summary(tree.carseats)
 # plot(tree.carseats)
 
-High=ifelse(Sales<=8,"No", "Yes")
+# High=ifelse(Sales<=8,"No", "Yes")
+# hist(High)
 Carseats=data.frame(Carseats,High)
+Carseats=data.frame(Carseats)
 Carseats = na.omit(Carseats)
 tree.carseats =tree(High~.-Sales , Carseats )
 test = na.omit(tree.carseats)
@@ -34,7 +36,8 @@ summary(test)
 ```
 
 ```{r}
-
+summary(Carseats)
+lm.fit=lm(Sales~Advertising+Price,data=Carseats)
 ```
 
 ```{r}
@@ -47,9 +50,13 @@ plot(tree.carseats)
 
 -----
 ```{r}
-high_binary = ifelse(Sales <= 8, "No", "Yes")
+high_binary = ifelse(Sales <= 8,0,1)
 c_df = data.frame(Carseats, high_binary)
-high
+high_binary
+c_df
+tree.carseats=tree(high_binary~.-Sales,data=c_df)
+summary(tree.carseats)
+plot(tree.carseats)
 ```   
 ### Now, we want to fit a tree to the data!
 

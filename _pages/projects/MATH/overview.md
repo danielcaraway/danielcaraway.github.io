@@ -1,5 +1,5 @@
 ---
-title: "Learning How to Learn"
+title: "MATH"
 permalink: /projects/MATH/overview
 ---
 
