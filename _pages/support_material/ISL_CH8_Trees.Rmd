@@ -27,12 +27,12 @@ hist(Sales)
 
 # High=ifelse(Sales<=8,"No", "Yes")
 # hist(High)
-Carseats=data.frame(Carseats,High)
-Carseats=data.frame(Carseats)
-Carseats = na.omit(Carseats)
-tree.carseats =tree(High~.-Sales , Carseats )
-test = na.omit(tree.carseats)
-summary(test)
+# Carseats=data.frame(Carseats,High)
+# Carseats=data.frame(Carseats)
+# Carseats = na.omit(Carseats)
+# tree.carseats =tree(High~.-Sales , Carseats )
+# test = na.omit(tree.carseats)
+# summary(test)
 ```
 
 ```{r}
@@ -41,9 +41,9 @@ lm.fit=lm(Sales~Advertising+Price,data=Carseats)
 ```
 
 ```{r}
-tree.carseats=tree(High~.-Sales,data=Carseats)
-summary(tree.carseats)
-plot(tree.carseats)
+# tree.carseats=tree(High~.-Sales,data=Carseats)
+# summary(tree.carseats)
+# plot(tree.carseats)
 ```
 
 
@@ -58,13 +58,31 @@ tree.carseats=tree(high_binary~.-Sales,data=c_df)
 summary(tree.carseats)
 plot(tree.carseats)
 ```   
-### Now, we want to fit a tree to the data!
-
-NOTE: We must remove `Sales` because the response is derived from `Sales`
+```{r}
+high_binary = ifelse(Sales <= 8,0,1)
+c_df = data.frame(Carseats, high_binary)
+high_binary
+c_df
+tree.carseats=tree(high_binary~.-Sales,data=c_df)
+summary(tree.carseats)
+plot(tree.carseats)
+text(tree.carseats, pretty=0)
+```
+## DETAILED SUMMARY OF TREE and ALL terminal nodes
 
 ```{r}
-tree.carseats = tree(high_binary ~ . - Sales, data = c_df)
-summary(tree.carseats)
+tree.carseats
+```
+
+## Now, we want to TRAIN our Tree and TEST our tree!
+1. Create a training and test set by...
+2. Splitting the 400 observations into (250,150) and...
+3. Growing the tree on the training set before ...
+4. Evaluating the performance on the test set
+
+
+```{r}
+
 ```
 ----------------------
 
