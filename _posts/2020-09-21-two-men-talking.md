@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Two Men Talking"
-tags: NLP
+tags: NLP big_lebowski
 ---
 
 # A Big Lebowski Experiment
