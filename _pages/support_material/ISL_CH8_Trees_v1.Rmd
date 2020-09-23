@@ -106,9 +106,13 @@ train=sample(1:nrow(c_df),250)
 tree.carseats=tree(hb_f~.-Sales,c_df,subset=train)
 plot(tree.carseats);text(tree.carseats,pretty=0)
 tree.pred=predict(tree.carseats, c_df[-train], type="class")
-test <- with(c_df[-train,],table(tree.pred,hb_f))
+with(c_df[-train,],table(tree.pred,hb_f))
 72+33/150
 ```
+
+## Misclassification table
+The diagonals in the table above are the incorrect classifications
+
 ----------------------
 
 # RANDOM FORESTS AND BOOSTING
