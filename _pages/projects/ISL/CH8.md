@@ -131,3 +131,7 @@ Examine the plot on pg 23. Assume that we wanted to select a model using the one
 Explanation
 
 Cross-Validated error is minimized at tree size 3. The error for Tree size 2 is within one standard error of the minimum, but the error for tree size 1 is not. Thus, the one-standard-error rule selects tree size 2.
+
+QUESTION: Suppose I have two qualitative predictor variables, each with three levels, and a quantitative response. I am considering fitting either a tree or an additive model. For the additive model, I will use a piecewise-constant function for each variable, with a separate constant for each level. Which model is capable of fitting a richer class of functions:
+
+ANSWER: Tree
