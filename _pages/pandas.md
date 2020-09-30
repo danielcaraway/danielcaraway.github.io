@@ -12,6 +12,10 @@ permalink: /pandas/
 
 # ==================================
 
+## SELECT ALL ROWS WHERE COLUMN CONTAINS
+
+`df[df['A'].str.contains("hello")]`
+
 ## PIVOT TABLES
 
 ```python
