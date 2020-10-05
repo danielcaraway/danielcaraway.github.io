@@ -5,6 +5,8 @@ permalink: /projects/ISL/CH9
 
 [CODE HERE](https://courses.edx.org/asset-v1:StanfordOnline+STATSX0001+1T2020+type@asset+block/ch9.html)
 
+[The Math Behind SVMs](https://shuzhanfan.github.io/2018/05/understanding-mathematics-behind-support-vector-machines/)
+
 ## OUTLINE FROM LECTURES
 
 ### 9.1 Optimal Separating Hyperplanes
