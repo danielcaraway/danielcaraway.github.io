@@ -24,6 +24,24 @@ We know 𝛽′=12𝛽 has length 1, so it is a unit vector in the same directio
 
 ### 9.2 Support Vector Classifier
 
+If N > P, data is often not separable by a linear boundary.
+
+HOWEVER, in problems like genomics and other problems with a lot of y-data, the sample points are less than the dimensions and...
+
+When the number of sample points is less than the number of dimensions (y) you can always separate with a hyperplane.
+
+QUESTION
+
+If we increase C (the error budget) in an SVM, do you expect the standard error of 𝛽 to increase or decrease?
+
+ANSWER
+
+Decrease
+
+EXPLANATION
+
+Increasing C makes the margin "softer," so that the orientation of the separating hyperplane is influenced by more points.
+
 ### 9.3 Feature Expansion and the SVM
 
 ### 9.4 Example and Comparison with Logistic Regression
