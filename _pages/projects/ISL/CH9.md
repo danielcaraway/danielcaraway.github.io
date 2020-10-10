@@ -44,6 +44,10 @@ Increasing C makes the margin "softer," so that the orientation of the separatin
 
 ### 9.3 Feature Expansion and the SVM
 
+* We can quickly and simply give ourselves more features by raising existing features to the power of 2,3,4 etc... X^2, X^3 etc.. `(X1, X2, X1^2, X2^2, X1*X2)`
+* When we do this, we add dimensions. The more dimensions we have, the more likely we will find a separator
+* 
+
 ### 9.4 Example and Comparison with Logistic Regression
 
 ### 9.5. SVMs in R
