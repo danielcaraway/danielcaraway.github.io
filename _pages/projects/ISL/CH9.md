@@ -46,7 +46,11 @@ Increasing C makes the margin "softer," so that the orientation of the separatin
 
 * We can quickly and simply give ourselves more features by raising existing features to the power of 2,3,4 etc... X^2, X^3 etc.. `(X1, X2, X1^2, X2^2, X1*X2)`
 * When we do this, we add dimensions. The more dimensions we have, the more likely we will find a separator
-* 
+
+#### Nonlinearities and Kernels
+
+* We don't like doing polynomial regression with a degree bigger than 3 (even cubic polynomial space is a big space)
+
 
 ### 9.4 Example and Comparison with Logistic Regression
 
