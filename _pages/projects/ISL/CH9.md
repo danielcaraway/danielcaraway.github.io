@@ -50,8 +50,49 @@ Increasing C makes the margin "softer," so that the orientation of the separatin
 #### Nonlinearities and Kernels
 
 * We don't like doing polynomial regression with a degree bigger than 3 (even cubic polynomial space is a big space)
+* K is computing the INNER PRODUCT between the target point X and each subsequent X in the sample
+* Alpha is non-zero only for those in the support set 
 
+#### REVIEW QUESTIONS
+
+##### QUESTION
+
+True or False: If no linear boundary can perfectly classify all the training data, this means we need to use a feature expansion.
+
+##### ANSWER
+
+False
+
+##### Explanation
+
+As in any statistical problem, we will always do better on the training data if we use a feature expansion, but that doesn't mean we will improve the test error. Not all regression lines should perfectly interpolate all the training points, and not all classifiers should perfectly classify all the training data.
+
+
+---
+
+##### QUESTION
+
+True or False: The computational effort required to solve a kernel support vector machine becomes greater and greater as the dimension of the basis increases.
+
+##### ANSWER
+
+False
+
+##### Explanation
+
+The beauty of the "kernel trick" is that, even if there is an infinite-dimensional basis, we need only look at the n^2 inner products between training data points.
 
 ### 9.4 Example and Comparison with Logistic Regression
 
 ### 9.5. SVMs in R
+
+
+
+## OTHER RESOURCES:
+
+[ML Mastery](https://machinelearningmastery.com/support-vector-machines-for-machine-learning/#:~:text=Support%20Vector%20Machines%20(Kernels)&text=The%20inner%20product%20between%20two,%2B%203*6%20or%2028.)
+
+### Data prep for SVM:
+
+* SVM works only with numeric data. If any categorical data, we need to convert that data to dummy variables 
+* Basic SVM is for BINARY classification, two class classification. 
