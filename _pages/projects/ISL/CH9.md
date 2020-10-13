@@ -84,6 +84,17 @@ The beauty of the "kernel trick" is that, even if there is an infinite-dimension
 
 ### 9.4 Example and Comparison with Logistic Regression
 
+* Gamma is another TUNING PARAMETER for SVM
+* The larger the gamma, the more wiggly the decision boundary, so when gamma is large, we are doing our best. And when we decrease gamma we do worse. 
+* How do decide gamma? We use all our usual tools -- cross validation, and cost parameter C 
+* With LINEAR support vector classifier we just have one tuning parameter, C
+
+#### What happens if we have more than two classes?!
+
+* OVA -- One Verse All (we take one and smush everything else into "All)
+* OVO -- One Verse One (and we do this for every single one and you see which class wins the most pair-wise competitions )
+* NOTE: OVA is used if number of classes is too large, otherwise OVO is favored  
+
 ### 9.5. SVMs in R
 
 
