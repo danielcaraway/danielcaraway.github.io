@@ -12,6 +12,12 @@ permalink: /pandas/
 
 # ==================================
 
+[python - Check if a given key already exists in a dictionary - Stack Overflow](https://stackoverflow.com/questions/1602934/check-if-a-given-key-already-exists-in-a-dictionary)
+
+[python - Pythonic Way to reverse nested dictionaries - Stack Overflow](https://stackoverflow.com/questions/2273691/pythonic-way-to-reverse-nested-dictionaries)
+
+[python - How to iterate over rows in a DataFrame in Pandas - Stack Overflow](https://stackoverflow.com/questions/16476924/how-to-iterate-over-rows-in-a-dataframe-in-pandas)
+
 ## SELECT ALL ROWS WHERE COLUMN CONTAINS
 
 `df[df['A'].str.contains("hello")]`
