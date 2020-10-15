@@ -95,6 +95,13 @@ The beauty of the "kernel trick" is that, even if there is an infinite-dimension
 * OVO -- One Verse One (and we do this for every single one and you see which class wins the most pair-wise competitions )
 * NOTE: OVA is used if number of classes is too large, otherwise OVO is favored  
 
+* LOGISTIC REGRESSION solves classification problems by modeling the probabilities of the classes 
+* With SVMs we are optimizing for the decision boundary
+
+1. SVMs are powerful classifiers but the price we pay is interpretability 
+2. With Logistic Regression (and the addition of the lasso etc.) we actually get probabilities which is very useful to us
+3. Imagine telling a person she has a chance of cancer? She would want to know the percent probability, which logistic regression would give her, where SVM would just tell her yes she has a liklihood of cancer
+
 ### 9.5. SVMs in R
 
 
