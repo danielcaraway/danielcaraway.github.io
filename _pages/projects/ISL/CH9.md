@@ -98,9 +98,24 @@ The beauty of the "kernel trick" is that, even if there is an infinite-dimension
 * LOGISTIC REGRESSION solves classification problems by modeling the probabilities of the classes 
 * With SVMs we are optimizing for the decision boundary
 
-1. SVMs are powerful classifiers but the price we pay is interpretability 
+1. SVMs are powerful classifiers but the price we pay is interoperability 
 2. With Logistic Regression (and the addition of the lasso etc.) we actually get probabilities which is very useful to us
-3. Imagine telling a person she has a chance of cancer? She would want to know the percent probability, which logistic regression would give her, where SVM would just tell her yes she has a liklihood of cancer
+3. Imagine telling a person she has a chance of cancer? She would want to know the percent probability, which logistic regression would give her, where SVM would just tell her yes she has a likelihood of cancer
+
+
+QUIZ:
+
+Recall that we obtain the ROC curve by classifying test points based on whether  𝑓̂ (𝑥)>𝑡 , and varying t.
+
+How large is the AUC (area under the ROC curve) for a classifier based on a completely random function  𝑓̂ (𝑥)  (that is, one for which the orderings of the  𝑓̂ (𝑥𝑖)  are completely random)?
+
+ANSWER:
+
+0.5 
+
+EXPLANATION 
+
+If  𝑓̂ (𝑥)  is completely random, then  𝑓̂ (𝑥𝑖)  (and therefore the prediction for  𝑦𝑖 ) has nothing to do with  𝑦𝑖 . Thus, the true positive rate and the false positive rate are both equal to the overall positive rate, and the ROC curve hugs the 45-degree line.
 
 ### 9.5. SVMs in R
 
