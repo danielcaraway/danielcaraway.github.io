@@ -92,8 +92,53 @@ points(x,col=y+1,pch=19)
 contour(px1,px2,matrix(func,69,99),level=0,add=TRUE)
 contour(px1,px2,matrix(prob,69,99),level=.5,add=TRUE,col="blue",lwd=2)
 ```
-```{r}
+## PLAYING ON MY OWN
 
+1. Generate random data
+2. Classify data with SVM
+3. See how well it classified and get test error
+```{r}
+library(MASS)
+set.seed(315)
+X0 <- MASS::mvrnorm(n=10, mu=c(1,1,1,1,1,0,0,0,0,0), Sigma=diag(10))
+plot(X0)
+
+
+```
+
+
+```{r}
+set.seed(10111)
+# MAKE 20 OBSERVATIONS in TWO classes on TWO variables
+x=matrix(rnorm(40),20,2)
+# MAKE A Y VARIABLE (either -1 or 1),
+# 10 in each class
+y=rep(c(-1,1),c(10,10))
+# We are moving the means from 0 to 1 (WHY!?)
+x[y==1,]=x[y==1,]+1
+# COL = COLOR
+plot(x,col=y+6,pch=19)
+```
+```{r}
+set.seed(10111)
+# MAKE 20 OBSERVATIONS in TWO classes on TWO variables
+x=matrix(rnorm(100),50,2)
+# MAKE A Y VARIABLE (either -1 or 1),
+# 10 in each class
+y=rep(c(-1,1),c(10,10))
+# We are moving the means from 0 to 1 (WHY!?)
+x[y==1,]=x[y==1,]+3
+# COL = COLOR
+plot(x,col=y+6,pch=19)
+```
+
+
+
+```{r}
+library(e1071)
+dat=data.frame(x,y=as.factor(y))
+svmfit=svm(y~.,data=dat,kernel="linear",cost=10,scale=FALSE)
+print(svmfit)
 ```
 
 FIN. 
