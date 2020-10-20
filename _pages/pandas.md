@@ -12,11 +12,35 @@ permalink: /pandas/
 
 # ==================================
 
+[python - How to select rows from a DataFrame based on column values - Stack Overflow](https://stackoverflow.com/questions/17071871/how-to-select-rows-from-a-dataframe-based-on-column-values)
+
+[python - AttributeError: Series object has no attribute value - Stack Overflow](https://stackoverflow.com/questions/61358737/attributeerror-series-object-has-no-attribute-value)
+
 [python - Check if a given key already exists in a dictionary - Stack Overflow](https://stackoverflow.com/questions/1602934/check-if-a-given-key-already-exists-in-a-dictionary)
 
 [python - Pythonic Way to reverse nested dictionaries - Stack Overflow](https://stackoverflow.com/questions/2273691/pythonic-way-to-reverse-nested-dictionaries)
 
 [python - How to iterate over rows in a DataFrame in Pandas - Stack Overflow](https://stackoverflow.com/questions/16476924/how-to-iterate-over-rows-in-a-dataframe-in-pandas)
+
+## SELECT ROWS WHOSE COLUMN VALUE IS OR IS IN
+
+### IN SQL
+
+```SQL
+SELECT *
+FROM table
+WHERE colume_name = some_value
+```
+
+### IN PYTHON
+
+```python
+df.loc[df['column_name'] == some_value]
+
+df.loc[df['column_name'].isin(some_values)]
+
+df.loc[(df['column_name'] >= A) & (df['column_name'] <= B)]
+```
 
 ## SELECT ALL ROWS WHERE COLUMN CONTAINS
 
