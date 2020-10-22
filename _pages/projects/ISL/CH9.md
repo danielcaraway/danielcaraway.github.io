@@ -125,6 +125,10 @@ If  𝑓̂ (𝑥)  is completely random, then  𝑓̂ (𝑥𝑖)  (and therefore
 
 [ML Mastery](https://machinelearningmastery.com/support-vector-machines-for-machine-learning/#:~:text=Support%20Vector%20Machines%20(Kernels)&text=The%20inner%20product%20between%20two,%2B%203*6%20or%2028.)
 
+[datascience/chapter9.ipynb at master · luigiselmi/datascience](https://github.com/luigiselmi/datascience/blob/master/r/stat_learning/chapter9.ipynb)
+
+[Support Vector Machines Using svm() function](https://rstudio-pubs-static.s3.amazonaws.com/271792_96b51b7fa2af4b3f808d04f3f3051516.html)
+
 ### Data prep for SVM:
 
 * SVM works only with numeric data. If any categorical data, we need to convert that data to dummy variables 
