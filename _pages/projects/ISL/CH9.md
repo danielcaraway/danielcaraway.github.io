@@ -119,6 +119,13 @@ If  𝑓̂ (𝑥)  is completely random, then  𝑓̂ (𝑥𝑖)  (and therefore
 
 ### 9.5. SVMs in R
 
+Generating a set of data and randomly classifying it leads to an interesting observation about SVMs:
+1. Radial kernel gives an expected test error rate of 0.16350 (16%)
+2. Linear kernel gives expected test error rate of 0.15791 (still 16% rounded, but slightly better) because the best decision boundary is truly linear 
+3. Logistic regression is similar to SVM with a linear kernel 
+
+
+---
 
 
 ## OTHER RESOURCES:
