@@ -126,6 +126,17 @@ Generating a set of data and randomly classifying it leads to an interesting obs
 
 
 ---
+### QUIZ:
+
+Suppose that after our computer works for an hour to fit an SVM on a large data set, we notice that  𝑥4 , the feature vector for the fourth example, was recorded incorrectly (say, one of the decimal points is obviously in the wrong place).
+
+However, your co-worker notices that the pair  (𝑥4,𝑦4)  did not turn out to be a support point in the original fit. He says there is no need to re-fit the SVM on the corrected data set, because changing the value of a non-support point can't possibly change the fit.
+
+Is coworker correct? No. 
+
+#### EXPLANATION:
+
+When we change  𝑥4 , the fourth example might become a support point; if so, the fit may change. However, we could check whether  𝑥4,𝑦4  is still not a support point even after correcting the value. If so, then we really don't need to re-fit the model.
 
 
 ## OTHER RESOURCES:
@@ -135,6 +146,8 @@ Generating a set of data and randomly classifying it leads to an interesting obs
 [datascience/chapter9.ipynb at master · luigiselmi/datascience](https://github.com/luigiselmi/datascience/blob/master/r/stat_learning/chapter9.ipynb)
 
 [Support Vector Machines Using svm() function](https://rstudio-pubs-static.s3.amazonaws.com/271792_96b51b7fa2af4b3f808d04f3f3051516.html)
+
+[ELI5 SVMs!](https://www.reddit.com/r/MachineLearning/comments/15zrpp/please_explain_support_vector_machines_svm_like_i/)
 
 ### Data prep for SVM:
 
