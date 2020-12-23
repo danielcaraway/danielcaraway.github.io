@@ -33,17 +33,32 @@ permalink: /UPY/
 
 ## Section 14: Introduction to Machine Learning
 
+### 78. Supervised Learning Overview
+
 [Reference Slides](https://docs.google.com/presentation/d/1WurfW8OWRqjiSmzmwOW71iN6CEShkbfOnyETqTvf6BE/edit#slide=id.g404b920135_0_58)
-1. Supervised learning is machine learning with labels
-2. Accuracy = number correctly predicted. As a measure of fit, is only good when the labeled data is balanced (e.g. half dogs, half cats -- NOT people with disease vs people no disease)
-4. Recall
+
+* Supervised learning is machine learning with labels
+
+### 79. Evaluating Performance - Classification Error Metrics
+
+1. Accuracy = number correctly predicted. As a measure of fit, is only good when the labeled data is balanced (e.g. half dogs, half cats -- NOT people with disease vs people no disease)
+2. Recall
    1. Ability to find ALL relevant cases
    2. `number of true positives / (number of true positives + number of false negatives)`
-5. Precision
+3. Precision
    1. Ability to identify ONLY relevant data points
    2. `number of true positives / (number of true positives + number of false positives)`
-6. F1 is a measure of the harmonic mean of precision and recall, taking both metrics into account
-7. NOTE: There is no "best measure of fit" -- it 100% depends on what you're trying to test for. (e.g. a false positive is much better than a false negative in cancer tests)
+4. F1 is a measure of the harmonic mean of precision and recall, taking both metrics into account
+5. NOTE: There is no "best measure of fit" -- it 100% depends on what you're trying to test for. (e.g. a false positive is much better than a false negative in cancer tests)
+
+### 80. Evaluating Performance - Regression Error Metrics
+
+1. MAE -- mean absolute error. PROBLEM: Does not punish outliers
+2. MSE -- mean squared error. Solves the outlier problem, HOWEVER, the metric isn't easily translatable (as it is squared)
+3. RMSE -- Root mean squared error. Takes the root of the MSE and solves both problems. 
+
+### 81. Machine Learning with Python
+
 
 ## Section 15: Linear Regression
 
