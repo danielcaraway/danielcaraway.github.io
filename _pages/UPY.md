@@ -59,6 +59,21 @@ permalink: /UPY/
 
 ### 81. Machine Learning with Python
 
+1. scikit-learn tries to be the same across all modeling families (see below)
+2. some methods will be available only to supervised learning algorithms (and others only for unsupervised)
+3. X and Y are passed to supervised learning algos (because that is LABELED data) and only X is passed to unsupervised learning algos
+
+#### On ALL ESTIMATORS/ALGOS
+* `model.fit()` -- fit training data (for supervised, this accepts X and y (`model.fit(X,y)`) -- for unsupervised, just X (`model.fit(X)`))
+* SUPERVISED: `model.predict()` (this takes the new data `model.predict(X_new)` and returns the learned label for each object in the passed data)
+* SUPERVISED: `model.predict_proba()` for clssification rpoblems, some estimators use this to return the probability the new observation has each categorical label. Label with highest probability is returned by model.predict()
+* SUPERVISED: `model.score()` (scores are betwen 0 and 1, closer to 1 being better fit)
+* UNSUPERVISED: `model.predict()` as well (predict labels in clustering algos)
+* UNSUPERVISED: `model.transform()` accepts X_new
+* UNSUPERVISED: `model.fit_transform()`
+
+
+
 
 ## Section 15: Linear Regression
 
