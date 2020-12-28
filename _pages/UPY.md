@@ -77,6 +77,14 @@ permalink: /UPY/
 
 ## Section 15: Linear Regression
 
+Originally "regression" came from a study in the 1800s about a father's and the height of his sons. It was shown that while a father's height is important, the more important factor is the overall mean of the population. The son's height tended to be closer to the overall average height of all the people. Meaning height REGRESSES towards the mean. 
+
+Our goal with linear regression, is to draw a line that's as close as possible to every single data point. If we have only two points, this line will simply hit both of those points. If there are many points, our goal is to find THE BEST line. Well, what's THE BEST line? There are a few ways to measure this but the overall goal is to minimize the distance between ALL the points and their distance to our line. 
+
+1. Things tend to regress towards the mean
+2. Linear regression is finding a line that is as close as possible to every data point
+3. How do we find "the best" line? We try to minimize the distance between each point and our line
+
 ## Section 16: Cross Validation and Bias-Variance Trade-Off
 
 ## Section 17: Logistic Regression
