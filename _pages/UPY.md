@@ -84,6 +84,17 @@ Our goal with linear regression, is to draw a line that's as close as possible t
 1. Things tend to regress towards the mean
 2. Linear regression is finding a line that is as close as possible to every data point
 3. How do we find "the best" line? We try to minimize the distance between each point and our line
+4. What is our "distance measure"? -- If we are using the Least Squares Method (sum of squares of the residuals)
+
+NOTE:
+
+`from sklearn.cross_validation import train_test_split`
+
+has been changed to :
+
+`from sklearn.model_selection import train_test_split`
+
+
 
 ## Section 16: Cross Validation and Bias-Variance Trade-Off
 
