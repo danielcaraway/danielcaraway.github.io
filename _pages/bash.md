@@ -4,6 +4,12 @@ title: "BASH NOTES"
 permalink: /bash/
 ---
 
+## LIST ALL DIRECTORIES BY CREATION DATE
+
+```console
+ls -lct
+```
+
 ## LIST ALL FILES CREATED TODAY
 
 ```console
