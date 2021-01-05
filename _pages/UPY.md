@@ -94,6 +94,47 @@ has been changed to :
 
 `from sklearn.model_selection import train_test_split`
 
+------------
+
+### Linear Regression with Python Pt 1:
+
+Split into X and y, toss out language
+
+df.columns
+X = df[[ columns (without predictor column -- PRICE --  or address bc it's NLP)]]
+
+y = column we want 
+
+use documentation to tuples for traintest split 
+X_train, X_test,  etc.
+(UPY has test_size=0.4 and random_State=101)
+
+from sklearn.linear_model (use tab) import LinearRegression model
+
+then instantiate it
+`lm = LinearREgression()`
+
+lm. HIT TAB to see all available methods on the model
+
+we want lm.fit()
+(we only want to train the training data)
+
+PRINT COEFF = `lm.coef_`
+PRINT INTERCEPT: `lm.intercept_`
+
+make a df of COEF
+
+cdf = pd.DataFrame(lm.coef_, X.columns)
+
+In English -- a one unit increase (holding all others constant) results in the COEFF increase in hosue price
+
+### QUICK REVIEW:
+
+1. Grab data
+2. Do quick EDA
+3. Separate our data into X and y (features and what we are trying to predict)
+4. Import the model (in this case, Linear Regression)
+5. Fit that model to the training data
 
 
 ## Section 16: Cross Validation and Bias-Variance Trade-Off
