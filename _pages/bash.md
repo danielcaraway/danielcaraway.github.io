@@ -4,6 +4,21 @@ title: "BASH NOTES"
 permalink: /bash/
 ---
 
+## USED ON EHD EXD EDH to rename files by date
+```console
+recursive_list_5() {
+for d in *; do
+  if [ -d "$d" ]; then
+    (cd -- "$d" && recursive_list_5)
+  fi
+  newdate=$(stat -f %SB -t %Y__%m__%d "$d")
+  filename=${newdate}_${d##*/}
+  echo "$filename"
+  mv "$d" "$filename"
+done
+}
+```
+
 ## LIST ALL DIRECTORIES BY CREATION DATE
 
 ```console
@@ -349,3 +364,5 @@ filename=${newdate}*${d##_/}
 echo "$filename"
 cp $d "\$filename"
 done
+
+

@@ -153,6 +153,11 @@ In English -- a one unit increase (holding all others constant) results in the C
 
 ## Section 23: Recommender Systems
 
+### GOAL -- take notes while NOT WATCHING LECTURE
+Then, recreate what I learned with my notes 
+
+1. import pandas and numpy
+2. create 
 ## Section 24: Natural Language Processing
 
 ## Section 25: Neural Nets and Deep Learning
