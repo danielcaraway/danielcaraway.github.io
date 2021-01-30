@@ -12,6 +12,27 @@ permalink: /pandas/
 
 # ==================================
 
+## Sort dictionary python
+
+`sorted_dict = dict(sorted(unsorted_dict.items(), key=lambda item: item[1], reverse=True))`
+
+## Return multiple things from a lambda
+
+```python
+# make columns first 
+df['year'] = ""
+df['month'] = ""
+df['day'] = ""
+def get_dates(filename):
+    try:
+        arr = filename.split('___')
+        return [arr[0], arr[1], arr[2]]
+    except:
+        return [None, None, None]
+
+df[['year','month','day']] = df.apply(lambda x: get_dates(x['filename']), axis=1, result_type="expand")
+```
+
 [python - How to select rows from a DataFrame based on column values - Stack Overflow](https://stackoverflow.com/questions/17071871/how-to-select-rows-from-a-dataframe-based-on-column-values)
 
 [python - AttributeError: Series object has no attribute value - Stack Overflow](https://stackoverflow.com/questions/61358737/attributeerror-series-object-has-no-attribute-value)

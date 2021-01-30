@@ -157,7 +157,23 @@ In English -- a one unit increase (holding all others constant) results in the C
 Then, recreate what I learned with my notes 
 
 1. import pandas and numpy
-2. create 
+2. create column_names ['userid', itemid, rating, timestamp]
+3. df = pd.read_csv u,data sep="\t" (tab separated data)
+4. check head
+5. MOVIE LENS dataset
+6. grab the movie titles from a separate csv
+7. pd.merge(df, movie_titles, on="item_id")
+8. Now explore the data
+9. Import matplotlib.pyplot as plt
+10. import seaborn as sns
+11. sns.set_Style('white')
+12. matplotlib line
+13. ratings df
+14. avg rating number of ratings
+15. groupby title rating mean()
+16. sort_values(ascending=False)
+17. MOST ratings
+18. 
 ## Section 24: Natural Language Processing
 
 ## Section 25: Neural Nets and Deep Learning
