@@ -4,7 +4,6 @@ title: UPY Notes"
 permalink: /UPY/
 ---
 
-
 ## Section 1: Course Introduction
 
 ## Section 2: Environment Set-Up
@@ -37,7 +36,7 @@ permalink: /UPY/
 
 [Reference Slides](https://docs.google.com/presentation/d/1WurfW8OWRqjiSmzmwOW71iN6CEShkbfOnyETqTvf6BE/edit#slide=id.g404b920135_0_58)
 
-* Supervised learning is machine learning with labels
+- Supervised learning is machine learning with labels
 
 ### 79. Evaluating Performance - Classification Error Metrics
 
@@ -55,7 +54,7 @@ permalink: /UPY/
 
 1. MAE -- mean absolute error. PROBLEM: Does not punish outliers
 2. MSE -- mean squared error. Solves the outlier problem, HOWEVER, the metric isn't easily translatable (as it is squared)
-3. RMSE -- Root mean squared error. Takes the root of the MSE and solves both problems. 
+3. RMSE -- Root mean squared error. Takes the root of the MSE and solves both problems.
 
 ### 81. Machine Learning with Python
 
@@ -64,22 +63,20 @@ permalink: /UPY/
 3. X and Y are passed to supervised learning algos (because that is LABELED data) and only X is passed to unsupervised learning algos
 
 #### On ALL ESTIMATORS/ALGOS
-* `model.fit()` -- fit training data (for supervised, this accepts X and y (`model.fit(X,y)`) -- for unsupervised, just X (`model.fit(X)`))
-* SUPERVISED: `model.predict()` (this takes the new data `model.predict(X_new)` and returns the learned label for each object in the passed data)
-* SUPERVISED: `model.predict_proba()` for clssification rpoblems, some estimators use this to return the probability the new observation has each categorical label. Label with highest probability is returned by model.predict()
-* SUPERVISED: `model.score()` (scores are betwen 0 and 1, closer to 1 being better fit)
-* UNSUPERVISED: `model.predict()` as well (predict labels in clustering algos)
-* UNSUPERVISED: `model.transform()` accepts X_new
-* UNSUPERVISED: `model.fit_transform()`
 
-
-
+- `model.fit()` -- fit training data (for supervised, this accepts X and y (`model.fit(X,y)`) -- for unsupervised, just X (`model.fit(X)`))
+- SUPERVISED: `model.predict()` (this takes the new data `model.predict(X_new)` and returns the learned label for each object in the passed data)
+- SUPERVISED: `model.predict_proba()` for clssification rpoblems, some estimators use this to return the probability the new observation has each categorical label. Label with highest probability is returned by model.predict()
+- SUPERVISED: `model.score()` (scores are betwen 0 and 1, closer to 1 being better fit)
+- UNSUPERVISED: `model.predict()` as well (predict labels in clustering algos)
+- UNSUPERVISED: `model.transform()` accepts X_new
+- UNSUPERVISED: `model.fit_transform()`
 
 ## Section 15: Linear Regression
 
-Originally "regression" came from a study in the 1800s about a father's and the height of his sons. It was shown that while a father's height is important, the more important factor is the overall mean of the population. The son's height tended to be closer to the overall average height of all the people. Meaning height REGRESSES towards the mean. 
+Originally "regression" came from a study in the 1800s about a father's and the height of his sons. It was shown that while a father's height is important, the more important factor is the overall mean of the population. The son's height tended to be closer to the overall average height of all the people. Meaning height REGRESSES towards the mean.
 
-Our goal with linear regression, is to draw a line that's as close as possible to every single data point. If we have only two points, this line will simply hit both of those points. If there are many points, our goal is to find THE BEST line. Well, what's THE BEST line? There are a few ways to measure this but the overall goal is to minimize the distance between ALL the points and their distance to our line. 
+Our goal with linear regression, is to draw a line that's as close as possible to every single data point. If we have only two points, this line will simply hit both of those points. If there are many points, our goal is to find THE BEST line. Well, what's THE BEST line? There are a few ways to measure this but the overall goal is to minimize the distance between ALL the points and their distance to our line.
 
 1. Things tend to regress towards the mean
 2. Linear regression is finding a line that is as close as possible to every data point
@@ -94,19 +91,19 @@ has been changed to :
 
 `from sklearn.model_selection import train_test_split`
 
-------------
+---
 
 ### Linear Regression with Python Pt 1:
 
 Split into X and y, toss out language
 
 df.columns
-X = df[[ columns (without predictor column -- PRICE --  or address bc it's NLP)]]
+X = df[[columns (without predictor column -- PRICE --  or address bc it's NLP)]]
 
-y = column we want 
+y = column we want
 
-use documentation to tuples for traintest split 
-X_train, X_test,  etc.
+use documentation to tuples for traintest split
+X_train, X_test, etc.
 (UPY has test_size=0.4 and random_State=101)
 
 from sklearn.linear_model (use tab) import LinearRegression model
@@ -124,7 +121,7 @@ PRINT INTERCEPT: `lm.intercept_`
 
 make a df of COEF
 
-cdf = pd.DataFrame(lm.coef_, X.columns)
+cdf = pd.DataFrame(lm.coef\_, X.columns)
 
 In English -- a one unit increase (holding all others constant) results in the COEFF increase in hosue price
 
@@ -135,7 +132,6 @@ In English -- a one unit increase (holding all others constant) results in the C
 3. Separate our data into X and y (features and what we are trying to predict)
 4. Import the model (in this case, Linear Regression)
 5. Fit that model to the training data
-
 
 ## Section 16: Cross Validation and Bias-Variance Trade-Off
 
@@ -154,7 +150,8 @@ In English -- a one unit increase (holding all others constant) results in the C
 ## Section 23: Recommender Systems
 
 ### GOAL -- take notes while NOT WATCHING LECTURE
-Then, recreate what I learned with my notes 
+
+Then, recreate what I learned with my notes
 
 1. import pandas and numpy
 2. create column_names ['userid', itemid, rating, timestamp]
@@ -172,8 +169,11 @@ Then, recreate what I learned with my notes
 14. avg rating number of ratings
 15. groupby title rating mean()
 16. sort_values(ascending=False)
-17. MOST ratings
-18. 
+17. get MOST ratings (count)
+18. Add number of ratings column
+19. `sns.jointplot(x='rating',y='num of ratings', data=ratings, alpha=0.5)
+20.
+
 ## Section 24: Natural Language Processing
 
 ## Section 25: Neural Nets and Deep Learning
