@@ -172,7 +172,12 @@ Then, recreate what I learned with my notes
 17. get MOST ratings (count)
 18. Add number of ratings column
 19. `sns.jointplot(x='rating',y='num of ratings', data=ratings, alpha=0.5)
-20.
+
+PART TWO!
+
+1. Create a matrix that has user ids on one axis and movie titles on another axis (each cell has rating the user gave that movie)
+2. Use PIVOT TABLE to get this matrix
+3.
 
 ## Section 24: Natural Language Processing
 
