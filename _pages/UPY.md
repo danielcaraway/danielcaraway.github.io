@@ -177,7 +177,19 @@ PART TWO!
 
 1. Create a matrix that has user ids on one axis and movie titles on another axis (each cell has rating the user gave that movie)
 2. Use PIVOT TABLE to get this matrix
-3.
+
+### PART TWO, AGAIN! 02-03-21
+
+1. Make a matrix with `df.pivot_table`
+2. Pick movies to test our recommender with!
+   1. using our ratings df, sort_values (ascending=False)
+   2. get JUST the ratings for those selected movies (e.g. star wars and liar liar)
+   3. our_matrix['Star Wars (1977)']
+3. Find movies similar to our test movies with the `corrwith` function!
+4. Makd a df out of this, drop the na,
+5. But wait?! These don't really coorelate with Star Wars!?
+6. We should drop anything that has fewer than 100 ratings
+7.
 
 ## Section 24: Natural Language Processing
 

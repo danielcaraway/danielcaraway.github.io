@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Pandas"
+title: 'Pandas'
 permalink: /pandas/
 ---
 
@@ -12,6 +12,27 @@ permalink: /pandas/
 
 # ==================================
 
+## Pandas dictionary dict to df
+
+```python
+
+import pandas as pd
+df = pd.DataFrame(z3_sorted.items())
+df
+```
+
+## Merge multiple dictionaries
+
+```python
+def merge_two_dicts(x, y):
+    z = x.copy()   # start with x's keys and values
+    z.update(y)    # modifies z with y's keys and values & returns None
+    return z
+
+z = merge_two_dicts(d1, d2)
+z2 = merge_two_dicts(z, d3)
+```
+
 ## Sort dictionary python
 
 `sorted_dict = dict(sorted(unsorted_dict.items(), key=lambda item: item[1], reverse=True))`
@@ -19,7 +40,7 @@ permalink: /pandas/
 ## Return multiple things from a lambda
 
 ```python
-# make columns first 
+# make columns first
 df['year'] = ""
 df['month'] = ""
 df['day'] = ""
