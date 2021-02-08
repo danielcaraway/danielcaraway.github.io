@@ -191,6 +191,32 @@ PART TWO!
 6. We should drop anything that has fewer than 100 ratings
 7.
 
+NOTE: We use JOIN instead of MERGE when we have to dfs with the same index (in this case, `title`)
+
+### HTML
+
+<h1> Testing this thing </h1>
+{% for file in site.static_files %}
+    {% if file.path contains 'UPY' %}
+        {% if file.extname contains '.html' %}
+            <div><a href="https://danielcaraway.github.io/{{ file.path }}">{{ file.basename }}</a></div>
+        {% endif %}
+    {% endif %}
+{% endfor %}
+</div>
+
+### PYTHON
+
+<h1> Testing this thing </h1>
+{% for file in site.static_files %}
+    {% if file.path contains 'UPY' %}
+        {% if file.extname contains '.py' %}
+            <div><a href="https://danielcaraway.github.io/{{ file.path }}">{{ file.basename }}</a></div>
+        {% endif %}
+    {% endif %}
+{% endfor %}
+</div>
+
 ## Section 24: Natural Language Processing
 
 ## Section 25: Neural Nets and Deep Learning
