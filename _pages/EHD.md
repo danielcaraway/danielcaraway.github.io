@@ -14,7 +14,8 @@ permalink: /EHD/
     {% endif %}
 {% endfor %}
 </div>
-
+<hr>
+<br>
 <div>
 <h1> PYTHON FILES </h1>
 {% for file in site.static_files %}
