@@ -1,10 +1,8 @@
 ---
 layout: single
-title: "How to use Data Science Superpowers for Useless Things: Organizing Ancient Projects, pt2"
+title: 'How to use Data Science Superpowers for Useless Things: Organizing Ancient Projects, pt2'
 tags: howto portfolio bash EHD
 ---
-
-
 
 ## EDITED
 
@@ -20,11 +18,13 @@ for d in *; do
   filepath=$(realpath "$d")
   arrIN=(${filepath//\// })
   filename=${newdate}____${arrIN[1]}
-  newname=`echo $filename | sed -e 's/ /_/g'`; 
+  newname=`echo $filename | sed -e 's/ /_/g'`;
   mv "$d" "$newname"
 done
 }
 ```
+
+<!-- find /__FLATTEN -mindepth 2 -type f -exec mv -i '{}' /__FLATTEN ';' -->
 
 ## INITIAL ATTEMPT
 
@@ -48,7 +48,7 @@ for d in *; do
   done
   echo "$arrIN[1]"
   filename=${newdate}____${arrIN[1]}
-  newname=`echo $filename | sed -e 's/ /_/g'`; 
+  newname=`echo $filename | sed -e 's/ /_/g'`;
   # echo "$filename"
   mv "$d" "$newname"
 done
