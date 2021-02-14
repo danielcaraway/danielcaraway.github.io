@@ -4,8 +4,6 @@ title: EHD Notes"
 permalink: /EHD/
 ---
 
-# External Hard Drive Cleaning Project
-
 <div>
 <h1> Testing this thing </h1>
 {% for file in site.static_files %}
