@@ -195,6 +195,7 @@ NOTE: We use JOIN instead of MERGE when we have to dfs with the same index (in t
 
 ### HTML
 
+<div>
 <h1> Testing this thing </h1>
 {% for file in site.static_files %}
     {% if file.path contains 'UPY' %}
@@ -207,6 +208,7 @@ NOTE: We use JOIN instead of MERGE when we have to dfs with the same index (in t
 
 ### PYTHON
 
+<div>
 <h1> Testing this thing </h1>
 {% for file in site.static_files %}
     {% if file.path contains 'UPY' %}
