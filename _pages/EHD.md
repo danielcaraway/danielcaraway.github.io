@@ -26,3 +26,15 @@ permalink: /EHD/
     {% endif %}
 {% endfor %}
 </div>
+<hr>
+<br>
+<div>
+<h1> CSV </h1>
+{% for file in site.static_files %}
+    {% if file.path contains 'EHD' %}
+        {% if file.extname contains '.csv' %}
+            <div><a href="https://danielcaraway.github.io/{{ file.path }}">{{ file.basename }}</a></div>
+        {% endif %}
+    {% endif %}
+{% endfor %}
+</div>

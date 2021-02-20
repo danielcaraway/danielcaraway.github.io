@@ -99,3 +99,47 @@ NOTES:
 
 - visualizing relationships between NUMERICAL variables (one MEASURE on columns shelf and one MEASURE on rows shelf)
 - Result is analogous to Cartesian chart with x + y coordinates
+
+NOTES:
+
+- Use scatterplots to visiualize relationships between numeric variables
+
+### DUAL AXIS CHARTS -- Useful for:
+
+- comparing multiple measures
+- Analyzing two measure with different scales
+- TIP: Quickly create by dragging measure onto the RIGHT side of the graph
+
+### COMBINED AXIS CHARTS -- Useful for:
+
+- (Same as above)
+- Resolves potential misunderstanding issues with the Dual Axis Charts
+- TIP: QUICKLY CREATE by dragging measure onto the axis
+
+### FILLED MAP
+
+- Size means nothing here BUT Color does!
+
+### CROSS TABS / PIVOT TABLES / TEXT TABLES
+
+- Order of pills on the shelf matters here
+- Like DIY drag-and-drop pivot tables
+- NOTE! When sorting, make sure the correct column is selected
+
+### GROUPS:
+
+- create a group to combine related members in a field
+- E.G. I have some customers who I'd like to GROUP together
+- HOW TO: Right click --DIMENSION-- and group (command click who I want )
+- Paperclip icon represents group
+- TO RENAME: Right click
+- FIND MEMBERS helps us quickly select and make groups
+
+### SETS -- "Like Groups on Steroids!"
+
+- We can do similar things to what we'd to in SQL!!!
+
+### HIERARCHIES:
+
+- Order matters
+- Save time and prevent "unknowns" using hierarchies
