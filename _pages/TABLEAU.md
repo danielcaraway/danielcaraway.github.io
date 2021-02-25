@@ -8,6 +8,22 @@ permalink: /TABLEAU/
 
 Having a completed "Tableau Desktop Specialist" on my Linkedin Profile
 
+## RESOURCES:
+
+[e-learning via tableau](https://elearning.tableau.com/)
+
+[How to pass via TDS](https://towardsdatascience.com/how-to-pass-the-tableau-desktop-specialist-certification-exam-bccb85b8e000)
+
+[Quizzes (with 2012 Superstore data)](https://learningtableau.com/qualified-associate-quiz-1/)
+
+[3 Quizzes for $20](https://learning-tableau-specialist.dpdcart.com/)
+
+[Program FAQ](https://mkt.tableau.com/files/TableauProductCertificationProgram.pdf)
+
+## INSPIRATION!:
+
+[The Data School -- VERY COOL GRAPHICS!](https://www.thedataschool.co.uk/andy-kriebel/ds22)
+
 ## BEFORE EXAM:
 
 - Review these notes
