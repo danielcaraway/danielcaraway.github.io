@@ -43,8 +43,10 @@ permalink: /EHD/
 {% assign t = tag | first %}
 {% assign posts = tag | last %}
 
-{{ t | downcase }}
+<!-- {{ t | downcase }} -->
 
+<div>
+<h1> POSTS WITH TAGS </h1>
 <ul>
 {% for post in posts %}
   {% if post.tags contains 'EHD' %}
@@ -56,3 +58,4 @@ permalink: /EHD/
 {% endfor %}
 </ul>
 {% endfor %}
+</div>
