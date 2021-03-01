@@ -159,3 +159,13 @@ NOTES:
 
 - Order matters
 - Save time and prevent "unknowns" using hierarchies
+
+### FILTERING:
+
+- We filter by dragging either our measure (continuous) or our dimension (discrete) into the "filter" drawer
+
+### SORTING:
+
+- We can use MANUAL sort to change the order of how we view things.
+- If it's a text based field, it defaults to alphabetical
+- We can sort by clicking on the "columns" but fastest way is by the "ascending" and "descending" buttons on top
