@@ -169,3 +169,61 @@ NOTES:
 - We can use MANUAL sort to change the order of how we view things.
 - If it's a text based field, it defaults to alphabetical
 - We can sort by clicking on the "columns" but fastest way is by the "ascending" and "descending" buttons on top
+
+### HISTOGRAMS:
+
+- a chart that displays a distribution. It takes a continuous measure and turns it into buckets.
+
+### PARAMETERS with HISTOGRAMS:
+
+- What if I don't want to keep manually changing the bin numbers each time? I can create a PARAMETER (dropdown by DIMENSIONS)
+
+### CREATING CALCULATED FIELDS:
+
+- Also, dropdown by DIMENSIONS, we can create CALCULATED FIELDS -- eg. Profit Ratio.
+- NOTE: it is NOT simply Profit/Sales -- we have to FIRST SUM(Profit)/SUM(Sales)
+
+### CALCULATED FIELDS FOR DATES:
+
+- ex: ship delay
+
+### TREND LINES
+
+- Analytics pane
+- To use TREND LINES -- both axis MUST be interpretable as a number (Dates are OK -- can be interpreted as numeric by tableau)
+
+### REFERENCE LINES AND BANDS
+
+- BAND is a shaded portion
+
+## SHARING INSIGHTS:
+
+### ANIMATIONS:
+
+- format >> Animations (off by default)
+- Introduced in v 2020.1
+
+### DASHBOARD:
+
+- THREE OPTIONS:
+  - Fixed Size
+  - Range (scale between)
+  - Automatic
+
+### TILED VS. FLOATING:
+
+- How do we we make something tiled vs floating?
+  - Tiled by default
+  - LAYOUT >> Floating
+
+### HOW TO EXPORT:
+
+- WORKSHEET >> EXPORT
+- ALSO right click and copy
+
+### STORIES:
+
+- "Alternative" to powerpoint
+- Each sheet of a story is called a "story point"
+- What's a story? A sequence of dashboards or sheets that work together to tell a story
+- STORIES -- remembers the actions you do (e.g. selecting)
