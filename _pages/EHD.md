@@ -39,15 +39,14 @@ permalink: /EHD/
 {% endfor %}
 </div>
 
-{% for tag in site.tags %}
-{% assign t = tag | first %}
-{% assign posts = tag | last %}
-
 <!-- {{ t | downcase }} -->
 
 <div>
 <h1> POSTS WITH TAGS </h1>
 <ul>
+{% for tag in site.tags %}
+{% assign t = tag | first %}
+{% assign posts = tag | last %}
 {% for post in posts %}
   {% if post.tags contains 'EHD' %}
   <li>

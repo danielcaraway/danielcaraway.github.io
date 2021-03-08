@@ -227,3 +227,5 @@ NOTES:
 - Each sheet of a story is called a "story point"
 - What's a story? A sequence of dashboards or sheets that work together to tell a story
 - STORIES -- remembers the actions you do (e.g. selecting)
+
+## TEST PREP
