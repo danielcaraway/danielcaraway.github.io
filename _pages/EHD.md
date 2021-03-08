@@ -58,3 +58,17 @@ permalink: /EHD/
 {% endfor %}
 </ul>
 </div>
+
+<div>
+<h1> POSTS WITH EHD TAGS </h1>
+<ul>
+{% for post in posts %}
+  {% if post.tags contains 'EHD' %}
+  <li>
+    <a href="{{ post.url }}">{{ post.title }}</a>
+    <span class="date">{{ post.date | date: "%B %-d, %Y"  }}</span>
+  </li>
+  {% endif %}
+{% endfor %}
+</ul>
+</div>
