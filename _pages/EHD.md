@@ -55,6 +55,6 @@ permalink: /EHD/
   </li>
   {% endif %}
 {% endfor %}
-</ul>
 {% endfor %}
+</ul>
 </div>
