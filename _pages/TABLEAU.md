@@ -31,6 +31,22 @@ Having a completed "Tableau Desktop Specialist" on my Linkedin Profile
 - Review TABLEAU google doc, specifically "What is the exam like"
 - Retake Quiz 1, 2, 3, & 4
 
+## POSTS:
+
+<div>
+<h1> POSTS WITH TABLEAU TAGS </h1>
+<ul>
+{% for post in site.posts %}
+  {% if post.tags contains 'tableau' %}
+  <li>
+    <a href="{{ post.url }}">{{ post.title }}</a>
+    <span class="date">{{ post.date | date: "%B %-d, %Y"  }}</span>
+  </li>
+  {% endif %}
+{% endfor %}
+</ul>
+</div>
+
 ## NOTES:
 
 ### 02-16-21

@@ -39,7 +39,7 @@ permalink: /EHD/
 {% endfor %}
 </div>
 
-<!-- {{ t | downcase }} -->
+<!-- {{ t | downcase }}
 
 <div>
 <h1> POSTS WITH TAGS </h1>
@@ -57,7 +57,7 @@ permalink: /EHD/
 {% endfor %}
 {% endfor %}
 </ul>
-</div>
+</div> -->
 
 <div>
 <h1> POSTS WITH EHD TAGS </h1>
