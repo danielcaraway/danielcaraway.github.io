@@ -62,7 +62,7 @@ permalink: /EHD/
 <div>
 <h1> POSTS WITH EHD TAGS </h1>
 <ul>
-{% for post in posts %}
+{% for post in site.posts %}
   {% if post.tags contains 'EHD' %}
   <li>
     <a href="{{ post.url }}">{{ post.title }}</a>
