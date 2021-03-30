@@ -1,7 +1,18 @@
 ---
-title: "Projects"
+title: 'Projects'
 permalink: /projects/
 ---
+
+## CURRENT:
+
+1. Donna Data
+2. EHD
+3. DIR/YIR/Texts
+
+## BACKLOG:
+
+4. Tableau?
+5. KendraMSDS /SYR portfolio
 
 ## IN PROGRESS
 
@@ -13,8 +24,8 @@ permalink: /projects/
     {% endfor %} 
 </ul>
 
-
 # ALL
+
 <ul>
     {% for page in site.pages %}
         <li>{{page.title}}</li>
@@ -26,4 +37,3 @@ permalink: /projects/
 [Flask + d3 App](https://ist718031230.herokuapp.com/)
 
 https://anvil.works/learn/examples/dashboard
-
