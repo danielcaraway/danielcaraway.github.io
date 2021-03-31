@@ -12,7 +12,8 @@ permalink: /projects/
 ## BACKLOG:
 
 4. Tableau?
-5. KendraMSDS /SYR portfolio
+5. Nest-analyzer
+6. KendraMSDS /SYR portfolio
 
 ## IN PROGRESS
 
