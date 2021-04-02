@@ -6,6 +6,7 @@ permalink: /projects/
 ## CURRENT:
 
 1. Donna Data
+   1. 4/1 STATUS: Filtered down to what she needs, started Tableau workbook
 2. EHD
 3. DIR/YIR/Texts
 
