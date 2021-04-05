@@ -223,6 +223,13 @@ NOTE: We use JOIN instead of MERGE when we have to dfs with the same index (in t
 
 ## Section 25: Neural Nets and Deep Learning
 
+STARTED: 4/5/21
+
+### 127. Perceptron Model
+
+1. Modeled after an actual neuron -- has dendrites (inputs) that feed into the neuron (the place where the computation happens) and outputs to the axon (the output)
+2. We can add weights and biases to our dendrite inputs
+
 ## Section 26: Big Data and Spark with Python
 
 ## Section 27: BONUS SECTION: THANK YOU!
