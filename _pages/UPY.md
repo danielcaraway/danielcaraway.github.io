@@ -230,6 +230,15 @@ STARTED: 4/5/21
 1. Modeled after an actual neuron -- has dendrites (inputs) that feed into the neuron (the place where the computation happens) and outputs to the axon (the output)
 2. We can add weights and biases to our dendrite inputs
 
+### 129. Activation Functions
+
+#### NOTES:
+
+- Remember, w = weight, x is our variable and b is our bias.
+- Think about bias as what w _ x would have to overcome to be "counted" so if the bias = -10, w _ x would have to overcome 10 to be "counted"
+
+What if we want to limit our w _ x + b? ENTER ACTIVATION FUNCTIONS!! We input our w _ x + b into our activation functions to limit what their output can be.
+
 ## Section 26: Big Data and Spark with Python
 
 ## Section 27: BONUS SECTION: THANK YOU!
